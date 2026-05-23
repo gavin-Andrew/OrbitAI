@@ -13,8 +13,8 @@ SOURCES = [
         "url": "https://openai.com/news/rss.xml",
     },
     {
-        "name": "Google DeepMind",
-        "url": "https://deepmind.google/blog/rss.xml",
+        "name": "Hugging Face Blog",
+        "url": "https://huggingface.co/blog/feed.xml",
     },
     {
         "name": "Google AI Blog",
@@ -40,6 +40,12 @@ def load_existing_data():
             data = json.load(file)
 
         if isinstance(data, list):
+            for item in data:
+                if "category" not in item:
+                    item["category"] = classify_item(
+                        item.get("title", ""),
+                        item.get("summary", "")
+                        )
             return data
 
         print("⚠️ data.json 格式不是列表，已暂时忽略旧数据。")
@@ -98,6 +104,27 @@ def truncate_text(text, max_length=220):
 
     return text[:max_length].rstrip() + "..."
 
+def classify_item(title, summary):
+    """
+    用简单关键词规则给信息做基础分类。
+    V1.3 暂时不用 AI，只用规则判断。
+    """
+    text = f"{title} {summary}".lower()
+
+    if any(keyword in text for keyword in ["model", "gpt", "claude", "llm", "language model", "gemini"]):
+        return "模型"
+
+    if any(keyword in text for keyword in ["paper", "research", "study", "benchmark", "evaluation"]):
+        return "论文/研究"
+
+    if any(keyword in text for keyword in ["product", "app", "release", "launch", "codex", "code"]):
+        return "产品"
+
+    if any(keyword in text for keyword in ["company", "funding", "startup", "enterprise", "business"]):
+        return "行业"
+
+    return "其他"
+
 def fetch_rss(source, existing_links):
     """
     抓取单个 RSS 信息源，返回新抓到的信息列表。
@@ -141,6 +168,7 @@ def fetch_rss(source, existing_links):
             "link": link,
             "published": published,
             "summary": summary,
+            "category": classify_item(title, summary),
             "fetched_at": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -173,15 +201,34 @@ def generate_html(items):
     """
     sorted_items = sort_items(items)
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sources = sorted({item.get("source", "未知来源") for item in sorted_items})
+    categories = sorted({item.get("category", "其他") for item in sorted_items})
 
+    source_options = "\n".join(
+        f'<option value="{escape(source)}">{escape(source)}</option>'
+        for source in sources
+    )
+
+    category_options = "\n".join(
+        f'<option value="{escape(category)}">{escape(category)}</option>'
+        for category in categories
+    )
+    
     article_cards = []
 
     for item in sorted_items:
-        title = escape(item.get("title", "无标题"))
-        source = escape(item.get("source", "未知来源"))
+        title_raw = item.get("title", "无标题")
+        source_raw = item.get("source", "未知来源")
+        category_raw = item.get("category", "其他")
+        summary_raw = truncate_text(clean_html(item.get("summary", "")), 240)
+        
+        title = escape(title_raw)
+        source = escape(source_raw)
+        category = escape(category_raw)
         link = escape(item.get("link", "#"))
         published = escape(item.get("published", "无发布时间"))
-        summary = escape(truncate_text(clean_html(item.get("summary", "")), 240))
+        summary = escape(summary_raw)
+        search_text = escape(f"{title_raw} {source_raw} {category_raw} {summary_raw}".lower())
 
         if summary:
             summary_html = f"<p class='summary'>{summary}</p>"
@@ -189,9 +236,10 @@ def generate_html(items):
             summary_html = "<p class='summary empty'>暂无摘要</p>"
 
         card = f"""
-        <article class="card">
+        <article class="card" data-source="{source}" data-category="{category}" data-search="{search_text}">
             <div class="meta">
                 <span class="source">{source}</span>
+                <span class="category">{category}</span>
                 <span class="time">{published}</span>
             </div>
             <h2>
@@ -265,6 +313,37 @@ def generate_html(items):
             font-size: 14px;
         }}
 
+        .controls {{
+            display: grid;
+            grid-template-columns: 1fr 180px 180px;
+            gap: 12px;
+            margin-bottom: 22px;
+        }}
+
+        .controls input,
+        .controls select {{
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dbe3ef;
+            border-radius: 14px;
+            background: white;
+            color: #111827;
+            font-size: 15px;
+            outline: none;
+        }}
+
+        .controls input:focus,
+        .controls select:focus {{
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }}
+
+        .result-count {{
+            grid-column: 1 / -1;
+            color: #6b7280;
+            font-size: 14px;
+        }}
+
         .card {{
             margin-bottom: 18px;
             padding: 24px;
@@ -286,6 +365,15 @@ def generate_html(items):
         .source {{
             font-weight: 700;
             color: #2563eb;
+        }}
+
+        .category {{
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 13px;
+            font-weight: 600;
         }}
 
         h2 {{
@@ -329,6 +417,12 @@ def generate_html(items):
             background: #dbeafe;
         }}
 
+        @media (max-width: 720px) {{
+            .controls {{
+                grid-template-columns: 1fr;
+            }}
+        }}
+
         .footer {{
             margin-top: 32px;
             text-align: center;
@@ -348,14 +442,71 @@ def generate_html(items):
             </div>
         </section>
 
+        <section class="controls">
+            <input id="searchInput" type="text" placeholder="搜索标题、来源、摘要..." />
+
+            <select id="sourceFilter">
+                <option value="all">全部来源</option>
+                {source_options}
+            </select>
+
+            <select id="categoryFilter">
+                <option value="all">全部分类</option>
+                {category_options}
+            </select>
+
+            <div id="resultCount" class="result-count"></div>
+        </section>
+
         <section class="feed">
             {cards_html}
         </section>
 
         <footer class="footer">
-            Generated locally by OrbitAI V1.2
+            Generated locally by OrbitAI V1.3
         </footer>
     </main>
+<script>
+    const searchInput = document.getElementById("searchInput");
+    const sourceFilter = document.getElementById("sourceFilter");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const resultCount = document.getElementById("resultCount");
+    const cards = Array.from(document.querySelectorAll(".card"));
+
+    function updateCards() {{
+        const searchValue = searchInput.value.trim().toLowerCase();
+        const selectedSource = sourceFilter.value;
+        const selectedCategory = categoryFilter.value;
+
+        let visibleCount = 0;
+
+        cards.forEach((card) => {{
+            const cardSource = card.dataset.source;
+            const cardCategory = card.dataset.category;
+            const cardSearch = card.dataset.search;
+
+            const matchesSearch = !searchValue || cardSearch.includes(searchValue);
+            const matchesSource = selectedSource === "all" || cardSource === selectedSource;
+            const matchesCategory = selectedCategory === "all" || cardCategory === selectedCategory;
+
+            const shouldShow = matchesSearch && matchesSource && matchesCategory;
+
+            card.style.display = shouldShow ? "block" : "none";
+
+            if (shouldShow) {{
+                visibleCount += 1;
+            }}
+        }});
+
+        resultCount.textContent = `当前显示：${{visibleCount}} / ${{cards.length}} 条`;
+    }}
+
+    searchInput.addEventListener("input", updateCards);
+    sourceFilter.addEventListener("change", updateCards);
+    categoryFilter.addEventListener("change", updateCards);
+
+    updateCards();
+</script>
 </body>
 </html>
 """
@@ -367,7 +518,7 @@ def generate_html(items):
 
 
 def main():
-    print("🚀 OrbitAI V1.2 - RSS 抓取、保存 data.json，并生成 index.html")
+    print("🚀 OrbitAI V1.3 - RSS 抓取、保存 data.json，并生成 index.html")
 
     existing_items = load_existing_data()
     existing_links = get_existing_links(existing_items)
@@ -393,7 +544,7 @@ def main():
 
     generate_html(updated_items)
 
-    print("\n✅ V1.2 运行结束。")
+    print("\n✅ V1.3 运行结束。")
 
 
 if __name__ == "__main__":
