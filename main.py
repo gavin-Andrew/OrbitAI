@@ -6,26 +6,51 @@ from pathlib import Path
 
 import feedparser
 
-
-SOURCES = [
-    {
-        "name": "OpenAI News",
-        "url": "https://openai.com/news/rss.xml",
-    },
-    {
-        "name": "Hugging Face Blog",
-        "url": "https://huggingface.co/blog/feed.xml",
-    },
-    {
-        "name": "Google AI Blog",
-        "url": "https://feeds.feedburner.com/blogspot/gJZg",
-    },
-]
-
-
 DATA_FILE = Path("data.json")
 HTML_FILE = Path("index.html")
+SOURCES_FILE = Path("sources.json")
 
+def load_sources():
+    """
+    从 sources.json 读取 RSS 信息源。
+    只返回 enabled 为 true 的信源。
+    """
+    if not SOURCES_FILE.exists():
+        print("⚠️ 未找到 sources.json，无法读取信息源。")
+        return []
+
+    try:
+        with SOURCES_FILE.open("r", encoding="utf-8") as file:
+            sources = json.load(file)
+
+        if not isinstance(sources, list):
+            print("⚠️ sources.json 格式错误：最外层应该是列表。")
+            return []
+
+        enabled_sources = []
+
+        for source in sources:
+            name = source.get("name")
+            url = source.get("url")
+            enabled = source.get("enabled", True)
+
+            if not enabled:
+                continue
+
+            if not name or not url:
+                print(f"⚠️ 跳过无效信源：{source}")
+                continue
+
+            enabled_sources.append({
+                "name": name,
+                "url": url,
+            })
+
+        return enabled_sources
+
+    except json.JSONDecodeError:
+        print("⚠️ sources.json 不是有效 JSON，请检查格式。")
+        return []
 
 def load_existing_data():
     """
@@ -463,7 +488,7 @@ def generate_html(items):
         </section>
 
         <footer class="footer">
-            Generated locally by OrbitAI V1.3
+            Generated locally by OrbitAI V1.4
         </footer>
     </main>
 <script>
@@ -518,7 +543,7 @@ def generate_html(items):
 
 
 def main():
-    print("🚀 OrbitAI V1.3 - RSS 抓取、保存 data.json，并生成 index.html")
+    print("🚀 OrbitAI V1.4 - RSS 抓取、保存 data.json，并生成 index.html")
 
     existing_items = load_existing_data()
     existing_links = get_existing_links(existing_items)
@@ -527,7 +552,15 @@ def main():
 
     all_new_items = []
 
-    for source in SOURCES:
+    sources = load_sources()
+
+    if not sources:
+        print("\n⚠️ 没有可用信息源，程序结束。")
+        return
+
+    all_new_items = []
+
+    for source in sources:
         new_items = fetch_rss(source, existing_links)
         all_new_items.extend(new_items)
 
@@ -544,7 +577,7 @@ def main():
 
     generate_html(updated_items)
 
-    print("\n✅ V1.3 运行结束。")
+    print("\n✅ V1.4 运行结束。")
 
 
 if __name__ == "__main__":
