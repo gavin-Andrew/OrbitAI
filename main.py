@@ -1,14 +1,28 @@
 import json
+import os
 import re
 from datetime import datetime, timezone
 from html import escape
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 import feedparser
+from dotenv import load_dotenv
 
 DATA_FILE = Path("data.json")
 HTML_FILE = Path("index.html")
 SOURCES_FILE = Path("sources.json")
+
+load_dotenv()
+
+AI_PROVIDER = os.getenv("AI_PROVIDER", "deepseek")
+AI_API_KEY = os.getenv("AI_API_KEY", "")
+AI_BASE_URL = os.getenv("AI_BASE_URL", "https://api.deepseek.com")
+AI_MODEL = os.getenv("AI_MODEL", "deepseek-v4-flash")
+AI_BATCH_LIMIT = int(os.getenv("AI_BATCH_LIMIT", "1"))
+AI_INPUT_SUMMARY_MAX_CHARS = int(os.getenv("AI_INPUT_SUMMARY_MAX_CHARS", "1800"))
+AI_MAX_TOKENS = int(os.getenv("AI_MAX_TOKENS", "500"))
 
 
 def load_sources():
@@ -73,7 +87,7 @@ def clean_html(raw_text):
 
 def truncate_text(text, max_length=220):
     """
-    把过长的摘要截断，避免网页卡片太长。
+    把过长的文本截断，避免页面卡片或 AI 输入过长。
     """
     if not text:
         return ""
@@ -89,7 +103,7 @@ def truncate_text(text, max_length=220):
 def classify_item(title, summary):
     """
     用简单关键词规则给信息做基础分类。
-    V2.0 仍然保留规则分类。
+    V2.1 仍然保留规则分类。
     真正的 AI 分类会在 V2.2 再加入。
     """
     text = f"{title} {summary}".lower()
@@ -112,7 +126,7 @@ def classify_item(title, summary):
 def create_empty_ai_fields():
     """
     创建 AI 预留字段。
-    V2.0 只准备结构，不真正调用 AI。
+    V2.1 会填充 title_cn、summary、processed、processed_at。
     """
     return {
         "title_cn": "",
@@ -135,7 +149,7 @@ def create_empty_ai_fields():
 
 def migrate_item_to_v2(item):
     """
-    把旧版数据迁移到 V2.0 数据结构。
+    把旧版数据迁移到 V2.x 数据结构。
 
     旧字段：
     - summary
@@ -193,7 +207,7 @@ def migrate_item_to_v2(item):
 def load_existing_data():
     """
     读取已经存在的 data.json。
-    如果 data.json 是旧结构，就自动迁移到 V2.0 结构。
+    如果 data.json 是旧结构，就自动迁移到 V2.x 结构。
     """
     if not DATA_FILE.exists():
         return []
@@ -239,7 +253,7 @@ def get_existing_links(items):
 
 def create_new_item(title, source, link, published, summary_original):
     """
-    创建一条 V2.0 标准结构的新信息。
+    创建一条 V2.x 标准结构的新信息。
     """
     return {
         "title": title,
@@ -251,6 +265,224 @@ def create_new_item(title, source, link, published, summary_original):
         "fetched_at": datetime.now(timezone.utc).isoformat(),
         "ai": create_empty_ai_fields(),
     }
+
+
+def extract_json_from_text(text):
+    """
+    尝试从 AI 返回文本中提取 JSON。
+    即使模型在 JSON 前后加了多余文本，也尽量解析出来。
+    """
+    if not text:
+        return None
+
+    text = text.strip()
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    start = text.find("{")
+    end = text.rfind("}")
+
+    if start == -1 or end == -1 or end <= start:
+        return None
+
+    try:
+        return json.loads(text[start:end + 1])
+    except json.JSONDecodeError:
+        return None
+
+
+def create_ai_client():
+    """
+    V2.1 使用 DeepSeek REST API。
+    这里不创建 SDK client，只检查 API Key 是否存在。
+    """
+    if not AI_API_KEY:
+        return None
+
+    return {
+        "api_key": AI_API_KEY,
+        "base_url": AI_BASE_URL.rstrip("/"),
+    }
+
+
+def call_ai_for_summary(client, item):
+    """
+    直接使用 DeepSeek REST API，为单条信息生成中文标题和中文摘要。
+    V2.1 只做 title_cn 和 summary。
+    """
+    title = item.get("title", "")
+    source = item.get("source", "")
+    published = item.get("published", "")
+
+    summary_original = clean_html(item.get("summary_original", ""))
+    summary_for_ai = truncate_text(summary_original, AI_INPUT_SUMMARY_MAX_CHARS)
+
+    system_prompt = """
+你是 OrbitAI 的中文 AI 信息整理助手。
+你必须只输出合法 JSON，不要输出 Markdown，不要输出解释。
+""".strip()
+
+    user_prompt = f"""
+请阅读下面这条 AI 行业信息，为它生成中文标题和中文摘要。
+
+要求：
+1. 只输出 JSON。
+2. JSON 必须包含 title_cn 和 summary 两个字段。
+3. title_cn 是自然、准确的中文标题，不要机械直译。
+4. summary 是 1 到 2 句中文摘要，要求实用、克制，不要夸张。
+5. 如果原文信息不足，就基于标题和已有摘要谨慎概括。
+6. 不要编造原文没有的信息。
+
+输出 JSON 示例：
+{{
+  "title_cn": "中文标题",
+  "summary": "中文摘要"
+}}
+
+信息如下：
+来源：{source}
+发布时间：{published}
+原标题：{title}
+原始摘要：{summary_for_ai}
+""".strip()
+
+    request_url = f"{client['base_url']}/chat/completions"
+
+    payload = {
+        "model": AI_MODEL,
+        "messages": [
+            {
+                "role": "system",
+                "content": system_prompt,
+            },
+            {
+                "role": "user",
+                "content": user_prompt,
+            },
+        ],
+        "max_tokens": AI_MAX_TOKENS,
+        "stream": False,
+    }
+
+    request_data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+
+    request = Request(
+        request_url,
+        data=request_data,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {client['api_key']}",
+            "Content-Type": "application/json",
+        },
+    )
+
+    try:
+        with urlopen(request, timeout=60) as response:
+            response_text = response.read().decode("utf-8")
+
+    except HTTPError as error:
+        error_body = error.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"DeepSeek HTTP 错误：{error.code}，{error_body}") from error
+
+    except URLError as error:
+        raise RuntimeError(f"DeepSeek 连接错误：{error}") from error
+
+    try:
+        response_json = json.loads(response_text)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"DeepSeek 返回内容不是合法 JSON：{response_text}") from error
+
+    try:
+        result_text = response_json["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError) as error:
+        raise ValueError(f"DeepSeek 返回结构异常：{response_json}") from error
+
+    result_json = extract_json_from_text(result_text)
+
+    if not isinstance(result_json, dict):
+        raise ValueError(f"AI 返回内容不是合法 JSON：{result_text}")
+
+    title_cn = str(result_json.get("title_cn", "")).strip()
+    summary = str(result_json.get("summary", "")).strip()
+
+    if not title_cn or not summary:
+        raise ValueError(f"AI 返回缺少 title_cn 或 summary：{result_json}")
+
+    return {
+        "title_cn": title_cn,
+        "summary": summary,
+    }
+
+
+def process_ai_summaries(items):
+    """
+    批量处理未经过 AI 摘要处理的信息。
+    每次最多尝试 AI_BATCH_LIMIT 条，成功或失败都计入尝试次数。
+    """
+    if AI_BATCH_LIMIT <= 0:
+        print("\nℹ️ AI_BATCH_LIMIT <= 0，跳过 AI 摘要处理。")
+        return items
+
+    client = create_ai_client()
+
+    if client is None:
+        print("\n⚠️ 未找到 AI_API_KEY，跳过 AI 摘要处理。")
+        print("请在 .env 文件中配置 AI_API_KEY。")
+        return items
+
+    print(f"\n🤖 AI Provider：{AI_PROVIDER}")
+    print(f"🤖 AI Base URL：{AI_BASE_URL}")
+    print(f"🤖 AI Model：{AI_MODEL}")
+    print(f"🤖 本次最多尝试：{AI_BATCH_LIMIT} 条")
+
+    attempted_count = 0
+    processed_count = 0
+
+    for item in items:
+        ai = item.get("ai")
+
+        if not isinstance(ai, dict):
+            item["ai"] = create_empty_ai_fields()
+            ai = item["ai"]
+
+        if ai.get("processed") is True:
+            continue
+
+        if attempted_count >= AI_BATCH_LIMIT:
+            break
+
+        title = item.get("title", "无标题")
+        attempted_count += 1
+
+        print(f"\n🤖 AI 处理中：{title}")
+
+        try:
+            ai_result = call_ai_for_summary(client, item)
+
+            ai["title_cn"] = ai_result["title_cn"]
+            ai["summary"] = ai_result["summary"]
+            ai["processed"] = True
+            ai["processed_at"] = datetime.now(timezone.utc).isoformat()
+            ai["error"] = ""
+
+            processed_count += 1
+
+            print(f"✅ AI 摘要完成：{ai['title_cn']}")
+
+        except Exception as error:
+            ai["error"] = repr(error)
+            ai["processed"] = False
+
+            print(f"⚠️ AI 处理失败：{title}")
+            print(f"错误类型：{type(error).__name__}")
+            print(f"错误信息：{repr(error)}")
+
+    print(f"\n✅ 本次 AI 尝试数量：{attempted_count} 条")
+    print(f"✅ 本次 AI 成功数量：{processed_count} 条")
+    return items
 
 
 def fetch_rss(source, existing_links):
@@ -324,8 +556,7 @@ def sort_items(items):
 def get_display_title(item):
     """
     页面展示标题。
-    V2.0 暂时没有 AI 中文标题，所以通常显示原始标题。
-    V2.1 接入 AI 后，会优先显示 ai.title_cn。
+    V2.1 后优先显示 AI 中文标题。
     """
     ai = item.get("ai", {})
     title_cn = ai.get("title_cn", "")
@@ -339,8 +570,7 @@ def get_display_title(item):
 def get_display_summary(item):
     """
     页面展示摘要。
-    V2.0 暂时没有 AI 摘要，所以显示 summary_original。
-    V2.1 接入 AI 后，会优先显示 ai.summary。
+    V2.1 后优先显示 AI 中文摘要。
     """
     ai = item.get("ai", {})
     ai_summary = ai.get("summary", "")
@@ -354,7 +584,7 @@ def get_display_summary(item):
 def get_display_category(item):
     """
     页面展示分类。
-    V2.0 暂时使用规则分类。
+    V2.1 暂时使用规则分类。
     V2.2 接入 AI 分类后，会优先显示 ai.category。
     """
     ai = item.get("ai", {})
@@ -369,7 +599,7 @@ def get_display_category(item):
 def generate_html(items):
     """
     根据 data.json 里的数据生成本地 index.html。
-    V2.0 页面仍然是全部信息页，但已经兼容未来 AI 字段。
+    V2.1 页面仍然是全部信息页，但已经优先展示 AI 中文标题和摘要。
     """
     sorted_items = sort_items(items)
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -681,7 +911,7 @@ def generate_html(items):
         </section>
 
         <footer class="footer">
-            Generated locally by OrbitAI V2.0
+            Generated locally by OrbitAI V2.1
         </footer>
     </main>
 <script>
@@ -736,29 +966,28 @@ def generate_html(items):
 
 
 def main():
-    print("🚀 OrbitAI V2.0 - AI 接入前的数据结构准备版")
+    print("🚀 OrbitAI V2.1 - DeepSeek REST API 摘要与标题翻译")
 
     existing_items = load_existing_data()
     existing_links = get_existing_links(existing_items)
 
     print(f"\n当前已保存信息数量：{len(existing_items)}")
-    print("✅ 旧数据已按 V2.0 结构检查 / 迁移。")
+    print("✅ 旧数据已按 V2.x 结构检查 / 迁移。")
 
     sources = load_sources()
 
-    if not sources:
-        print("\n⚠️ 没有可用信息源，程序结束。")
-        save_data(existing_items)
-        generate_html(existing_items)
-        return
-
     all_new_items = []
 
-    for source in sources:
-        new_items = fetch_rss(source, existing_links)
-        all_new_items.extend(new_items)
+    if sources:
+        for source in sources:
+            new_items = fetch_rss(source, existing_links)
+            all_new_items.extend(new_items)
+    else:
+        print("\n⚠️ 没有可用信息源，本次只处理已有数据。")
 
     updated_items = all_new_items + existing_items
+
+    updated_items = process_ai_summaries(updated_items)
 
     save_data(updated_items)
 
@@ -768,11 +997,11 @@ def main():
         print(f"当前总数：{len(updated_items)} 条")
     else:
         print("\n✅ 没有发现新内容。")
-        print("✅ data.json 已保存为 V2.0 数据结构。")
+        print("✅ data.json 已保存为 V2.1 数据结构。")
 
     generate_html(updated_items)
 
-    print("\n✅ V2.0 运行结束。")
+    print("\n✅ V2.1 运行结束。")
 
 
 if __name__ == "__main__":
