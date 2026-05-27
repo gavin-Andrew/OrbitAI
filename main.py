@@ -24,6 +24,17 @@ AI_BATCH_LIMIT = int(os.getenv("AI_BATCH_LIMIT", "1"))
 AI_INPUT_SUMMARY_MAX_CHARS = int(os.getenv("AI_INPUT_SUMMARY_MAX_CHARS", "1800"))
 AI_MAX_TOKENS = int(os.getenv("AI_MAX_TOKENS", "500"))
 
+AI_CATEGORIES = [
+    "模型",
+    "产品",
+    "论文/研究",
+    "开发工具",
+    "行业/商业",
+    "政策/安全",
+    "教程/观点",
+    "其他",
+]
+
 
 def load_sources():
     """
@@ -126,7 +137,7 @@ def classify_item(title, summary):
 def create_empty_ai_fields():
     """
     创建 AI 预留字段。
-    V2.1 会填充 title_cn、summary、processed、processed_at。
+    V2.2 会填充 title_cn、summary、category、tags、processed、processed_at。
     """
     return {
         "title_cn": "",
@@ -308,17 +319,126 @@ def create_ai_client():
     }
 
 
-def call_ai_for_summary(client, item):
+def normalize_ai_category(category, fallback_category="其他"):
     """
-    直接使用 DeepSeek REST API，为单条信息生成中文标题和中文摘要。
-    V2.1 只做 title_cn 和 summary。
+    校验 AI 返回的分类。
+    如果 AI 返回不在固定分类列表中，就回退到规则分类或“其他”。
+    """
+    category = str(category or "").strip()
+
+    if category in AI_CATEGORIES:
+        return category
+
+    fallback_category = str(fallback_category or "其他").strip()
+
+    if fallback_category in AI_CATEGORIES:
+        return fallback_category
+
+    # 兼容 V1/V2.1 旧规则分类里的“行业”
+    if fallback_category == "行业":
+        return "行业/商业"
+
+    return "其他"
+
+
+def normalize_ai_tags(tags):
+    """
+    校验并清洗 AI 返回的 tags。
+    目标：确保 tags 一定是短字符串列表，避免 AI 返回格式漂移。
+    """
+    if isinstance(tags, str):
+        tags = re.split(r"[,，、/|]", tags)
+
+    if not isinstance(tags, list):
+        return []
+
+    cleaned_tags = []
+    seen_tags = set()
+
+    for tag in tags:
+        tag_text = str(tag or "").strip()
+        tag_text = re.sub(r"\s+", " ", tag_text)
+
+        if not tag_text:
+            continue
+
+        if len(tag_text) > 24:
+            tag_text = tag_text[:24].strip()
+
+        tag_key = tag_text.lower()
+
+        if tag_key in seen_tags:
+            continue
+
+        cleaned_tags.append(tag_text)
+        seen_tags.add(tag_key)
+
+        if len(cleaned_tags) >= 6:
+            break
+
+    return cleaned_tags
+
+
+def item_needs_ai_processing(item):
+    """
+    判断一条信息是否还需要 AI 处理。
+    V2.2 不能只看 processed，因为 V2.1 可能已经生成标题和摘要，
+    但还没有生成 AI 分类和标签。
+    """
+    ai = item.get("ai")
+
+    if not isinstance(ai, dict):
+        return True
+
+    if not str(ai.get("title_cn", "")).strip():
+        return True
+
+    if not str(ai.get("summary", "")).strip():
+        return True
+
+    if not str(ai.get("category", "")).strip():
+        return True
+
+    tags = ai.get("tags", [])
+
+    if not isinstance(tags, list) or len(tags) == 0:
+        return True
+
+    return False
+
+
+def item_is_ai_complete(item):
+    """
+    判断一条信息是否已经完成 V2.2 所需的 AI 结构化处理。
+    """
+    return not item_needs_ai_processing(item)
+
+
+def call_ai_for_analysis(client, item):
+    """
+    直接使用 DeepSeek REST API，为单条信息生成：
+    - 中文标题 title_cn
+    - 中文摘要 summary
+    - AI 分类 category
+    - 关键词 tags
     """
     title = item.get("title", "")
     source = item.get("source", "")
     published = item.get("published", "")
+    category_rule = item.get("category_rule", "其他")
+
+    existing_ai = item.get("ai", {})
+    existing_title_cn = ""
+    existing_summary = ""
+
+    if isinstance(existing_ai, dict):
+        existing_title_cn = str(existing_ai.get("title_cn", "")).strip()
+        existing_summary = str(existing_ai.get("summary", "")).strip()
 
     summary_original = clean_html(item.get("summary_original", ""))
     summary_for_ai = truncate_text(summary_original, AI_INPUT_SUMMARY_MAX_CHARS)
+
+    categories_text = "、".join(AI_CATEGORIES)
 
     system_prompt = """
 你是 OrbitAI 的中文 AI 信息整理助手。
@@ -326,26 +446,35 @@ def call_ai_for_summary(client, item):
 """.strip()
 
     user_prompt = f"""
-请阅读下面这条 AI 行业信息，为它生成中文标题和中文摘要。
+请阅读下面这条 AI 行业信息，为它生成结构化整理结果。
 
 要求：
 1. 只输出 JSON。
-2. JSON 必须包含 title_cn 和 summary 两个字段。
+2. JSON 必须包含 title_cn、summary、category、tags 四个字段。
 3. title_cn 是自然、准确的中文标题，不要机械直译。
 4. summary 是 1 到 2 句中文摘要，要求实用、克制，不要夸张。
-5. 如果原文信息不足，就基于标题和已有摘要谨慎概括。
-6. 不要编造原文没有的信息。
+5. category 必须且只能从以下分类中选择一个：{categories_text}。
+6. tags 必须是字符串数组，数量 3 到 6 个。
+7. tags 优先使用中文；但 LLM、RAG、AI Agent、Codex、OpenAI 这类专有名词可以保留英文。
+8. 不要输出“人工智能”“技术”“新闻”这类过泛标签。
+9. 如果原文信息不足，就基于标题和已有摘要谨慎概括。
+10. 不要编造原文没有的信息。
 
 输出 JSON 示例：
 {{
   "title_cn": "中文标题",
-  "summary": "中文摘要"
+  "summary": "中文摘要",
+  "category": "开发工具",
+  "tags": ["AI Agent", "代码助手", "开发者工具"]
 }}
 
 信息如下：
 来源：{source}
 发布时间：{published}
+规则分类参考：{category_rule}
 原标题：{title}
+已有中文标题：{existing_title_cn}
+已有中文摘要：{existing_summary}
 原始摘要：{summary_for_ai}
 """.strip()
 
@@ -407,29 +536,44 @@ def call_ai_for_summary(client, item):
 
     title_cn = str(result_json.get("title_cn", "")).strip()
     summary = str(result_json.get("summary", "")).strip()
+    category = normalize_ai_category(
+        result_json.get("category", ""),
+        fallback_category=category_rule,
+    )
+    tags = normalize_ai_tags(result_json.get("tags", []))
+
+    if not title_cn:
+        title_cn = existing_title_cn
+
+    if not summary:
+        summary = existing_summary
 
     if not title_cn or not summary:
         raise ValueError(f"AI 返回缺少 title_cn 或 summary：{result_json}")
 
+    if not tags:
+        raise ValueError(f"AI 返回缺少有效 tags：{result_json}")
+
     return {
         "title_cn": title_cn,
         "summary": summary,
+        "category": category,
+        "tags": tags,
     }
 
-
-def process_ai_summaries(items):
+def process_ai_items(items):
     """
-    批量处理未经过 AI 摘要处理的信息。
+    批量处理未完成 V2.2 AI 结构化整理的信息。
     每次最多尝试 AI_BATCH_LIMIT 条，成功或失败都计入尝试次数。
     """
     if AI_BATCH_LIMIT <= 0:
-        print("\nℹ️ AI_BATCH_LIMIT <= 0，跳过 AI 摘要处理。")
+        print("\nℹ️ AI_BATCH_LIMIT <= 0，跳过 AI 处理。")
         return items
 
     client = create_ai_client()
 
     if client is None:
-        print("\n⚠️ 未找到 AI_API_KEY，跳过 AI 摘要处理。")
+        print("\n⚠️ 未找到 AI_API_KEY，跳过 AI 处理。")
         print("请在 .env 文件中配置 AI_API_KEY。")
         return items
 
@@ -448,7 +592,7 @@ def process_ai_summaries(items):
             item["ai"] = create_empty_ai_fields()
             ai = item["ai"]
 
-        if ai.get("processed") is True:
+        if not item_needs_ai_processing(item):
             continue
 
         if attempted_count >= AI_BATCH_LIMIT:
@@ -457,20 +601,24 @@ def process_ai_summaries(items):
         title = item.get("title", "无标题")
         attempted_count += 1
 
-        print(f"\n🤖 AI 处理中：{title}")
+        print(f"\n🤖 AI 结构化处理中：{title}")
 
         try:
-            ai_result = call_ai_for_summary(client, item)
+            ai_result = call_ai_for_analysis(client, item)
 
             ai["title_cn"] = ai_result["title_cn"]
             ai["summary"] = ai_result["summary"]
+            ai["category"] = ai_result["category"]
+            ai["tags"] = ai_result["tags"]
             ai["processed"] = True
             ai["processed_at"] = datetime.now(timezone.utc).isoformat()
             ai["error"] = ""
 
             processed_count += 1
 
-            print(f"✅ AI 摘要完成：{ai['title_cn']}")
+            print(f"✅ AI 结构化完成：{ai['title_cn']}")
+            print(f"   分类：{ai['category']}")
+            print(f"   标签：{', '.join(ai['tags'])}")
 
         except Exception as error:
             ai["error"] = repr(error)
@@ -483,7 +631,6 @@ def process_ai_summaries(items):
     print(f"\n✅ 本次 AI 尝试数量：{attempted_count} 条")
     print(f"✅ 本次 AI 成功数量：{processed_count} 条")
     return items
-
 
 def fetch_rss(source, existing_links):
     """
@@ -556,7 +703,7 @@ def sort_items(items):
 def get_display_title(item):
     """
     页面展示标题。
-    V2.1 后优先显示 AI 中文标题。
+    V2.2 后优先显示 AI 中文标题。
     """
     ai = item.get("ai", {})
     title_cn = ai.get("title_cn", "")
@@ -570,7 +717,7 @@ def get_display_title(item):
 def get_display_summary(item):
     """
     页面展示摘要。
-    V2.1 后优先显示 AI 中文摘要。
+    V2.2 后优先显示 AI 中文摘要。
     """
     ai = item.get("ai", {})
     ai_summary = ai.get("summary", "")
@@ -584,8 +731,7 @@ def get_display_summary(item):
 def get_display_category(item):
     """
     页面展示分类。
-    V2.1 暂时使用规则分类。
-    V2.2 接入 AI 分类后，会优先显示 ai.category。
+    V2.2 优先使用 AI 分类；如果没有 AI 分类，则回退到规则分类。
     """
     ai = item.get("ai", {})
     ai_category = ai.get("category", "")
@@ -599,7 +745,7 @@ def get_display_category(item):
 def generate_html(items):
     """
     根据 data.json 里的数据生成本地 index.html。
-    V2.1 页面仍然是全部信息页，但已经优先展示 AI 中文标题和摘要。
+    V2.2 页面支持 AI 分类展示和标签筛选。
     """
     sorted_items = sort_items(items)
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -607,9 +753,17 @@ def generate_html(items):
     sources = sorted({item.get("source", "未知来源") for item in sorted_items})
     categories = sorted({get_display_category(item) for item in sorted_items})
 
+    all_tags = set()
+    for item in sorted_items:
+        tags = item.get("ai", {}).get("tags", [])
+        if isinstance(tags, list):
+            all_tags.update(str(tag) for tag in tags if str(tag).strip())
+
+    tags = sorted(all_tags)
+
     ai_processed_count = sum(
         1 for item in sorted_items
-        if item.get("ai", {}).get("processed") is True
+        if item_is_ai_complete(item)
     )
 
     source_options = "\n".join(
@@ -620,6 +774,11 @@ def generate_html(items):
     category_options = "\n".join(
         f'<option value="{escape(category)}">{escape(category)}</option>'
         for category in categories
+    )
+
+    tag_options = "\n".join(
+        f'<option value="{escape(tag)}">{escape(tag)}</option>'
+        for tag in tags
     )
 
     article_cards = []
@@ -645,6 +804,7 @@ def generate_html(items):
         summary = escape(summary_raw)
 
         tags_text = " ".join(tags)
+        tags_data = escape("||".join(tags))
 
         search_text = escape(
             f"{title_raw} {display_title_raw} {source_raw} "
@@ -666,7 +826,7 @@ def generate_html(items):
             tags_html = ""
 
         card = f"""
-        <article class="card" data-source="{source}" data-category="{category}" data-search="{search_text}">
+        <article class="card" data-source="{source}" data-category="{category}" data-tags="{tags_data}" data-search="{search_text}">
             <div class="meta">
                 <span class="source">{source}</span>
                 <span class="category">{category}</span>
@@ -746,7 +906,7 @@ def generate_html(items):
 
         .controls {{
             display: grid;
-            grid-template-columns: 1fr 180px 180px;
+            grid-template-columns: 1fr 160px 160px 160px;
             gap: 12px;
             margin-bottom: 22px;
         }}
@@ -903,6 +1063,11 @@ def generate_html(items):
                 {category_options}
             </select>
 
+            <select id="tagFilter">
+                <option value="all">全部标签</option>
+                {tag_options}
+            </select>
+
             <div id="resultCount" class="result-count"></div>
         </section>
 
@@ -911,13 +1076,14 @@ def generate_html(items):
         </section>
 
         <footer class="footer">
-            Generated locally by OrbitAI V2.1
+            Generated locally by OrbitAI V2.2
         </footer>
     </main>
 <script>
     const searchInput = document.getElementById("searchInput");
     const sourceFilter = document.getElementById("sourceFilter");
     const categoryFilter = document.getElementById("categoryFilter");
+    const tagFilter = document.getElementById("tagFilter");
     const resultCount = document.getElementById("resultCount");
     const cards = Array.from(document.querySelectorAll(".card"));
 
@@ -925,19 +1091,22 @@ def generate_html(items):
         const searchValue = searchInput.value.trim().toLowerCase();
         const selectedSource = sourceFilter.value;
         const selectedCategory = categoryFilter.value;
+        const selectedTag = tagFilter.value;
 
         let visibleCount = 0;
 
         cards.forEach((card) => {{
             const cardSource = card.dataset.source;
             const cardCategory = card.dataset.category;
+            const cardTags = card.dataset.tags || "";
             const cardSearch = card.dataset.search;
 
             const matchesSearch = !searchValue || cardSearch.includes(searchValue);
             const matchesSource = selectedSource === "all" || cardSource === selectedSource;
             const matchesCategory = selectedCategory === "all" || cardCategory === selectedCategory;
+            const matchesTag = selectedTag === "all" || cardTags.split("||").includes(selectedTag);
 
-            const shouldShow = matchesSearch && matchesSource && matchesCategory;
+            const shouldShow = matchesSearch && matchesSource && matchesCategory && matchesTag;
 
             card.style.display = shouldShow ? "block" : "none";
 
@@ -952,6 +1121,7 @@ def generate_html(items):
     searchInput.addEventListener("input", updateCards);
     sourceFilter.addEventListener("change", updateCards);
     categoryFilter.addEventListener("change", updateCards);
+    tagFilter.addEventListener("change", updateCards);
 
     updateCards();
 </script>
@@ -966,7 +1136,7 @@ def generate_html(items):
 
 
 def main():
-    print("🚀 OrbitAI V2.1 - DeepSeek REST API 摘要与标题翻译")
+    print("🚀 OrbitAI V2.2 - AI 分类与关键词提取")
 
     existing_items = load_existing_data()
     existing_links = get_existing_links(existing_items)
@@ -987,7 +1157,7 @@ def main():
 
     updated_items = all_new_items + existing_items
 
-    updated_items = process_ai_summaries(updated_items)
+    updated_items = process_ai_items(updated_items)
 
     save_data(updated_items)
 
@@ -997,11 +1167,11 @@ def main():
         print(f"当前总数：{len(updated_items)} 条")
     else:
         print("\n✅ 没有发现新内容。")
-        print("✅ data.json 已保存为 V2.1 数据结构。")
+        print("✅ data.json 已保存为 V2.2 数据结构。")
 
     generate_html(updated_items)
 
-    print("\n✅ V2.1 运行结束。")
+    print("\n✅ V2.2 运行结束。")
 
 
 if __name__ == "__main__":
