@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 
 DATA_FILE = Path("data.json")
 HTML_FILE = Path("index.html")
+FEATURED_FILE = Path("featured.html")
 SOURCES_FILE = Path("sources.json")
 
 load_dotenv()
@@ -52,6 +53,10 @@ FINAL_SCORE_WEIGHTS = {
     "learning_value": 0.20,
     "source_authority": 0.10,
 }
+
+FEATURED_SCORE_THRESHOLD = 75
+FEATURED_MIN_ITEMS = 5
+FEATURED_MAX_ITEMS = 10
 
 
 def load_sources():
@@ -817,6 +822,54 @@ def sort_items(items):
         reverse=True,
     )
 
+def get_item_final_score(item):
+    """
+    获取单条信息的综合分。
+    如果没有合法 final_score，就返回 0。
+    """
+    try:
+        return float(item.get("ai", {}).get("final_score", 0))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def sort_items_by_score(items):
+    """
+    按综合分从高到低排序。
+    V2.4 精选页使用这个排序。
+    """
+    return sorted(
+        items,
+        key=get_item_final_score,
+        reverse=True,
+    )
+
+
+def get_featured_items(items):
+    """
+    从全部信息中筛选精选信息。
+
+    规则：
+    1. 优先选择 final_score >= FEATURED_SCORE_THRESHOLD 的信息；
+    2. 如果数量少于 FEATURED_MIN_ITEMS，则用综合分最高的前几条兜底；
+    3. 最多展示 FEATURED_MAX_ITEMS 条。
+    """
+    scored_items = [
+        item for item in items
+        if get_item_final_score(item) > 0
+    ]
+
+    sorted_by_score = sort_items_by_score(scored_items)
+
+    featured_items = [
+        item for item in sorted_by_score
+        if get_item_final_score(item) >= FEATURED_SCORE_THRESHOLD
+    ]
+
+    if len(featured_items) < FEATURED_MIN_ITEMS:
+        featured_items = sorted_by_score[:FEATURED_MIN_ITEMS]
+
+    return featured_items[:FEATURED_MAX_ITEMS]
 
 def get_display_title(item):
     """
@@ -860,12 +913,25 @@ def get_display_category(item):
     return item.get("category_rule", "其他")
 
 
-def generate_html(items):
+def generate_html(
+    items,
+    output_file=HTML_FILE,
+    page_title="OrbitAI",
+    page_subtitle="Personal AI Information Radar",
+    stat_label="总信息数",
+    sort_by_score=False,
+):
     """
-    根据 data.json 里的数据生成本地 index.html。
-    V2.3 页面支持 AI 分类、标签筛选和综合分展示。
+    根据 data.json 里的数据生成本地 HTML 页面。
+    V2.4 支持生成：
+    - index.html：全部信息页
+    - featured.html：精选信息页
     """
-    sorted_items = sort_items(items)
+    if sort_by_score:
+        sorted_items = sort_items_by_score(items)
+    else:
+        sorted_items = sort_items(items)
+
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     sources = sorted({item.get("source", "未知来源") for item in sorted_items})
@@ -899,6 +965,21 @@ def generate_html(items):
         for tag in tags
     )
 
+    if output_file == FEATURED_FILE:
+        nav_html = """
+            <nav class="nav">
+                <a class="nav-link" href="index.html">全部信息</a>
+                <a class="nav-link active" href="featured.html">精选信息</a>
+            </nav>
+        """
+    else:
+        nav_html = """
+            <nav class="nav">
+                <a class="nav-link active" href="index.html">全部信息</a>
+                <a class="nav-link" href="featured.html">精选信息</a>
+            </nav>
+        """
+
     article_cards = []
 
     for item in sorted_items:
@@ -921,6 +1002,7 @@ def generate_html(items):
         link = escape(item.get("link", "#"))
         published = escape(item.get("published", "无发布时间"))
         summary = escape(summary_raw)
+
         score_html = ""
 
         if final_score_raw is not None:
@@ -978,7 +1060,7 @@ def generate_html(items):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OrbitAI</title>
+    <title>{page_title}</title>
     <style>
         * {{
             box-sizing: border-box;
@@ -1030,6 +1112,34 @@ def generate_html(items):
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.14);
             font-size: 14px;
+        }}
+
+        .nav {{
+            display: flex;
+            gap: 10px;
+            margin: -12px 0 24px;
+        }}
+
+        .nav-link {{
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: white;
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            border: 1px solid #dbeafe;
+        }}
+
+        .nav-link:hover {{
+            background: #eff6ff;
+        }}
+
+        .nav-link.active {{
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
         }}
 
         .controls {{
@@ -1178,14 +1288,16 @@ def generate_html(items):
 <body>
     <main class="page">
         <section class="header">
-            <h1>OrbitAI</h1>
-            <p>Personal AI Information Radar</p>
+            <h1>{page_title}</h1>
+            <p>{page_subtitle}</p>
             <div class="stats">
-                <span class="stat">总信息数：{len(sorted_items)}</span>
+                <span class="stat">{stat_label}：{len(sorted_items)}</span>
                 <span class="stat">AI 已处理：{ai_processed_count}</span>
                 <span class="stat">生成时间：{generated_at}</span>
             </div>
         </section>
+
+        {nav_html}
 
         <section class="controls">
             <input id="searchInput" type="text" placeholder="搜索标题、来源、摘要、标签..." />
@@ -1213,7 +1325,7 @@ def generate_html(items):
         </section>
 
         <footer class="footer">
-            Generated locally by OrbitAI V2.3
+            Generated locally by OrbitAI V2.4
         </footer>
     </main>
 <script>
@@ -1266,14 +1378,29 @@ def generate_html(items):
 </html>
 """
 
-    with HTML_FILE.open("w", encoding="utf-8") as file:
+    with output_file.open("w", encoding="utf-8") as file:
         file.write(html_content)
 
-    print(f"\n✅ {HTML_FILE} 已生成。")
+    print(f"\n✅ {output_file} 已生成。")
 
+def generate_featured_html(items):
+    """
+    生成 V2.4 精选页 featured.html。
+    精选页复用主页样式，但只展示综合分较高的信息。
+    """
+    featured_items = get_featured_items(items)
+
+    generate_html(
+        featured_items,
+        output_file=FEATURED_FILE,
+        page_title="OrbitAI Featured",
+        page_subtitle=f"精选 AI 信息｜阈值 {FEATURED_SCORE_THRESHOLD}，最多 {FEATURED_MAX_ITEMS} 条",
+        stat_label="精选信息数",
+        sort_by_score=True,
+    )
 
 def main():
-    print("🚀 OrbitAI V2.3 - AI 分类与关键词提取")
+    print("🚀 OrbitAI V2.4 - AI 分类与关键词提取")
 
     existing_items = load_existing_data()
     existing_links = get_existing_links(existing_items)
@@ -1304,11 +1431,12 @@ def main():
         print(f"当前总数：{len(updated_items)} 条")
     else:
         print("\n✅ 没有发现新内容。")
-        print("✅ data.json 已保存为 V2.3 数据结构。")
+        print("✅ data.json 已保存为 V2.4 数据结构。")
 
     generate_html(updated_items)
+    generate_featured_html(updated_items)
 
-    print("\n✅ V2.3 运行结束。")
+    print("\n✅ V2.4 运行结束。")
 
 
 if __name__ == "__main__":
