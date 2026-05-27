@@ -36,6 +36,24 @@ AI_CATEGORIES = [
 ]
 
 
+AI_SCORE_KEYS = [
+    "importance",
+    "novelty",
+    "practical_value",
+    "learning_value",
+    "source_authority",
+]
+
+
+FINAL_SCORE_WEIGHTS = {
+    "importance": 0.30,
+    "novelty": 0.20,
+    "practical_value": 0.20,
+    "learning_value": 0.20,
+    "source_authority": 0.10,
+}
+
+
 def load_sources():
     """
     从 sources.json 读取 RSS 信息源。
@@ -137,7 +155,7 @@ def classify_item(title, summary):
 def create_empty_ai_fields():
     """
     创建 AI 预留字段。
-    V2.2 会填充 title_cn、summary、category、tags、processed、processed_at。
+    V2.3 会填充 title_cn、summary、category、tags、scores、final_score、processed、processed_at。
     """
     return {
         "title_cn": "",
@@ -379,11 +397,60 @@ def normalize_ai_tags(tags):
     return cleaned_tags
 
 
+def normalize_score(value, default=50):
+    """
+    把 AI 返回的单个评分清洗成 0 到 100 之间的数字。
+    """
+    try:
+        score = float(value)
+    except (TypeError, ValueError):
+        score = float(default)
+
+    if score < 0:
+        score = 0.0
+
+    if score > 100:
+        score = 100.0
+
+    return round(score, 1)
+
+
+def normalize_ai_scores(scores):
+    """
+    校验并清洗 AI 返回的多维评分。
+    确保 scores 一定包含 V2.3 需要的五个维度。
+    """
+    if not isinstance(scores, dict):
+        scores = {}
+
+    normalized_scores = {}
+
+    for key in AI_SCORE_KEYS:
+        normalized_scores[key] = normalize_score(scores.get(key), default=50)
+
+    return normalized_scores
+
+
+def calculate_final_score(scores):
+    """
+    根据多维评分计算综合分。
+    综合分由代码计算，不直接相信 AI 输出。
+    """
+    normalized_scores = normalize_ai_scores(scores)
+
+    final_score = 0.0
+
+    for key, weight in FINAL_SCORE_WEIGHTS.items():
+        final_score += normalized_scores[key] * weight
+
+    return round(final_score, 1)
+
+
 def item_needs_ai_processing(item):
     """
     判断一条信息是否还需要 AI 处理。
-    V2.2 不能只看 processed，因为 V2.1 可能已经生成标题和摘要，
-    但还没有生成 AI 分类和标签。
+    V2.3 不能只看 processed，也不能只看标题、摘要、分类、标签。
+    只有 title_cn、summary、category、tags、scores、final_score 都齐全，才跳过。
     """
     ai = item.get("ai")
 
@@ -404,6 +471,35 @@ def item_needs_ai_processing(item):
     if not isinstance(tags, list) or len(tags) == 0:
         return True
 
+    scores = ai.get("scores", {})
+
+    if not isinstance(scores, dict):
+        return True
+
+    for key in AI_SCORE_KEYS:
+        value = scores.get(key)
+
+        if value is None:
+            return True
+
+        try:
+            score = float(value)
+        except (TypeError, ValueError):
+            return True
+
+        if score < 0 or score > 100:
+            return True
+
+    final_score = ai.get("final_score")
+
+    if final_score is None:
+        return True
+
+    try:
+        float(final_score)
+    except (TypeError, ValueError):
+        return True
+
     return False
 
 
@@ -421,6 +517,7 @@ def call_ai_for_analysis(client, item):
     - 中文摘要 summary
     - AI 分类 category
     - 关键词 tags
+    - 多维评分 scores
     """
     title = item.get("title", "")
     source = item.get("source", "")
@@ -450,22 +547,36 @@ def call_ai_for_analysis(client, item):
 
 要求：
 1. 只输出 JSON。
-2. JSON 必须包含 title_cn、summary、category、tags 四个字段。
+2. JSON 必须包含 title_cn、summary、category、tags、scores 五个字段。
 3. title_cn 是自然、准确的中文标题，不要机械直译。
 4. summary 是 1 到 2 句中文摘要，要求实用、克制，不要夸张。
 5. category 必须且只能从以下分类中选择一个：{categories_text}。
 6. tags 必须是字符串数组，数量 3 到 6 个。
 7. tags 优先使用中文；但 LLM、RAG、AI Agent、Codex、OpenAI 这类专有名词可以保留英文。
 8. 不要输出“人工智能”“技术”“新闻”这类过泛标签。
-9. 如果原文信息不足，就基于标题和已有摘要谨慎概括。
-10. 不要编造原文没有的信息。
+9. scores 必须是对象，包含 importance、novelty、practical_value、learning_value、source_authority 五个字段。
+10. 每个评分必须是 0 到 100 的数字。
+11. importance 表示行业或技术重要性。
+12. novelty 表示信息新颖性。
+13. practical_value 表示对开发、学习、产品使用的实际价值。
+14. learning_value 表示这条信息是否有助于理解 AI 技术或行业。
+15. source_authority 表示信源权威度。
+16. 如果原文信息不足，就基于标题和已有摘要谨慎概括。
+17. 不要编造原文没有的信息。
 
 输出 JSON 示例：
 {{
   "title_cn": "中文标题",
   "summary": "中文摘要",
   "category": "开发工具",
-  "tags": ["AI Agent", "代码助手", "开发者工具"]
+  "tags": ["AI Agent", "代码助手", "开发者工具"],
+  "scores": {{
+    "importance": 80,
+    "novelty": 70,
+    "practical_value": 85,
+    "learning_value": 75,
+    "source_authority": 90
+  }}
 }}
 
 信息如下：
@@ -541,6 +652,8 @@ def call_ai_for_analysis(client, item):
         fallback_category=category_rule,
     )
     tags = normalize_ai_tags(result_json.get("tags", []))
+    scores = normalize_ai_scores(result_json.get("scores", {}))
+    final_score = calculate_final_score(scores)
 
     if not title_cn:
         title_cn = existing_title_cn
@@ -559,6 +672,8 @@ def call_ai_for_analysis(client, item):
         "summary": summary,
         "category": category,
         "tags": tags,
+        "scores": scores,
+        "final_score": final_score,
     }
 
 def process_ai_items(items):
@@ -610,6 +725,8 @@ def process_ai_items(items):
             ai["summary"] = ai_result["summary"]
             ai["category"] = ai_result["category"]
             ai["tags"] = ai_result["tags"]
+            ai["scores"] = ai_result["scores"]
+            ai["final_score"] = ai_result["final_score"]
             ai["processed"] = True
             ai["processed_at"] = datetime.now(timezone.utc).isoformat()
             ai["error"] = ""
@@ -619,6 +736,7 @@ def process_ai_items(items):
             print(f"✅ AI 结构化完成：{ai['title_cn']}")
             print(f"   分类：{ai['category']}")
             print(f"   标签：{', '.join(ai['tags'])}")
+            print(f"   综合分：{ai['final_score']}")
 
         except Exception as error:
             ai["error"] = repr(error)
@@ -745,7 +863,7 @@ def get_display_category(item):
 def generate_html(items):
     """
     根据 data.json 里的数据生成本地 index.html。
-    V2.2 页面支持 AI 分类展示和标签筛选。
+    V2.3 页面支持 AI 分类、标签筛选和综合分展示。
     """
     sorted_items = sort_items(items)
     generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -788,6 +906,7 @@ def generate_html(items):
         display_title_raw = get_display_title(item)
         source_raw = item.get("source", "未知来源")
         category_raw = get_display_category(item)
+        final_score_raw = item.get("ai", {}).get("final_score")
         summary_raw = truncate_text(clean_html(get_display_summary(item)), 240)
 
         ai = item.get("ai", {})
@@ -802,6 +921,14 @@ def generate_html(items):
         link = escape(item.get("link", "#"))
         published = escape(item.get("published", "无发布时间"))
         summary = escape(summary_raw)
+        score_html = ""
+
+        if final_score_raw is not None:
+            try:
+                score_text = str(round(float(final_score_raw), 1))
+                score_html = f'<span class="score">综合分：{escape(score_text)}</span>'
+            except (TypeError, ValueError):
+                score_html = ""
 
         tags_text = " ".join(tags)
         tags_data = escape("||".join(tags))
@@ -830,6 +957,7 @@ def generate_html(items):
             <div class="meta">
                 <span class="source">{source}</span>
                 <span class="category">{category}</span>
+                {score_html}
                 <span class="time">{published}</span>
             </div>
             <h2>
@@ -967,6 +1095,15 @@ def generate_html(items):
             font-weight: 600;
         }}
 
+        .score {{
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 13px;
+            font-weight: 700;
+        }}
+
         h2 {{
             margin: 0 0 12px;
             font-size: 22px;
@@ -1076,7 +1213,7 @@ def generate_html(items):
         </section>
 
         <footer class="footer">
-            Generated locally by OrbitAI V2.2
+            Generated locally by OrbitAI V2.3
         </footer>
     </main>
 <script>
@@ -1136,7 +1273,7 @@ def generate_html(items):
 
 
 def main():
-    print("🚀 OrbitAI V2.2 - AI 分类与关键词提取")
+    print("🚀 OrbitAI V2.3 - AI 分类与关键词提取")
 
     existing_items = load_existing_data()
     existing_links = get_existing_links(existing_items)
@@ -1167,11 +1304,11 @@ def main():
         print(f"当前总数：{len(updated_items)} 条")
     else:
         print("\n✅ 没有发现新内容。")
-        print("✅ data.json 已保存为 V2.2 数据结构。")
+        print("✅ data.json 已保存为 V2.3 数据结构。")
 
     generate_html(updated_items)
 
-    print("\n✅ V2.2 运行结束。")
+    print("\n✅ V2.3 运行结束。")
 
 
 if __name__ == "__main__":
