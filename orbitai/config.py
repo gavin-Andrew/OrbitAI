@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 DATA_FILE = Path("data.json")
 HTML_FILE = Path("index.html")
 FEATURED_FILE = Path("featured.html")
+DAILY_FILE = Path("daily.html")
 SOURCES_FILE = Path("sources.json")
 
 load_dotenv()

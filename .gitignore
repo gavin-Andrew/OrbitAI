@@ -20,5 +20,6 @@ Thumbs.db
 data.json
 index.html
 featured.html
+daily.html
 # Secret config
 .env

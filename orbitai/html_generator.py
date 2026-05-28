@@ -4,6 +4,7 @@ from html import escape
 from orbitai.config import (
     HTML_FILE,
     FEATURED_FILE,
+    DAILY_FILE,
     FEATURED_SCORE_THRESHOLD,
     FEATURED_MAX_ITEMS,
 )
@@ -118,20 +119,17 @@ def generate_html(
         for tag in tags
     )
 
-    if output_file == FEATURED_FILE:
-        nav_html = """
-            <nav class="nav">
-                <a class="nav-link" href="index.html">全部信息</a>
-                <a class="nav-link active" href="featured.html">精选信息</a>
-            </nav>
-        """
-    else:
-        nav_html = """
-            <nav class="nav">
-                <a class="nav-link active" href="index.html">全部信息</a>
-                <a class="nav-link" href="featured.html">精选信息</a>
-            </nav>
-        """
+    index_active = "active" if output_file == HTML_FILE else ""
+    featured_active = "active" if output_file == FEATURED_FILE else ""
+    daily_active = "active" if output_file == DAILY_FILE else ""
+
+    nav_html = f"""
+        <nav class="nav">
+            <a class="nav-link {index_active}" href="index.html">全部信息</a>
+            <a class="nav-link {featured_active}" href="featured.html">精选信息</a>
+            <a class="nav-link {daily_active}" href="daily.html">每日简报</a>
+        </nav>
+    """
 
     article_cards = []
 
@@ -552,3 +550,389 @@ def generate_featured_html(items):
         stat_label="精选信息数",
         sort_by_score=True,
     )
+
+def parse_item_date(item):
+    """
+    从 fetched_at 中解析日期。
+    fetched_at 是抓取时写入的时间，用它判断一条信息是不是今天新增的。
+    """
+    fetched_at = str(item.get("fetched_at", "")).strip()
+
+    if not fetched_at:
+        return None
+
+    try:
+        parsed_time = datetime.fromisoformat(
+            fetched_at.replace("Z", "+00:00")
+        )
+        return parsed_time.astimezone().date()
+    except ValueError:
+        return None
+
+
+def get_today_items(items):
+    """
+    筛选今天新增的信息。
+    """
+    today = datetime.now().astimezone().date()
+
+    return [
+        item for item in items
+        if parse_item_date(item) == today
+    ]
+
+def generate_daily_html(items):
+    """
+    生成 V2.6 每日简报页 daily.html。
+
+    daily.html 的定位：
+    - 只展示今天新增的信息；
+    - 按 final_score 从高到低排序；
+    - 再按 AI 分类分组；
+    - 不使用精选阈值，因为每日简报关注的是“今天发生了什么”。
+    """
+    today_items = get_today_items(items)
+    sorted_items = sort_items_by_score(today_items)
+
+    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    categories = []
+
+    for item in sorted_items:
+        category = get_display_category(item)
+
+        if category not in categories:
+            categories.append(category)
+
+    category_sections = []
+
+    for category in categories:
+        category_items = [
+            item for item in sorted_items
+            if get_display_category(item) == category
+        ]
+
+        item_cards = []
+
+        for item in category_items:
+            title = escape(get_display_title(item))
+            source = escape(item.get("source", "未知来源"))
+            link = escape(item.get("link", "#"))
+            published = escape(item.get("published", "无发布时间"))
+            summary = escape(
+                truncate_text(
+                    clean_html(get_display_summary(item)),
+                    260,
+                )
+            )
+
+            final_score_raw = item.get("ai", {}).get("final_score")
+            score_html = ""
+
+            if final_score_raw is not None:
+                try:
+                    score_text = str(round(float(final_score_raw), 1))
+                    score_html = f'<span class="score">综合分：{escape(score_text)}</span>'
+                except (TypeError, ValueError):
+                    score_html = ""
+
+            tags = item.get("ai", {}).get("tags", [])
+
+            if not isinstance(tags, list):
+                tags = []
+
+            if tags:
+                tags_html = "<div class='tags'>" + "".join(
+                    f"<span class='tag'>{escape(str(tag))}</span>"
+                    for tag in tags
+                    if str(tag).strip()
+                ) + "</div>"
+            else:
+                tags_html = ""
+
+            card = f"""
+            <article class="brief-card">
+                <div class="meta">
+                    <span class="source">{source}</span>
+                    {score_html}
+                    <span class="time">{published}</span>
+                </div>
+
+                <h3>
+                    <a href="{link}" target="_blank" rel="noopener noreferrer">{title}</a>
+                </h3>
+
+                <p class="summary">{summary}</p>
+
+                {tags_html}
+
+                <a class="button" href="{link}" target="_blank" rel="noopener noreferrer">打开原文</a>
+            </article>
+            """
+
+            item_cards.append(card)
+
+        section = f"""
+        <section class="brief-section">
+            <h2>{escape(category)}</h2>
+            {"".join(item_cards)}
+        </section>
+        """
+
+        category_sections.append(section)
+
+    sections_html = "\n".join(category_sections)
+    if not sections_html:
+        sections_html = """
+        <section class="intro">
+            <h2>今天暂无新增信息</h2>
+            <p>OrbitAI 今天没有抓取到新的内容。你可以查看“全部信息”或“精选信息”页面。</p>
+        </section>
+        """
+
+    html_content = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrbitAI Daily</title>
+    <style>
+        * {{
+            box-sizing: border-box;
+        }}
+
+        body {{
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            line-height: 1.7;
+        }}
+
+        .page {{
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }}
+
+        .header {{
+            margin-bottom: 32px;
+            padding: 30px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8);
+            color: white;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+        }}
+
+        .header h1 {{
+            margin: 0 0 8px;
+            font-size: 40px;
+            letter-spacing: -0.04em;
+        }}
+
+        .header p {{
+            margin: 0;
+            opacity: 0.9;
+        }}
+
+        .stats {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }}
+
+        .stat {{
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 14px;
+        }}
+
+        .nav {{
+            display: flex;
+            gap: 10px;
+            margin: -12px 0 24px;
+        }}
+
+        .nav-link {{
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: white;
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            border: 1px solid #dbeafe;
+        }}
+
+        .nav-link:hover {{
+            background: #eff6ff;
+        }}
+
+        .nav-link.active {{
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }}
+
+        .intro {{
+            margin-bottom: 24px;
+            padding: 20px 22px;
+            border-radius: 20px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+        }}
+
+        .intro h2 {{
+            margin: 0 0 8px;
+            font-size: 22px;
+        }}
+
+        .intro p {{
+            margin: 0;
+            color: #4b5563;
+        }}
+
+        .brief-section {{
+            margin-bottom: 28px;
+        }}
+
+        .brief-section > h2 {{
+            margin: 0 0 14px;
+            font-size: 24px;
+            color: #111827;
+        }}
+
+        .brief-card {{
+            margin-bottom: 16px;
+            padding: 22px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }}
+
+        .meta {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #6b7280;
+        }}
+
+        .source {{
+            font-weight: 700;
+            color: #2563eb;
+        }}
+
+        .score {{
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 13px;
+            font-weight: 700;
+        }}
+
+        .brief-card h3 {{
+            margin: 0 0 12px;
+            font-size: 21px;
+            line-height: 1.35;
+        }}
+
+        .brief-card h3 a {{
+            color: #111827;
+            text-decoration: none;
+        }}
+
+        .brief-card h3 a:hover {{
+            color: #2563eb;
+        }}
+
+        .summary {{
+            margin: 0 0 16px;
+            color: #4b5563;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }}
+
+        .tags {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 16px;
+        }}
+
+        .tag {{
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: 600;
+        }}
+
+        .button {{
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+        }}
+
+        .button:hover {{
+            background: #dbeafe;
+        }}
+
+        .footer {{
+            margin-top: 32px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 14px;
+        }}
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="header">
+            <h1>OrbitAI Daily</h1>
+            <p>每日 AI 信息简报</p>
+            <div class="stats">
+                <span class="stat">今日新增：{len(sorted_items)}</span>
+                <span class="stat">排序方式：综合分从高到低</span>
+                <span class="stat">生成时间：{generated_at}</span>
+            </div>
+        </section>
+
+        <nav class="nav">
+            <a class="nav-link" href="index.html">全部信息</a>
+            <a class="nav-link" href="featured.html">精选信息</a>
+            <a class="nav-link active" href="daily.html">每日简报</a>
+        </nav>
+
+        <section class="intro">
+            <h2>今日重点</h2>
+            <p>以下内容来自今天新增的信息，并按综合分排序、按 AI 分类整理，适合快速浏览今日 AI 动态。</p>
+        </section>
+
+        {sections_html}
+
+        <footer class="footer">
+            Generated locally by OrbitAI V2.6
+        </footer>
+    </main>
+</body>
+</html>
+"""
+
+    with DAILY_FILE.open("w", encoding="utf-8") as file:
+        file.write(html_content)
+
+    print(f"\n✅ {DAILY_FILE} 已生成。")
