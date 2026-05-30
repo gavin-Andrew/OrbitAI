@@ -1,8 +1,19 @@
 import json
+import ssl
+import time
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 
+import certifi
 import feedparser
 
-from orbitai.config import SOURCES_FILE
+from orbitai.config import (
+    SOURCES_FILE,
+    RSS_MAX_ITEMS_PER_SOURCE,
+    RSS_RETRY_TIMES,
+    RSS_RETRY_DELAY_SECONDS,
+    RSS_TIMEOUT_SECONDS,
+)
 from orbitai.data_utils import create_new_item
 from orbitai.text_utils import clean_html
 
@@ -49,6 +60,77 @@ def load_sources():
         print("⚠️ sources.json 不是有效 JSON，请检查格式。")
         return []
 
+def parse_rss_with_retry(
+    url,
+    retry_times=RSS_RETRY_TIMES,
+    retry_delay_seconds=RSS_RETRY_DELAY_SECONDS,
+    timeout_seconds=RSS_TIMEOUT_SECONDS,
+):
+    """
+    带重试机制地读取 RSS。
+
+    为什么不直接 feedparser.parse(url)：
+    - 网络请求可能偶发失败；
+    - 部分 RSS 源对没有 User-Agent 的请求不稳定；
+    - feed.bozo 为 True 时，有时仍然能解析出 entries。
+    """
+    last_error = None
+
+    headers = {
+        "User-Agent": (
+            "OrbitAI/2.7 "
+            "(Personal AI Information Radar; RSS Reader)"
+        )
+    }
+
+    for attempt in range(1, retry_times + 1):
+        try:
+            print(f"尝试读取 RSS：第 {attempt}/{retry_times} 次")
+
+            request = Request(
+                url,
+                headers=headers,
+            )
+
+            ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+            with urlopen(
+                request,
+                timeout=timeout_seconds,
+                context=ssl_context,
+            ) as response:
+                feed_content = response.read()
+
+            feed = feedparser.parse(feed_content)
+
+            if feed.bozo:
+                last_error = feed.bozo_exception
+
+                if feed.entries:
+                    print("⚠️ RSS 存在解析警告，但已读取到内容，继续处理。")
+                    print(f"警告信息：{last_error}\n")
+                    return feed
+
+                print(f"⚠️ RSS 解析失败：{last_error}")
+
+            else:
+                return feed
+
+        except URLError as error:
+            last_error = error
+            print(f"⚠️ RSS 连接失败：{error}")
+
+        except Exception as error:
+            last_error = error
+            print(f"⚠️ RSS 读取异常：{error}")
+
+        if attempt < retry_times:
+            print(f"等待 {retry_delay_seconds} 秒后重试...\n")
+            time.sleep(retry_delay_seconds)
+
+    print("❌ RSS 多次读取失败。")
+    print(f"最后错误信息：{last_error}\n")
+    return None
 
 def fetch_rss(source, existing_links):
     """
@@ -60,11 +142,10 @@ def fetch_rss(source, existing_links):
     print(f"\n========== {name} ==========\n")
     print(f"RSS 地址：{url}\n")
 
-    feed = feedparser.parse(url)
+    feed = parse_rss_with_retry(url)
 
-    if feed.bozo:
-        print("⚠️ 这个 RSS 源可能读取失败，先跳过。")
-        print(f"错误信息：{feed.bozo_exception}\n")
+    if feed is None:
+        print("⚠️ 这个 RSS 源多次读取失败，本次先跳过。\n")
         return []
 
     if not feed.entries:
@@ -73,7 +154,7 @@ def fetch_rss(source, existing_links):
 
     new_items = []
 
-    for entry in feed.entries[:5]:
+    for entry in feed.entries[:RSS_MAX_ITEMS_PER_SOURCE]:
         title = entry.get("title", "无标题")
         link = entry.get("link", "")
         published = entry.get("published", "无发布时间")

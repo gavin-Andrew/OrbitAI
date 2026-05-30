@@ -47,6 +47,9 @@ def create_empty_ai_fields():
         "processed": False,
         "processed_at": "",
         "error": "",
+        "error_type": "",
+        "failed_at": "",
+        "retry_count": 0,
     }
 
 

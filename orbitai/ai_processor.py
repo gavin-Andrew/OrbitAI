@@ -349,6 +349,9 @@ def process_ai_items(items):
             ai["processed"] = True
             ai["processed_at"] = datetime.now(timezone.utc).isoformat()
             ai["error"] = ""
+            ai["error_type"] = ""
+            ai["failed_at"] = ""
+            ai["retry_count"] = 0
 
             processed_count += 1
 
@@ -358,12 +361,20 @@ def process_ai_items(items):
             print(f"   综合分：{ai['final_score']}")
 
         except Exception as error:
-            ai["error"] = repr(error)
+            error_type = type(error).__name__
+            error_message = repr(error)
+
+            ai["error"] = error_message
+            ai["error_type"] = error_type
+            ai["failed_at"] = datetime.now(timezone.utc).isoformat()
+            ai["retry_count"] = int(ai.get("retry_count", 0) or 0) + 1
             ai["processed"] = False
 
             print(f"⚠️ AI 处理失败：{title}")
-            print(f"错误类型：{type(error).__name__}")
-            print(f"错误信息：{repr(error)}")
+            print(f"错误类型：{ai['error_type']}")
+            print(f"错误信息：{ai['error']}")
+            print(f"累计失败次数：{ai['retry_count']}")
+            print(f"失败时间：{ai['failed_at']}")
 
     print(f"\n✅ 本次 AI 尝试数量：{attempted_count} 条")
     print(f"✅ 本次 AI 成功数量：{processed_count} 条")

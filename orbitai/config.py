@@ -11,6 +11,12 @@ SOURCES_FILE = Path("sources.json")
 
 load_dotenv()
 
+# RSS 抓取配置
+RSS_MAX_ITEMS_PER_SOURCE = int(os.getenv("RSS_MAX_ITEMS_PER_SOURCE", "5"))
+RSS_RETRY_TIMES = int(os.getenv("RSS_RETRY_TIMES", "3"))
+RSS_RETRY_DELAY_SECONDS = int(os.getenv("RSS_RETRY_DELAY_SECONDS", "2"))
+RSS_TIMEOUT_SECONDS = int(os.getenv("RSS_TIMEOUT_SECONDS", "20"))
+
 AI_PROVIDER = os.getenv("AI_PROVIDER", "deepseek")
 AI_API_KEY = os.getenv("AI_API_KEY", "")
 AI_BASE_URL = os.getenv("AI_BASE_URL", "https://api.deepseek.com")
