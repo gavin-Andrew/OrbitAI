@@ -2,3 +2,6 @@ feedparser
 openai
 python-dotenv
 certifi
+fastapi
+uvicorn
+jinja2   
