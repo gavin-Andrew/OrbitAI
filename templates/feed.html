@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="controls">
+    <input id="searchInput" type="text" placeholder="搜索标题、来源、摘要、标签..." />
+
+    <select id="sourceFilter">
+        <option value="all">全部来源</option>
+        {% for source in sources %}
+        <option value="{{ source }}">{{ source }}</option>
+        {% endfor %}
+    </select>
+
+    <select id="categoryFilter">
+        <option value="all">全部分类</option>
+        {% for category in categories %}
+        <option value="{{ category }}">{{ category }}</option>
+        {% endfor %}
+    </select>
+
+    <select id="tagFilter">
+        <option value="all">全部标签</option>
+        {% for tag in tags %}
+        <option value="{{ tag }}">{{ tag }}</option>
+        {% endfor %}
+    </select>
+
+    <div id="resultCount" class="result-count"></div>
+</section>
+
+<section class="feed">
+    {% if items %}
+        {% for item in items %}
+        <article
+            class="card"
+            data-source="{{ item.get('source', '未知来源') }}"
+            data-category="{{ get_display_category(item) }}"
+            data-tags="{{ get_item_tags(item) | join('||') }}"
+            data-search="{{ build_search_text(item) }}"
+        >
+            <div class="meta">
+                <span class="source">{{ item.get("source", "未知来源") }}</span>
+                <span class="category">{{ get_display_category(item) }}</span>
+
+                {% set score = get_display_score(item) %}
+                {% if score %}
+                <span class="score">综合分：{{ score }}</span>
+                {% endif %}
+
+                <span class="time">{{ item.get("published", "无发布时间") }}</span>
+            </div>
+
+            <h2>
+                <a href="{{ item.get('link', '#') }}" target="_blank" rel="noopener noreferrer">
+                    {{ get_display_title(item) }}
+                </a>
+            </h2>
+
+            {% set summary = get_short_summary(item) %}
+            {% if summary %}
+            <p class="summary">{{ summary }}</p>
+            {% else %}
+            <p class="summary empty">暂无摘要</p>
+            {% endif %}
+
+            {% set item_tags = get_item_tags(item) %}
+            {% if item_tags %}
+            <div class="tags">
+                {% for tag in item_tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <a class="button" href="{{ item.get('link', '#') }}" target="_blank" rel="noopener noreferrer">
+                打开原文
+            </a>
+        </article>
+        {% endfor %}
+    {% else %}
+        <section class="intro">
+            <h2>暂无信息</h2>
+            <p>当前没有可展示的信息。你可以先运行 <code>python main.py</code> 抓取并处理数据。</p>
+        </section>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='app.js') }}"></script>
+{% endblock %}

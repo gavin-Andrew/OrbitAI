@@ -1,55 +1,43 @@
-from pathlib import Path
 from datetime import datetime
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from orbitai.data_utils import load_existing_data
 from orbitai.ai_processor import item_is_ai_complete
 from orbitai.scoring import get_featured_items, sort_items_by_score
 from orbitai.html_generator import (
-    generate_html,
-    generate_featured_html,
-    generate_daily_html,
     get_today_items,
+    get_display_title,
+    get_display_summary,
+    get_display_category,
 )
+from orbitai.text_utils import clean_html, truncate_text
 
 
 app = FastAPI(
     title="OrbitAI",
-    description="OrbitAI V3.0 - Local FastAPI Service",
-    version="3.0.0",
+    description="OrbitAI V3.1 - Local FastAPI Service with Jinja2 Templates",
+    version="3.1.0",
 )
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-INDEX_FILE = Path("index.html")
-FEATURED_FILE = Path("featured.html")
-DAILY_FILE = Path("daily.html")
+templates = Jinja2Templates(directory="templates")
 
 
-def read_html_file(file_path: Path) -> str:
+def sort_items_by_time(items: list[dict]) -> list[dict]:
     """
-    读取已经生成好的 HTML 文件。
-    如果文件不存在，返回一个简单提示页面。
+    按 fetched_at 倒序排列，首页使用。
     """
-    if file_path.exists():
-        return file_path.read_text(encoding="utf-8")
-
-    return f"""
-    <!DOCTYPE html>
-    <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-        <title>OrbitAI</title>
-    </head>
-    <body>
-        <h1>OrbitAI</h1>
-        <p>未找到 {file_path.name}。</p>
-        <p>请先运行 <code>python main.py</code> 生成本地页面，或访问 API 查看数据。</p>
-    </body>
-    </html>
-    """
+    return sorted(
+        items,
+        key=lambda item: item.get("fetched_at", ""),
+        reverse=True,
+    )
 
 
 def get_ai_final_score(item: dict) -> float:
@@ -62,19 +50,89 @@ def get_ai_final_score(item: dict) -> float:
         return 0.0
 
 
-def get_display_category(item: dict) -> str:
+def get_item_tags(item: dict) -> list[str]:
     """
-    获取展示分类。
-    优先使用 AI 分类，没有则回退到规则分类。
+    安全读取标签列表。
     """
-    ai = item.get("ai", {})
+    tags = item.get("ai", {}).get("tags", [])
 
-    if isinstance(ai, dict):
-        ai_category = str(ai.get("category", "")).strip()
-        if ai_category:
-            return ai_category
+    if not isinstance(tags, list):
+        return []
 
-    return str(item.get("category_rule", "其他")).strip() or "其他"
+    return [
+        str(tag).strip()
+        for tag in tags
+        if str(tag).strip()
+    ]
+
+
+def get_display_score(item: dict) -> str:
+    """
+    页面展示用综合分。
+    """
+    score = item.get("ai", {}).get("final_score")
+
+    if score is None:
+        return ""
+
+    try:
+        return str(round(float(score), 1))
+    except (TypeError, ValueError):
+        return ""
+
+
+def get_short_summary(item: dict, max_length: int = 240) -> str:
+    """
+    页面展示用摘要。
+    """
+    return truncate_text(clean_html(get_display_summary(item)), max_length)
+
+
+def build_search_text(item: dict) -> str:
+    """
+    构造前端搜索用文本。
+    """
+    tags = " ".join(get_item_tags(item))
+
+    text = (
+        f"{item.get('title', '')} "
+        f"{get_display_title(item)} "
+        f"{item.get('source', '')} "
+        f"{item.get('category_rule', '')} "
+        f"{get_display_category(item)} "
+        f"{get_short_summary(item, 260)} "
+        f"{tags}"
+    )
+
+    return text.lower()
+
+
+def build_filter_options(items: list[dict]) -> dict:
+    """
+    构造来源、分类、标签筛选选项。
+    """
+    sources = sorted({
+        str(item.get("source", "未知来源")).strip() or "未知来源"
+        for item in items
+    })
+
+    categories = sorted({
+        get_display_category(item)
+        for item in items
+    })
+
+    all_tags = set()
+
+    for item in items:
+        all_tags.update(get_item_tags(item))
+
+    tags = sorted(all_tags)
+
+    return {
+        "sources": sources,
+        "categories": categories,
+        "tags": tags,
+    }
 
 
 def build_status(items: list[dict]) -> dict:
@@ -113,8 +171,8 @@ def build_status(items: list[dict]) -> dict:
         categories[category] = categories.get(category, 0) + 1
 
     return {
-        "version": "V3.0",
-        "mode": "Local FastAPI Service",
+        "version": "V3.1",
+        "mode": "Local FastAPI Service with Jinja2 Templates",
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total_count": total_count,
         "ai_processed_count": ai_processed_count,
@@ -124,89 +182,174 @@ def build_status(items: list[dict]) -> dict:
         "ai_failed_count": len(ai_failed_items),
         "sources": sources,
         "categories": categories,
-        "pages": {
-            "index_html_exists": INDEX_FILE.exists(),
-            "featured_html_exists": FEATURED_FILE.exists(),
-            "daily_html_exists": DAILY_FILE.exists(),
-        },
     }
 
 
-@app.get("/", response_class=HTMLResponse)
-def home():
+def build_template_context(
+    request: Request,
+    items: list[dict],
+    page_title: str,
+    page_subtitle: str,
+    stat_label: str,
+    active_page: str,
+) -> dict:
+    """
+    构造模板渲染需要的通用上下文。
+    """
+    filter_options = build_filter_options(items)
+    ai_processed_count = sum(1 for item in items if item_is_ai_complete(item))
+
+    return {
+        "request": request,
+        "page_title": page_title,
+        "page_subtitle": page_subtitle,
+        "stat_label": stat_label,
+        "active_page": active_page,
+        "items": items,
+        "total_count": len(items),
+        "ai_processed_count": ai_processed_count,
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "sources": filter_options["sources"],
+        "categories": filter_options["categories"],
+        "tags": filter_options["tags"],
+        "get_display_title": get_display_title,
+        "get_display_category": get_display_category,
+        "get_item_tags": get_item_tags,
+        "get_display_score": get_display_score,
+        "get_short_summary": get_short_summary,
+        "build_search_text": build_search_text,
+    }
+
+
+@app.get("/")
+def home(request: Request):
     """
     首页。
-    V3.0 先复用 V2 生成的 index.html。
-    如果 index.html 不存在，就临时生成一次。
+    V3.1 开始改为 Jinja2 模板动态渲染。
     """
-    items = load_existing_data()
+    items = sort_items_by_time(load_existing_data())
 
-    if items and not INDEX_FILE.exists():
-        generate_html(items)
+    context = build_template_context(
+        request=request,
+        items=items,
+        page_title="OrbitAI",
+        page_subtitle="Personal AI Information Radar",
+        stat_label="总信息数",
+        active_page="index",
+    )
 
-    return HTMLResponse(content=read_html_file(INDEX_FILE))
+    return templates.TemplateResponse(
+        request=request,
+        name="feed.html",
+        context=context,
+    )
 
-@app.get("/index.html", response_class=HTMLResponse)
-def index_html_page():
+
+@app.get("/index.html")
+def index_html_page(request: Request):
     """
-    兼容 V2 静态 HTML 导航链接。
+    兼容旧静态 HTML 导航链接。
     """
-    return home()
+    return home(request)
 
-@app.get("/featured", response_class=HTMLResponse)
-def featured_page():
+
+@app.get("/featured")
+def featured_page(request: Request):
     """
     精选信息页。
-    V3.0 先复用 V2 的 featured.html 生成逻辑。
+    V3.1 使用模板动态渲染。
     """
-    items = load_existing_data()
+    items = sort_items_by_score(get_featured_items(load_existing_data()))
 
-    if items:
-        generate_featured_html(items)
+    context = build_template_context(
+        request=request,
+        items=items,
+        page_title="OrbitAI Featured",
+        page_subtitle="精选 AI 信息｜按综合分排序",
+        stat_label="精选信息数",
+        active_page="featured",
+    )
 
-    return HTMLResponse(content=read_html_file(FEATURED_FILE))
+    return templates.TemplateResponse(
+        request=request,
+        name="feed.html",
+        context=context,
+    )
 
-@app.get("/featured.html", response_class=HTMLResponse)
-def featured_html_page():
+
+@app.get("/featured.html")
+def featured_html_page(request: Request):
     """
-    兼容 V2 静态 HTML 导航链接。
+    兼容旧静态 HTML 导航链接。
     """
-    return featured_page()
+    return featured_page(request)
 
-@app.get("/daily", response_class=HTMLResponse)
-def daily_page():
+
+@app.get("/daily")
+def daily_page(request: Request):
     """
     每日简报页。
-    V3.0 先复用 V2 的 daily.html 生成逻辑。
+    V3.1 使用模板动态渲染。
     """
-    items = load_existing_data()
+    items = sort_items_by_score(get_today_items(load_existing_data()))
 
-    if items:
-        generate_daily_html(items)
+    grouped_sections = []
 
-    return HTMLResponse(content=read_html_file(DAILY_FILE))
+    for item in items:
+        category = get_display_category(item)
 
-@app.get("/daily.html", response_class=HTMLResponse)
-def daily_html_page():
+        section = next(
+            (
+                existing_section
+                for existing_section in grouped_sections
+                if existing_section["category"] == category
+            ),
+            None,
+        )
+
+        if section is None:
+            section = {
+                "category": category,
+                "items": [],
+            }
+            grouped_sections.append(section)
+
+        section["items"].append(item)
+
+    context = build_template_context(
+        request=request,
+        items=items,
+        page_title="OrbitAI Daily",
+        page_subtitle="每日 AI 信息简报",
+        stat_label="今日新增",
+        active_page="daily",
+    )
+
+    context["grouped_sections"] = grouped_sections
+
+    return templates.TemplateResponse(
+        request=request,
+        name="daily.html",
+        context=context,
+    )
+
+
+@app.get("/daily.html")
+def daily_html_page(request: Request):
     """
-    兼容 V2 静态 HTML 导航链接。
+    兼容旧静态 HTML 导航链接。
     """
-    return daily_page()
+    return daily_page(request)
+
 
 @app.get("/api/items")
 def api_items():
     """
     返回全部信息 JSON。
     """
-    items = load_existing_data()
+    items = sort_items_by_time(load_existing_data())
 
-    sorted_items = sorted(
-        items,
-        key=lambda item: item.get("fetched_at", ""),
-        reverse=True,
-    )
-
-    return JSONResponse(content=jsonable_encoder(sorted_items))
+    return JSONResponse(content=jsonable_encoder(items))
 
 
 @app.get("/api/featured")
@@ -226,13 +369,7 @@ def api_daily():
     返回今日新增信息 JSON。
     """
     items = load_existing_data()
-    today_items = get_today_items(items)
-
-    today_items = sorted(
-        today_items,
-        key=get_ai_final_score,
-        reverse=True,
-    )
+    today_items = sort_items_by_score(get_today_items(items))
 
     return JSONResponse(content=jsonable_encoder(today_items))
 
@@ -266,10 +403,9 @@ def api_top(limit: int = 10):
 def health_check():
     """
     健康检查接口。
-    用来确认 FastAPI 服务是否正常启动。
     """
     return {
         "status": "ok",
         "service": "OrbitAI",
-        "version": "V3.0",
+        "version": "V3.1",
     }
