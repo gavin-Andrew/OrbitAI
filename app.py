@@ -20,8 +20,8 @@ from orbitai.text_utils import clean_html, truncate_text
 
 app = FastAPI(
     title="OrbitAI",
-    description="OrbitAI V3.1 - Local FastAPI Service with Jinja2 Templates",
-    version="3.1.0",
+    description="OrbitAI V3.2 - Local Web Interaction Enhanced",
+    version="3.2.0",
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -79,6 +79,60 @@ def get_display_score(item: dict) -> str:
         return str(round(float(score), 1))
     except (TypeError, ValueError):
         return ""
+
+
+def get_score_level(item: dict) -> str:
+    """
+    根据综合分生成页面展示用等级。
+    """
+    score = get_ai_final_score(item)
+
+    if score >= 85:
+        return "高价值"
+    if score >= 75:
+        return "精选"
+    if score > 0:
+        return "普通"
+
+    return "未评分"
+
+
+def is_high_score_item(item: dict) -> bool:
+    """
+    判断是否为高分内容。
+    V3.2 前端快捷筛选使用。
+    """
+    return get_ai_final_score(item) >= 75
+
+
+def is_today_item(item: dict) -> bool:
+    """
+    判断是否为今日新增内容。
+    V3.2 前端快捷筛选使用。
+    """
+    return item in get_today_items([item])
+
+
+def get_item_time_value(item: dict) -> str:
+    """
+    给前端排序使用的时间值。
+    优先使用 fetched_at，其次使用 published。
+    """
+    return str(item.get("fetched_at") or item.get("published") or "")
+
+
+def get_original_title(item: dict) -> str:
+    """
+    返回原始英文标题，详情展开区使用。
+    """
+    return str(item.get("title", "")).strip()
+
+
+def get_original_summary(item: dict) -> str:
+    """
+    返回原始摘要，详情展开区使用。
+    """
+    return truncate_text(clean_html(item.get("summary_original", "")), 600)
 
 
 def get_short_summary(item: dict, max_length: int = 240) -> str:
@@ -170,16 +224,41 @@ def build_status(items: list[dict]) -> dict:
         category = get_display_category(item)
         categories[category] = categories.get(category, 0) + 1
 
+    scored_items = [
+        item for item in items
+        if get_ai_final_score(item) > 0
+    ]
+
+    avg_score = 0.0
+    top_score = 0.0
+
+    if scored_items:
+        scores = [get_ai_final_score(item) for item in scored_items]
+        avg_score = round(sum(scores) / len(scores), 1)
+        top_score = round(max(scores), 1)
+
+    high_score_count = sum(1 for item in items if is_high_score_item(item))
+
+    latest_fetched_at = ""
+    if items:
+        latest_fetched_at = max(str(item.get("fetched_at", "")) for item in items)
+
     return {
-        "version": "V3.1",
-        "mode": "Local FastAPI Service with Jinja2 Templates",
+        "version": "V3.2",
+        "mode": "Local Web Interaction Enhanced",
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total_count": total_count,
         "ai_processed_count": ai_processed_count,
         "ai_unprocessed_count": total_count - ai_processed_count,
         "featured_count": featured_count,
         "today_count": today_count,
+        "high_score_count": high_score_count,
         "ai_failed_count": len(ai_failed_items),
+        "source_count": len(sources),
+        "category_count": len(categories),
+        "avg_score": avg_score,
+        "top_score": top_score,
+        "latest_fetched_at": latest_fetched_at,
         "sources": sources,
         "categories": categories,
     }
@@ -198,6 +277,7 @@ def build_template_context(
     """
     filter_options = build_filter_options(items)
     ai_processed_count = sum(1 for item in items if item_is_ai_complete(item))
+    status = build_status(load_existing_data())
 
     return {
         "request": request,
@@ -218,6 +298,14 @@ def build_template_context(
         "get_display_score": get_display_score,
         "get_short_summary": get_short_summary,
         "build_search_text": build_search_text,
+        "get_ai_final_score": get_ai_final_score,
+        "get_score_level": get_score_level,
+        "is_high_score_item": is_high_score_item,
+        "is_today_item": is_today_item,
+        "get_item_time_value": get_item_time_value,
+        "get_original_title": get_original_title,
+        "get_original_summary": get_original_summary,
+        "status": status,
     }
 
 
@@ -407,5 +495,5 @@ def health_check():
     return {
         "status": "ok",
         "service": "OrbitAI",
-        "version": "V3.1",
+        "version": "V3.2",
     }

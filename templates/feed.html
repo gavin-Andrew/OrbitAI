@@ -25,26 +25,49 @@
         {% endfor %}
     </select>
 
+    <select id="sortSelect">
+        <option value="time-desc">时间：最新在前</option>
+        <option value="time-asc">时间：最旧在前</option>
+        <option value="score-desc">分数：高到低</option>
+        <option value="score-asc">分数：低到高</option>
+    </select>
+
+
     <div id="resultCount" class="result-count"></div>
 </section>
 
-<section class="feed">
+<section class="feed" id="feedList">
     {% if items %}
         {% for item in items %}
+        {% set score = get_display_score(item) %}
+        {% set item_tags = get_item_tags(item) %}
+        {% set original_title = get_original_title(item) %}
+        {% set original_summary = get_original_summary(item) %}
         <article
             class="card"
             data-source="{{ item.get('source', '未知来源') }}"
             data-category="{{ get_display_category(item) }}"
-            data-tags="{{ get_item_tags(item) | join('||') }}"
+            data-tags="{{ item_tags | join('||') }}"
             data-search="{{ build_search_text(item) }}"
+            data-score="{{ get_ai_final_score(item) }}"
+            data-time="{{ get_item_time_value(item) }}"
+            data-today="{{ 'true' if is_today_item(item) else 'false' }}"
+            data-high-score="{{ 'true' if is_high_score_item(item) else 'false' }}"
+            data-ai-complete="{{ 'true' if score else 'false' }}"
         >
             <div class="meta">
                 <span class="source">{{ item.get("source", "未知来源") }}</span>
                 <span class="category">{{ get_display_category(item) }}</span>
 
-                {% set score = get_display_score(item) %}
                 {% if score %}
                 <span class="score">综合分：{{ score }}</span>
+                {% if get_score_level(item) == "精选" %}
+                <span class="level">精选</span>
+                {% endif %}
+                {% endif %}
+
+                {% if is_today_item(item) %}
+                <span class="today-badge">今日新增</span>
                 {% endif %}
 
                 <span class="time">{{ item.get("published", "无发布时间") }}</span>
@@ -63,7 +86,6 @@
             <p class="summary empty">暂无摘要</p>
             {% endif %}
 
-            {% set item_tags = get_item_tags(item) %}
             {% if item_tags %}
             <div class="tags">
                 {% for tag in item_tags %}
@@ -72,9 +94,32 @@
             </div>
             {% endif %}
 
-            <a class="button" href="{{ item.get('link', '#') }}" target="_blank" rel="noopener noreferrer">
-                打开原文
-            </a>
+            <div class="card-actions">
+                <button class="button detail-toggle" type="button">展开详情</button>
+                <a class="button" href="{{ item.get('link', '#') }}" target="_blank" rel="noopener noreferrer">
+                    打开原文
+                </a>
+            </div>
+
+            <div class="details" hidden>
+                <div class="detail-grid">
+                    <div>
+                        <h3>原始标题</h3>
+                        <p>{{ original_title or "暂无原始标题" }}</p>
+                    </div>
+                    <div>
+                        <h3>抓取时间</h3>
+                        <p>{{ item.get("fetched_at", "无抓取时间") }}</p>
+                    </div>
+                </div>
+
+                <h3>原始摘要</h3>
+                {% if original_summary %}
+                <p>{{ original_summary }}</p>
+                {% else %}
+                <p class="summary empty">暂无原始摘要</p>
+                {% endif %}
+            </div>
         </article>
         {% endfor %}
     {% else %}
