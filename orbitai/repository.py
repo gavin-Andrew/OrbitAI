@@ -498,7 +498,7 @@ def get_status_summary(
     )
 
     return {
-        "version": "V3.4",
+        "version": "V3.6",
         "mode": "Local Web App Status Dashboard",
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 

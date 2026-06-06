@@ -25,8 +25,8 @@ from main import (
 
 app = FastAPI(
     title="OrbitAI",
-    description="OrbitAI V3.5 - Local Web Interaction Enhanced",
-    version="3.5.0",
+    description="OrbitAI V3.6 - Local Web Interaction Enhanced",
+    version="3.6.0",
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -36,7 +36,7 @@ templates = Jinja2Templates(directory="templates")
 
 def build_admin_response(result: dict):
     """
-    V3.5：统一包装后台操作结果。
+    V3.6：统一包装后台操作结果。
     """
     status = get_status_summary()
 
@@ -52,7 +52,7 @@ def build_admin_response(result: dict):
 
 def build_admin_error_response(error: Exception):
     """
-    V3.5：统一包装后台操作异常。
+    V3.6：统一包装后台操作异常。
     """
     status = get_status_summary()
 
@@ -95,6 +95,33 @@ def get_ai_final_score(item: dict) -> float:
     except (TypeError, ValueError):
         return 0.0
 
+def is_ai_processed_for_display(item: dict) -> bool:
+    """
+    页面统计用：判断一条信息是否已经完成 AI 处理。
+
+    这里优先相信数据库里的 processed 标记；
+    如果旧数据没有 processed，但已经有 final_score，也视为已处理。
+    """
+    ai = item.get("ai", {})
+
+    if not isinstance(ai, dict):
+        return False
+
+    if ai.get("processed") is True:
+        return True
+
+    if ai.get("processed") == 1:
+        return True
+
+    final_score = ai.get("final_score")
+
+    if final_score is None:
+        return False
+
+    try:
+        return float(final_score) > 0
+    except (TypeError, ValueError):
+        return False
 
 def get_item_tags(item: dict) -> list[str]:
     """
@@ -290,7 +317,7 @@ def build_status(items: list[dict]) -> dict:
         latest_fetched_at = max(str(item.get("fetched_at", "")) for item in items)
 
     return {
-        "version": "V3.2",
+        "version": "V3.6",
         "mode": "Local Web Interaction Enhanced",
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "total_count": total_count,
@@ -322,7 +349,10 @@ def build_template_context(
     构造模板渲染需要的通用上下文。
     """
     filter_options = build_filter_options(items)
-    ai_processed_count = sum(1 for item in items if item_is_ai_complete(item))
+    current_ai_processed_count = sum(
+        1 for item in items
+        if is_ai_processed_for_display(item)
+    )
     status = get_status_summary()
 
     return {
@@ -333,7 +363,8 @@ def build_template_context(
         "active_page": active_page,
         "items": items,
         "total_count": len(items),
-        "ai_processed_count": ai_processed_count,
+        "ai_processed_count": current_ai_processed_count,
+        "current_ai_processed_count": current_ai_processed_count,
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "sources": filter_options["sources"],
         "categories": filter_options["categories"],
@@ -395,6 +426,12 @@ def featured_page(request: Request):
     """
     items = sort_items_by_score(get_featured_items(load_articles_from_db()))
 
+    # 当前页面已处理数量
+    current_ai_processed_count = sum(
+    1 for item in items
+    if is_ai_processed_for_display(item)
+)
+
     context = build_template_context(
         request=request,
         items=items,
@@ -403,6 +440,9 @@ def featured_page(request: Request):
         stat_label="精选信息数",
         active_page="featured",
     )
+
+    # 覆盖 context 中的 current_ai_processed_count
+    context["current_ai_processed_count"] = current_ai_processed_count
 
     return templates.TemplateResponse(
         request=request,
@@ -427,27 +467,22 @@ def daily_page(request: Request):
     """
     items = sort_items_by_score(get_today_items(load_articles_from_db()))
 
+    current_ai_processed_count = sum(
+    1 for item in items
+    if is_ai_processed_for_display(item)
+    )
+
     grouped_sections = []
 
     for item in items:
         category = get_display_category(item)
-
         section = next(
-            (
-                existing_section
-                for existing_section in grouped_sections
-                if existing_section["category"] == category
-            ),
+            (existing_section for existing_section in grouped_sections if existing_section["category"] == category),
             None,
         )
-
         if section is None:
-            section = {
-                "category": category,
-                "items": [],
-            }
+            section = {"category": category, "items": []}
             grouped_sections.append(section)
-
         section["items"].append(item)
 
     context = build_template_context(
@@ -460,6 +495,7 @@ def daily_page(request: Request):
     )
 
     context["grouped_sections"] = grouped_sections
+    context["current_ai_processed_count"] = current_ai_processed_count
 
     return templates.TemplateResponse(
         request=request,
@@ -573,7 +609,7 @@ def api_daily():
 @app.get("/api/status")
 def api_status():
     """
-    返回当前 OrbitAI V3.4 状态。
+    返回当前 OrbitAI V3.6 状态。
     """
     status = get_status_summary()
 
@@ -602,5 +638,5 @@ def health_check():
     return {
         "status": "ok",
         "service": "OrbitAI",
-        "version": "V3.5",
+        "version": "V3.6",
     }

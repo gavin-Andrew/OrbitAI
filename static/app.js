@@ -170,7 +170,7 @@ if (searchInput && sourceFilter && categoryFilter && tagFilter) {
 
 
 /* =========================
-   OrbitAI V3.5 Admin Controls
+   OrbitAI V3.6 Admin Controls
    状态页手动操作逻辑
    ========================= */
 

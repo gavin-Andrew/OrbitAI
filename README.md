@@ -1,378 +1,93 @@
-```markdown
-# OrbitAI
-
-OrbitAI is a personal AI information radar.
-
-It collects AI-related information from RSS feeds, processes the information with AI, saves structured data locally, and generates local HTML pages for reading and review.
-
-The current goal of OrbitAI is not to become a large online platform immediately, but to first build a stable local information system that can run reliably on a personal computer.
-
----
-
-## Current Version
-
-### V2.7 - AI Enhanced Local Stable Version
-
-Current status: completed.
-
-OrbitAI V2.7 can:
-
-- Fetch AI-related information from RSS sources
-- Save structured information to `data.json`
-- Avoid duplicated articles by checking existing links
-- Use DeepSeek API to generate:
-  - Chinese title
-  - Chinese summary
-  - AI category
-  - Tags
-  - Multi-dimensional scores
-  - `final_score`
-- Generate three local HTML pages:
-  - `index.html`: all information
-  - `featured.html`: selected high-value information
-  - `daily.html`: today's newly fetched information
-- Retry unstable RSS requests
-- Use `certifi` to improve Python HTTPS certificate verification
-- Record AI processing errors with:
-  - `error`
-  - `error_type`
-  - `failed_at`
-  - `retry_count`
-
----
-
-## Basic Workflow
-
-```text
-sources.json
-    ↓
-Load RSS sources
-    ↓
-Fetch RSS feeds
-    ↓
-Deduplicate by link
-    ↓
-Create new structured items
-    ↓
-AI processing
-    ↓
-Save to data.json
-    ↓
-Generate local HTML pages
-    ↓
-Open in browser
-```
-
----
-
-## Project Structure
-
-```text
-OrbitAI/
-├─ main.py
-├─ requirements.txt
-├─ README.md
-├─ sources.json
-├─ .env
-├─ .gitignore
-│
-├─ orbitai/
-│  ├─ __init__.py
-│  ├─ config.py
-│  ├─ data_utils.py
-│  ├─ text_utils.py
-│  ├─ scoring.py
-│  ├─ rss_fetcher.py
-│  ├─ ai_client.py
-│  ├─ ai_processor.py
-│  └─ html_generator.py
-│
-├─ data.json          # generated, ignored by Git
-├─ index.html         # generated, ignored by Git
-├─ featured.html      # generated, ignored by Git
-└─ daily.html         # generated, ignored by Git
-```
-
----
-
-## Main Modules
-
-### `main.py`
-
-Main workflow controller.
-
-It coordinates the whole process:
-
-1. Load existing data
-2. Load RSS sources
-3. Fetch new RSS items
-4. Process items with AI
-5. Save data
-6. Generate HTML pages
-
----
-
-### `orbitai/config.py`
-
-Central configuration file.
-
-It manages:
-
-- File paths
-- AI provider settings
-- AI model settings
-- RSS retry settings
-- AI categories
-- Score keys
-- Final score weights
-- Featured page thresholds
-
----
-
-### `orbitai/data_utils.py`
-
-Data loading, saving, migration, and item creation.
-
-It handles:
-
-- Reading `data.json`
-- Saving `data.json`
-- Migrating old data into V2.x structure
-- Creating new article items
-- Creating empty AI fields
-- Deduplicating links
-
----
-
-### `orbitai/rss_fetcher.py`
-
-RSS source loading and RSS fetching.
-
-It handles:
-
-- Reading `sources.json`
-- Loading enabled RSS sources
-- Fetching RSS content
-- Retrying failed RSS requests
-- Adding User-Agent
-- Using `certifi` for SSL certificate verification
-- Parsing RSS entries
-- Creating new article items
-
----
-
-### `orbitai/ai_client.py`
-
-DeepSeek REST API client.
-
-It handles:
-
-- Creating the AI client configuration
-- Sending chat completion requests
-- Handling HTTP errors
-- Handling connection errors
-- Parsing API responses
-
----
-
-### `orbitai/ai_processor.py`
-
-AI information processing.
-
-It handles:
-
-- Prompt construction
-- AI JSON extraction
-- Chinese title generation
-- Chinese summary generation
-- AI category normalization
-- Tag normalization
-- Multi-dimensional scoring
-- Error recording
-- Retry count recording
-
----
-
-### `orbitai/scoring.py`
-
-Scoring logic.
-
-It handles:
-
-- Score normalization
-- `final_score` calculation
-- Sorting by score
-- Selecting featured items
-
----
-
-### `orbitai/html_generator.py`
-
-HTML page generation.
-
-It generates:
-
-- `index.html`
-- `featured.html`
-- `daily.html`
-
----
-
-### `orbitai/text_utils.py`
-
-Text utility functions.
-
-It handles:
-
-- Cleaning HTML from RSS summaries
-- Truncating long text
-
----
-
-## Generated Files
-
-The following files are generated automatically and should not be committed to GitHub:
-
-```text
-data.json
-index.html
-featured.html
-daily.html
-```
-
-They are ignored by `.gitignore`.
-
----
-
-## Environment Variables
-
-Create a local `.env` file in the project root.
-
-Example:
-
-```env
+OrbitAI
+
+OrbitAI 是一个本地优先的个人 AI 信息雷达（Personal AI Information Radar）。
+
+它的目标是帮助用户持续收集、整理、浏览和管理 AI 及科技相关信息，避免被信息洪流淹没，同时保持完全可控、可观察的本地环境。
+
+OrbitAI 强调：
+
+小步迭代，易用且低复杂度。
+本地运行：数据库 + 网页访问，无公网部署，无用户系统。
+模块化与可扩展性：便于长期维护和功能扩展。
+信息闭环：RSS 抓取 → 数据存储 → AI 处理 → 网页展示 → 状态监控。
+核心功能
+信息抓取：支持从多源 RSS 获取 AI/科技信息。
+数据存储：本地 SQLite 数据库为主存储，保持历史信息备份。
+AI 处理：
+标题和摘要翻译（中英文）。
+信息分类、标签提取。
+多维度评分与综合分（final_score）。
+本地 Web 页面：
+/：全部信息。
+/featured：精选信息。
+/daily：每日新增信息简报。
+/status：系统运行状态与错误监控。
+后台手动操作：
+RSS 抓取。
+AI 批量处理。
+静态 HTML 再生成。
+API 接口：
+/api/items
+/api/featured
+/api/daily
+/api/status
+/api/top
+/health
+稳定性机制：
+RSS 请求重试。
+AI 失败记录与 retry_count 控制。
+高 retry_count 条目在状态页可视化标记。
+安装与运行
+安装依赖：
+pip install -r requirements.txt
+配置 .env 文件：
 AI_PROVIDER=deepseek
-AI_API_KEY=your_deepseek_api_key
+AI_API_KEY=你的 DeepSeek Key
 AI_BASE_URL=https://api.deepseek.com
 AI_MODEL=deepseek-v4-flash
 AI_BATCH_LIMIT=5
 AI_INPUT_SUMMARY_MAX_CHARS=1800
-AI_MAX_TOKENS=1200
+启动本地服务：
+uvicorn app:app --reload
+浏览器访问：
+http://127.0.0.1:8000
 
-RSS_MAX_ITEMS_PER_SOURCE=5
-RSS_RETRY_TIMES=3
-RSS_RETRY_DELAY_SECONDS=2
-RSS_TIMEOUT_SECONDS=20
-```
+访问首页、精选页、每日简报及状态页。
 
-Do not commit `.env` to GitHub.
-
----
-
-## Installation
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-If the network has trouble connecting to PyPI, configure the terminal proxy first.
-
-Example for PowerShell:
-
-```powershell
-$env:HTTP_PROXY="http://127.0.0.1:7897"
-$env:HTTPS_PROXY="http://127.0.0.1:7897"
-```
-
-Then run:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Usage
-
-Run:
-
-```bash
-python main.py
-```
-
-After running, OrbitAI will generate:
-
-```text
-index.html
-featured.html
-daily.html
-```
-
-Open them in your browser to read the collected AI information.
-
----
-
-## Version History
-
-### V1.x - Local Basic Version
-
-- V1.0: Fetch RSS feeds and print results in the terminal
-- V1.1: Save fetched data to `data.json`
-- V1.2: Generate local `index.html`
-- V1.3: Add search and basic classification
-- V1.4: Improve local user experience
-
-### V2.x - AI Enhanced Version
-
-- V2.0: Prepare AI data structure
-- V2.1: Add DeepSeek API integration
-- V2.2: Add AI classification and tag extraction
-- V2.3: Add AI multi-dimensional scoring and `final_score`
-- V2.4: Add `featured.html` selected information page
-- V2.5: Refactor code into modules
-- V2.6: Add `daily.html` daily briefing page
-- V2.7: Improve local stability, RSS retry logic, configuration management, and AI error recording
-
----
-
-## Known Issues
-
-### DeepSeek connection instability
-
-DeepSeek API requests may occasionally fail due to network or service instability.
-
-Current behavior:
-
-- Failed AI processing is recorded in the item
-- The failed item may be retried in later runs
-- Error type, error message, failed time, and retry count are stored
-
-Possible future improvement:
-
-- Add a retry threshold
-- If `retry_count >= 3`, temporarily skip AI processing for that item
-- Keep the article in the dataset but avoid repeated API consumption
-
----
-
-## Development Principle
-
-OrbitAI follows these principles:
-
-1. Build a runnable local workflow first.
-2. Keep deterministic logic in code.
-3. Use AI for language understanding, summarization, classification, tagging, and scoring.
-4. Keep generated data and generated pages out of Git.
-5. After each version, test, summarize, and push to GitHub.
-6. Prefer stable small improvements over large risky rewrites.
-
----
-
-## About
-
-OrbitAI is a learning-oriented personal project.
-
-Its long-term direction is to become a personal AI information radar that helps users track important AI updates without being overwhelmed by information noise.
-```
+项目结构（核心部分）
+OrbitAI/
+├─ app.py                     # FastAPI 本地服务入口
+├─ main.py                    # RSS + AI + SQLite 流程调度
+├─ orbitai/                   # 功能模块
+│  ├─ config.py
+│  ├─ data_utils.py
+│  ├─ rss_fetcher.py
+│  ├─ ai_client.py
+│  ├─ ai_processor.py
+│  ├─ scoring.py
+│  ├─ html_generator.py
+│  └─ text_utils.py
+├─ templates/                 # Jinja2 页面模板
+├─ static/                    # 样式和前端逻辑
+├─ data.json                  # 历史备份
+├─ orbitai.db                 # SQLite 数据库
+├─ sources.json               # RSS 配置
+└─ README.md
+项目演进（简要）
+V1.x：本地 RSS 抓取与静态 HTML 展示。
+V2.x：接入 AI 处理，生成中文标题、摘要、分类、标签和多维评分，增加精选页与每日简报。
+V3.x：本地 Web App 化，逐步增加：
+FastAPI 服务化。
+Jinja2 模板渲染。
+Web 交互增强。
+SQLite 数据库化。
+状态页与错误管理。
+网页端手动操作与静态兼容。
+V3.6：本地 Web 稳定版收官，长期使用可控、页面与后台功能完整。
+开发原则
+保持本地可运行闭环。
+模块化、可扩展、易维护。
+AI 用于理解、分类、摘要、打分。
+生成内容不提交 Git。
+版本完成后，测试、总结并提交 GitHub。
+稳定小步迭代优先，避免一次性大改。

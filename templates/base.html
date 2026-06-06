@@ -27,15 +27,18 @@
                     <strong>{{ stat_label }}</strong>
                     {{ total_count }}
                 </span>
+
                 <span class="stat">
                     <strong>AI 已处理</strong>
-                    {{ status.ai_processed_count }}
+                    {{ current_ai_processed_count }}
                 </span>
+
                 {% if active_page == "index" %}
                 <span class="stat">
                     <strong>今日新增</strong>
                     {{ status.today_count }}
                 </span>
+
                 <span class="stat">
                     <strong>高分内容</strong>
                     {{ status.high_score_count }}
@@ -55,7 +58,7 @@
         {% block content %}{% endblock %}
 
         <footer class="footer">
-            Generated dynamically by OrbitAI V3.2 · {{ generated_at }}
+            Generated dynamically by OrbitAI V3.6 · {{ generated_at }}
         </footer>
     </main>
 
