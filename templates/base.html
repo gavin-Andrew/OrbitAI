@@ -29,7 +29,7 @@
                 </span>
                 <span class="stat">
                     <strong>AI 已处理</strong>
-                    {{ ai_processed_count }}
+                    {{ status.ai_processed_count }}
                 </span>
                 {% if active_page == "index" %}
                 <span class="stat">
@@ -48,6 +48,7 @@
             <a class="nav-link {% if active_page == 'index' %}active{% endif %}" href="/">全部信息</a>
             <a class="nav-link {% if active_page == 'featured' %}active{% endif %}" href="/featured">精选信息</a>
             <a class="nav-link {% if active_page == 'daily' %}active{% endif %}" href="/daily">每日简报</a>
+            <a class="nav-link {% if active_page == 'status' %}active{% endif %}" href="/status">状态页</a>
             <a class="nav-link" href="/api/status" target="_blank" rel="noopener noreferrer">状态 JSON</a>
         </nav>
 

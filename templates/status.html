@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="page">
+        <section class="header">
+            <div class="header-main">
+                <div>
+                    <p class="eyebrow">ORBITAI STATUS</p>
+                    <h1>{{ page_title }}</h1>
+                    <p>{{ page_subtitle }}</p>
+                </div>
+
+                <div class="status-pill">
+                    <span class="status-dot"></span>
+                    本地运行中
+                </div>
+            </div>
+
+            <div class="stats stats-grid">
+                <span class="stat">
+                    <strong>总文章数</strong>
+                    {{ status.total_count }}
+                </span>
+
+                <span class="stat">
+                    <strong>今日新增</strong>
+                    {{ status.today_count }}
+                </span>
+
+                <span class="stat">
+                    <strong>AI 已处理</strong>
+                    {{ status.ai_processed_count }}
+                </span>
+
+                <span class="stat">
+                    <strong>AI 未处理</strong>
+                    {{ status.ai_unprocessed_count }}
+                </span>
+
+                <span class="stat">
+                    <strong>AI 失败</strong>
+                    {{ status.ai_failed_count }}
+                </span>
+
+                <span class="stat">
+                    <strong>高重试条目</strong>
+                    {{ status.high_retry_count }}
+                </span>
+            </div>
+        </section>
+
+        <nav class="nav">
+            <a class="nav-link" href="/">全部信息</a>
+            <a class="nav-link" href="/featured">精选信息</a>
+            <a class="nav-link" href="/daily">每日简报</a>
+            <a class="nav-link active" href="/status">状态页</a>
+        </nav>
+
+        <section class="intro">
+            <h2>系统概览</h2>
+            <p>
+                当前版本：{{ status.version }}｜运行模式：{{ status.mode }}｜
+                状态生成时间：{{ status.generated_at }}｜
+                最近抓取时间：{{ status.latest_fetched_at or "暂无记录" }}
+            </p>
+        </section>
+
+        <section class="status-layout">
+            <article class="status-panel">
+                <h2>AI 处理状态</h2>
+
+                <div class="status-list">
+                    <div class="status-row">
+                        <span>已处理</span>
+                        <strong>{{ status.ai_processed_count }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>未处理</span>
+                        <strong>{{ status.ai_unprocessed_count }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>失败条目</span>
+                        <strong>{{ status.ai_failed_count }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>有重试记录</span>
+                        <strong>{{ status.retry_count_total }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>retry 阈值</span>
+                        <strong>{{ status.retry_threshold }}</strong>
+                    </div>
+                </div>
+            </article>
+
+            <article class="status-panel">
+                <h2>评分状态</h2>
+
+                <div class="status-list">
+                    <div class="status-row">
+                        <span>已评分数量</span>
+                        <strong>{{ status.scored_count }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>平均分</span>
+                        <strong>{{ status.avg_score }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>最高分</span>
+                        <strong>{{ status.top_score }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>精选数量</span>
+                        <strong>{{ status.featured_count }}</strong>
+                    </div>
+
+                    <div class="status-row">
+                        <span>高分数量</span>
+                        <strong>{{ status.high_score_count }}</strong>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="status-layout">
+            <article class="status-panel">
+                <h2>RSS 来源统计</h2>
+
+                {% if status.sources %}
+                    <div class="status-list">
+                        {% for source, count in status.sources.items() %}
+                            <div class="status-row">
+                                <span>{{ source }}</span>
+                                <strong>{{ count }}</strong>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty-text">暂无来源统计。</p>
+                {% endif %}
+            </article>
+
+            <article class="status-panel">
+                <h2>分类统计</h2>
+
+                {% if status.categories %}
+                    <div class="status-list">
+                        {% for category, count in status.categories.items() %}
+                            <div class="status-row">
+                                <span>{{ category }}</span>
+                                <strong>{{ count }}</strong>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty-text">暂无分类统计。</p>
+                {% endif %}
+            </article>
+        </section>
+
+        <section class="status-section">
+            <h2>最近错误信息</h2>
+
+            {% if status.recent_errors %}
+                {% for item in status.recent_errors %}
+                    {% set ai = item.ai %}
+                    <article class="card error-card">
+                        <div class="meta">
+                            <span class="source">{{ item.source }}</span>
+                            <span class="category">{{ get_display_category(item) }}</span>
+                            <span class="level">错误：{{ ai.error_type or "未知错误" }}</span>
+                            <span class="time">{{ ai.failed_at or item.fetched_at }}</span>
+                        </div>
+
+                        <h2>
+                            <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">
+                                {{ get_display_title(item) }}
+                            </a>
+                        </h2>
+
+                        <p class="summary">
+                            {{ ai.error or "没有记录详细错误信息。" }}
+                        </p>
+
+                        <div class="card-actions">
+                            <a class="button" href="{{ item.link }}" target="_blank" rel="noopener noreferrer">
+                                打开原文
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <section class="intro">
+                    <h2>暂无错误记录</h2>
+                    <p>当前数据库中没有记录 AI 失败条目，系统状态看起来比较健康。</p>
+                </section>
+            {% endif %}
+        </section>
+
+        <section class="status-section">
+            <h2>高 retry_count 条目</h2>
+
+            {% if status.high_retry_items %}
+                {% for item in status.high_retry_items %}
+                    {% set ai = item.ai %}
+                    <article class="card warning-card">
+                        <div class="meta">
+                            <span class="source">{{ item.source }}</span>
+                            <span class="category">{{ get_display_category(item) }}</span>
+                            <span class="level">retry_count：{{ ai.retry_count }}</span>
+                            <span class="time">{{ ai.failed_at or item.fetched_at }}</span>
+                        </div>
+
+                        <h2>
+                            <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">
+                                {{ get_display_title(item) }}
+                            </a>
+                        </h2>
+
+                        <p class="summary">
+                            该条目重试次数较高，后续可标记为“待人工检查 / 暂停重试”。
+                        </p>
+
+                        {% if ai.error %}
+                            <div class="details">
+                                <h3>最近错误</h3>
+                                <p>{{ ai.error }}</p>
+                            </div>
+                        {% endif %}
+
+                        <div class="card-actions">
+                            <a class="button" href="{{ item.link }}" target="_blank" rel="noopener noreferrer">
+                                打开原文
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <section class="intro">
+                    <h2>暂无高重试条目</h2>
+                    <p>当前没有 retry_count 达到阈值的文章。</p>
+                </section>
+            {% endif %}
+        </section>
+
+        <footer class="footer">
+            Generated locally by OrbitAI V3.4
+        </footer>
+    </main>
+</body>
+</html>

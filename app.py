@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from orbitai.repository import get_all_articles
+from orbitai.repository import get_all_articles, get_status_summary
 from orbitai.ai_processor import item_is_ai_complete
 from orbitai.scoring import get_featured_items, sort_items_by_score
 from orbitai.html_generator import (
@@ -283,7 +283,7 @@ def build_template_context(
     """
     filter_options = build_filter_options(items)
     ai_processed_count = sum(1 for item in items if item_is_ai_complete(item))
-    status = build_status(load_articles_from_db())
+    status = get_status_summary()
 
     return {
         "request": request,
@@ -435,6 +435,29 @@ def daily_html_page(request: Request):
     """
     return daily_page(request)
 
+@app.get("/status")
+def status_page(request: Request):
+    """
+    V3.4 状态页。
+    将 /api/status 的 JSON 状态可视化展示。
+    """
+    status = get_status_summary()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="status.html",
+        context={
+            "request": request,
+            "page_title": "OrbitAI Status",
+            "page_subtitle": "系统运行状态与错误管理",
+            "active_page": "status",
+            "status": status,
+            "get_display_title": get_display_title,
+            "get_display_category": get_display_category,
+            "get_display_score": get_display_score,
+            "get_short_summary": get_short_summary,
+        },
+    )
 
 @app.get("/api/items")
 def api_items():
@@ -471,10 +494,9 @@ def api_daily():
 @app.get("/api/status")
 def api_status():
     """
-    返回当前 OrbitAI 状态。
+    返回当前 OrbitAI V3.4 状态。
     """
-    items = load_articles_from_db()
-    status = build_status(items)
+    status = get_status_summary()
 
     return JSONResponse(content=jsonable_encoder(status))
 

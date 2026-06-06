@@ -148,6 +148,390 @@ def get_article_count():
 
     return int(result[0] or 0)
 
+def fetch_count(cursor, sql: str, params: tuple = ()) -> int:
+    """
+    执行 COUNT 查询，并安全返回整数结果。
+    V3.4 状态页统计使用。
+    """
+    cursor.execute(sql, params)
+    result = cursor.fetchone()
+
+    if result is None:
+        return 0
+
+    return int(result[0] or 0)
+
+
+def get_today_date_text() -> str:
+    """
+    返回本地日期字符串，用于统计今日新增。
+    fetched_at 是 ISO 格式，前 10 位通常就是 YYYY-MM-DD。
+    """
+    return datetime.now().astimezone().date().isoformat()
+
+
+def get_today_article_count(today_text: str | None = None) -> int:
+    """
+    统计今天新增的文章数量。
+    依据 fetched_at 的日期部分判断。
+    """
+    init_db()
+
+    if today_text is None:
+        today_text = get_today_date_text()
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        return fetch_count(
+            cursor,
+            """
+            SELECT COUNT(*)
+            FROM articles
+            WHERE substr(COALESCE(fetched_at, ''), 1, 10) = ?
+            """,
+            (today_text,),
+        )
+
+
+def get_ai_status_counts() -> dict:
+    """
+    统计 AI 处理状态：
+    - 已处理
+    - 未处理
+    - 失败
+    - 有重试记录
+    """
+    init_db()
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        total_count = fetch_count(
+            cursor,
+            "SELECT COUNT(*) FROM articles",
+        )
+
+        ai_processed_count = fetch_count(
+            cursor,
+            """
+            SELECT COUNT(*)
+            FROM articles
+            WHERE processed = 1
+            """,
+        )
+
+        ai_unprocessed_count = fetch_count(
+            cursor,
+            """
+            SELECT COUNT(*)
+            FROM articles
+            WHERE processed = 0
+            """,
+        )
+
+        ai_failed_count = fetch_count(
+            cursor,
+            """
+            SELECT COUNT(*)
+            FROM articles
+            WHERE
+                COALESCE(error, '') != ''
+                OR COALESCE(error_type, '') != ''
+            """,
+        )
+
+        retry_count_total = fetch_count(
+            cursor,
+            """
+            SELECT COUNT(*)
+            FROM articles
+            WHERE COALESCE(retry_count, 0) > 0
+            """,
+        )
+
+    return {
+        "total_count": total_count,
+        "ai_processed_count": ai_processed_count,
+        "ai_unprocessed_count": ai_unprocessed_count,
+        "ai_failed_count": ai_failed_count,
+        "retry_count_total": retry_count_total,
+    }
+
+
+def get_featured_article_count(threshold: float = 75) -> int:
+    """
+    统计达到精选阈值的文章数量。
+    默认阈值保持和当前精选逻辑一致：75。
+    """
+    init_db()
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        return fetch_count(
+            cursor,
+            """
+            SELECT COUNT(*)
+            FROM articles
+            WHERE COALESCE(final_score, 0) >= ?
+            """,
+            (threshold,),
+        )
+
+
+def get_high_score_article_count(threshold: float = 75) -> int:
+    """
+    统计高分内容数量。
+    V3.2 前端已有高分筛选，V3.4 状态页继续复用这个概念。
+    """
+    return get_featured_article_count(threshold=threshold)
+
+
+def get_source_stats() -> dict:
+    """
+    按 RSS 来源统计文章数量。
+    返回格式：
+    {
+        "OpenAI News": 10,
+        "Hugging Face Blog": 8
+    }
+    """
+    init_db()
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT
+            COALESCE(NULLIF(source, ''), '未知来源') AS source_name,
+            COUNT(*) AS count
+        FROM articles
+        GROUP BY source_name
+        ORDER BY count DESC, source_name ASC
+        """)
+
+        rows = cursor.fetchall()
+
+    return {
+        row["source_name"]: int(row["count"] or 0)
+        for row in rows
+    }
+
+
+def get_category_stats() -> dict:
+    """
+    按分类统计文章数量。
+    优先使用 AI 分类；如果 AI 分类为空，则回退到规则分类。
+    """
+    init_db()
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT
+            COALESCE(
+                NULLIF(ai_category, ''),
+                NULLIF(category_rule, ''),
+                '其他'
+            ) AS category_name,
+            COUNT(*) AS count
+        FROM articles
+        GROUP BY category_name
+        ORDER BY count DESC, category_name ASC
+        """)
+
+        rows = cursor.fetchall()
+
+    return {
+        row["category_name"]: int(row["count"] or 0)
+        for row in rows
+    }
+
+
+def get_latest_fetched_at() -> str:
+    """
+    获取最近一次抓取时间。
+    """
+    init_db()
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT MAX(fetched_at) AS latest_fetched_at
+        FROM articles
+        """)
+
+        row = cursor.fetchone()
+
+    if row is None:
+        return ""
+
+    return row["latest_fetched_at"] or ""
+
+
+def get_recent_error_articles(limit: int = 10) -> list[dict]:
+    """
+    获取最近出现错误的文章。
+    用于状态页展示最近错误信息。
+    """
+    init_db()
+
+    limit = max(1, min(int(limit or 10), 50))
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT *
+        FROM articles
+        WHERE
+            COALESCE(error, '') != ''
+            OR COALESCE(error_type, '') != ''
+        ORDER BY
+            failed_at DESC,
+            updated_at DESC,
+            fetched_at DESC
+        LIMIT ?
+        """, (limit,))
+
+        rows = cursor.fetchall()
+
+    return [row_to_item(row) for row in rows]
+
+
+def get_high_retry_articles(
+    retry_threshold: int = 3,
+    limit: int = 20,
+) -> list[dict]:
+    """
+    获取 retry_count 较高的文章。
+    V3.4 用于标记“待人工检查 / 暂停重试”的候选条目。
+    """
+    init_db()
+
+    retry_threshold = max(1, int(retry_threshold or 3))
+    limit = max(1, min(int(limit or 20), 100))
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT *
+        FROM articles
+        WHERE COALESCE(retry_count, 0) >= ?
+        ORDER BY
+            retry_count DESC,
+            failed_at DESC,
+            updated_at DESC,
+            fetched_at DESC
+        LIMIT ?
+        """, (retry_threshold, limit))
+
+        rows = cursor.fetchall()
+
+    return [row_to_item(row) for row in rows]
+
+
+def get_score_stats() -> dict:
+    """
+    获取综合分统计。
+    包括：
+    - 已评分数量
+    - 平均分
+    - 最高分
+    """
+    init_db()
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT
+            COUNT(final_score) AS scored_count,
+            AVG(final_score) AS avg_score,
+            MAX(final_score) AS top_score
+        FROM articles
+        WHERE final_score IS NOT NULL
+        """)
+
+        row = cursor.fetchone()
+
+    if row is None:
+        return {
+            "scored_count": 0,
+            "avg_score": 0.0,
+            "top_score": 0.0,
+        }
+
+    return {
+        "scored_count": int(row["scored_count"] or 0),
+        "avg_score": round(float(row["avg_score"] or 0), 1),
+        "top_score": round(float(row["top_score"] or 0), 1),
+    }
+
+
+def get_status_summary(
+    retry_threshold: int = 3,
+    recent_error_limit: int = 10,
+    high_retry_limit: int = 20,
+) -> dict:
+    """
+    聚合 OrbitAI V3.4 状态页需要的核心数据。
+
+    这个函数是后续 /api/status 和 /status 页面最推荐调用的入口。
+    """
+    ai_counts = get_ai_status_counts()
+    source_stats = get_source_stats()
+    category_stats = get_category_stats()
+    score_stats = get_score_stats()
+
+    recent_error_articles = get_recent_error_articles(
+        limit=recent_error_limit,
+    )
+
+    high_retry_articles = get_high_retry_articles(
+        retry_threshold=retry_threshold,
+        limit=high_retry_limit,
+    )
+
+    return {
+        "version": "V3.4",
+        "mode": "Local Web App Status Dashboard",
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
+        "total_count": ai_counts["total_count"],
+        "today_count": get_today_article_count(),
+
+        "ai_processed_count": ai_counts["ai_processed_count"],
+        "ai_unprocessed_count": ai_counts["ai_unprocessed_count"],
+        "ai_failed_count": ai_counts["ai_failed_count"],
+
+        "featured_count": get_featured_article_count(),
+        "high_score_count": get_high_score_article_count(),
+
+        "retry_count_total": ai_counts["retry_count_total"],
+        "retry_threshold": retry_threshold,
+        "high_retry_count": len(high_retry_articles),
+
+        "source_count": len(source_stats),
+        "category_count": len(category_stats),
+
+        "scored_count": score_stats["scored_count"],
+        "avg_score": score_stats["avg_score"],
+        "top_score": score_stats["top_score"],
+
+        "latest_fetched_at": get_latest_fetched_at(),
+
+        "sources": source_stats,
+        "categories": category_stats,
+
+        "recent_errors": recent_error_articles,
+        "high_retry_items": high_retry_articles,
+    }
+
 def get_article_columns() -> set[str]:
     """
     获取 articles 表当前已有字段。

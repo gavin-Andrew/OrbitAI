@@ -48,4 +48,33 @@ def init_db():
         )
         """)
 
+        cursor.execute("PRAGMA table_info(articles)")
+        existing_columns = {
+            row["name"]
+            for row in cursor.fetchall()
+        }
+
+        required_columns = {
+            "title_cn": "TEXT",
+            "summary_cn": "TEXT",
+            "ai_category": "TEXT",
+            "tags": "TEXT",
+            "scores": "TEXT",
+            "final_score": "REAL",
+            "processed": "INTEGER DEFAULT 0",
+            "processed_at": "TEXT",
+            "error": "TEXT",
+            "error_type": "TEXT",
+            "failed_at": "TEXT",
+            "retry_count": "INTEGER DEFAULT 0",
+            "created_at": "TEXT",
+            "updated_at": "TEXT",
+        }
+
+        for column_name, column_type in required_columns.items():
+            if column_name not in existing_columns:
+                cursor.execute(
+                    f"ALTER TABLE articles ADD COLUMN {column_name} {column_type}"
+                )
+
         connection.commit()
