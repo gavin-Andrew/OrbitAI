@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from orbitai.data_utils import load_existing_data
+from orbitai.repository import get_all_articles
 from orbitai.ai_processor import item_is_ai_complete
 from orbitai.scoring import get_featured_items, sort_items_by_score
 from orbitai.html_generator import (
@@ -27,6 +27,12 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
+def load_articles_from_db() -> list[dict]:
+    """
+    V3.3.3：从 SQLite 读取文章。
+    后续如果需要缓存或异常兜底，也可以集中在这里处理。
+    """
+    return get_all_articles()
 
 
 def sort_items_by_time(items: list[dict]) -> list[dict]:
@@ -277,7 +283,7 @@ def build_template_context(
     """
     filter_options = build_filter_options(items)
     ai_processed_count = sum(1 for item in items if item_is_ai_complete(item))
-    status = build_status(load_existing_data())
+    status = build_status(load_articles_from_db())
 
     return {
         "request": request,
@@ -315,7 +321,7 @@ def home(request: Request):
     首页。
     V3.1 开始改为 Jinja2 模板动态渲染。
     """
-    items = sort_items_by_time(load_existing_data())
+    items = sort_items_by_time(load_articles_from_db())
 
     context = build_template_context(
         request=request,
@@ -347,7 +353,7 @@ def featured_page(request: Request):
     精选信息页。
     V3.1 使用模板动态渲染。
     """
-    items = sort_items_by_score(get_featured_items(load_existing_data()))
+    items = sort_items_by_score(get_featured_items(load_articles_from_db()))
 
     context = build_template_context(
         request=request,
@@ -379,7 +385,7 @@ def daily_page(request: Request):
     每日简报页。
     V3.1 使用模板动态渲染。
     """
-    items = sort_items_by_score(get_today_items(load_existing_data()))
+    items = sort_items_by_score(get_today_items(load_articles_from_db()))
 
     grouped_sections = []
 
@@ -435,7 +441,7 @@ def api_items():
     """
     返回全部信息 JSON。
     """
-    items = sort_items_by_time(load_existing_data())
+    items = sort_items_by_time(load_articles_from_db())
 
     return JSONResponse(content=jsonable_encoder(items))
 
@@ -445,7 +451,7 @@ def api_featured():
     """
     返回精选信息 JSON。
     """
-    items = load_existing_data()
+    items = load_articles_from_db()
     featured_items = get_featured_items(items)
 
     return JSONResponse(content=jsonable_encoder(featured_items))
@@ -456,7 +462,7 @@ def api_daily():
     """
     返回今日新增信息 JSON。
     """
-    items = load_existing_data()
+    items = load_articles_from_db()
     today_items = sort_items_by_score(get_today_items(items))
 
     return JSONResponse(content=jsonable_encoder(today_items))
@@ -467,7 +473,7 @@ def api_status():
     """
     返回当前 OrbitAI 状态。
     """
-    items = load_existing_data()
+    items = load_articles_from_db()
     status = build_status(items)
 
     return JSONResponse(content=jsonable_encoder(status))
@@ -479,7 +485,7 @@ def api_top(limit: int = 10):
     返回综合分最高的信息。
     默认返回前 10 条。
     """
-    items = load_existing_data()
+    items = load_articles_from_db()
     sorted_items = sort_items_by_score(items)
 
     limit = max(1, min(limit, 50))

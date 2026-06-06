@@ -16,6 +16,11 @@ env/
 .DS_Store
 Thumbs.db
 
+# SQLite database
+*.db
+*.sqlite
+*.sqlite3
+
 # Future generated files
 data.json
 index.html
