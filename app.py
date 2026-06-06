@@ -16,17 +16,57 @@ from orbitai.html_generator import (
     get_display_category,
 )
 from orbitai.text_utils import clean_html, truncate_text
+from main import (
+    run_fetch_only,
+    run_ai_only,
+    run_regenerate_static,
+)
 
 
 app = FastAPI(
     title="OrbitAI",
-    description="OrbitAI V3.2 - Local Web Interaction Enhanced",
-    version="3.2.0",
+    description="OrbitAI V3.5 - Local Web Interaction Enhanced",
+    version="3.5.0",
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
+
+
+def build_admin_response(result: dict):
+    """
+    V3.5：统一包装后台操作结果。
+    """
+    status = get_status_summary()
+
+    return JSONResponse(
+        content=jsonable_encoder({
+            "ok": result.get("ok", False),
+            "message": result.get("message", ""),
+            "result": result,
+            "status": status,
+        })
+    )
+
+
+def build_admin_error_response(error: Exception):
+    """
+    V3.5：统一包装后台操作异常。
+    """
+    status = get_status_summary()
+
+    return JSONResponse(
+        status_code=500,
+        content=jsonable_encoder({
+            "ok": False,
+            "message": "操作失败",
+            "result": None,
+            "status": status,
+            "error": str(error),
+        })
+    )
+
 def load_articles_from_db() -> list[dict]:
     """
     V3.3.3：从 SQLite 读取文章。
@@ -459,6 +499,45 @@ def status_page(request: Request):
         },
     )
 
+@app.post("/admin/fetch")
+def admin_fetch():
+    """
+    V3.5：网页端手动抓取 RSS。
+    只执行 RSS 抓取和 SQLite 写入，不调用 AI。
+    """
+    try:
+        result = run_fetch_only()
+        return build_admin_response(result)
+    except Exception as error:
+        return build_admin_error_response(error)
+
+
+@app.post("/admin/process-ai")
+def admin_process_ai(batch_size: int = 10):
+    """
+    V3.5：网页端手动处理 AI。
+    默认处理 10 条未处理文章。
+    """
+    try:
+        batch_size = max(1, min(batch_size, 50))
+        result = run_ai_only(batch_size=batch_size)
+        return build_admin_response(result)
+    except Exception as error:
+        return build_admin_error_response(error)
+
+
+@app.post("/admin/regenerate")
+def admin_regenerate():
+    """
+    V3.5：网页端手动重新生成静态 HTML。
+    用于兼容 index.html / featured.html / daily.html。
+    """
+    try:
+        result = run_regenerate_static()
+        return build_admin_response(result)
+    except Exception as error:
+        return build_admin_error_response(error)
+
 @app.get("/api/items")
 def api_items():
     """
@@ -523,5 +602,5 @@ def health_check():
     return {
         "status": "ok",
         "service": "OrbitAI",
-        "version": "V3.2",
+        "version": "V3.5",
     }

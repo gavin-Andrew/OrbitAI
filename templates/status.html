@@ -55,6 +55,44 @@
             </div>
         </section>
 
+        <section class="intro admin-controls">
+            <h2>手动操作（V3.5）</h2>
+            <p>
+                在本地网页中手动触发 RSS 抓取、AI 处理和静态 HTML 重新生成。
+            </p>
+
+            <div class="admin-actions">
+                <button
+                    type="button"
+                    class="button"
+                    data-admin-action="/admin/fetch"
+                    data-admin-name="抓取 RSS"
+                >
+                    抓取 RSS
+                </button>
+
+                <button
+                    type="button"
+                    class="button"
+                    data-admin-action="/admin/process-ai"
+                    data-admin-name="处理 AI"
+                >
+                    处理 AI
+                </button>
+
+                <button
+                    type="button"
+                    class="button"
+                    data-admin-action="/admin/regenerate"
+                    data-admin-name="重新生成静态 HTML"
+                >
+                    重新生成静态 HTML
+                </button>
+            </div>
+
+            <pre id="adminResult" class="admin-result">等待操作。</pre>
+        </section>
+
         <nav class="nav">
             <a class="nav-link" href="/">全部信息</a>
             <a class="nav-link" href="/featured">精选信息</a>
@@ -257,8 +295,10 @@
         </section>
 
         <footer class="footer">
-            Generated locally by OrbitAI V3.4
+            Generated locally by OrbitAI V3.5
         </footer>
     </main>
+
+    <script src="/static/app.js?v=3.5.1"></script>
 </body>
 </html>
