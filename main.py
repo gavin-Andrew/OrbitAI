@@ -169,7 +169,7 @@ def run_full_pipeline(batch_size=10):
     ai_result = run_ai_only(batch_size=batch_size)
     regenerate_result = run_regenerate_static()
 
-    print("✅ V3.5 完整流程运行结束。")
+    print("✅ V3.6 完整流程运行结束。")
 
     return {
         "ok": True,

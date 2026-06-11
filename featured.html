@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrbitAI Featured</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            margin-bottom: 32px;
+            padding: 28px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8);
+            color: white;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 40px;
+            letter-spacing: -0.04em;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 14px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin: -12px 0 24px;
+        }
+
+        .nav-link {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: white;
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            border: 1px solid #dbeafe;
+        }
+
+        .nav-link:hover {
+            background: #eff6ff;
+        }
+
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 160px 160px 160px;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .controls input,
+        .controls select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dbe3ef;
+            border-radius: 14px;
+            background: white;
+            color: #111827;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .controls input:focus,
+        .controls select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .result-count {
+            grid-column: 1 / -1;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .card {
+            margin-bottom: 18px;
+            padding: 24px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .source {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .category {
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #4b5563;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .score {
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 22px;
+            line-height: 1.35;
+        }
+
+        h2 a {
+            color: #111827;
+            text-decoration: none;
+        }
+
+        h2 a:hover {
+            color: #2563eb;
+        }
+
+        .summary {
+            margin: 0 0 18px;
+            color: #4b5563;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .summary.empty {
+            color: #9ca3af;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 18px;
+        }
+
+        .tag {
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background: #dbeafe;
+        }
+
+        @media (max-width: 720px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="header">
+            <h1>OrbitAI Featured</h1>
+            <p>精选 AI 信息｜阈值 75，最多 10 条</p>
+            <div class="stats">
+                <span class="stat">精选信息数：10</span>
+                <span class="stat">AI 已处理：0</span>
+                <span class="stat">生成时间：2026-06-11 19:02:37</span>
+            </div>
+        </section>
+
+        
+        <nav class="nav">
+            <a class="nav-link " href="index.html">全部信息</a>
+            <a class="nav-link active" href="featured.html">精选信息</a>
+            <a class="nav-link " href="daily.html">每日简报</a>
+        </nav>
+    
+
+        <section class="controls">
+            <input id="searchInput" type="text" placeholder="搜索标题、来源、摘要、标签..." />
+
+            <select id="sourceFilter">
+                <option value="all">全部来源</option>
+                <option value="Google AI Blog">Google AI Blog</option>
+<option value="Hugging Face Blog">Hugging Face Blog</option>
+<option value="OpenAI News">OpenAI News</option>
+            </select>
+
+            <select id="categoryFilter">
+                <option value="all">全部分类</option>
+                <option value="模型">模型</option>
+<option value="行业/商业">行业/商业</option>
+            </select>
+
+            <select id="tagFilter">
+                <option value="all">全部标签</option>
+                <option value="AI Agent">AI Agent</option>
+<option value="AI基础设施">AI基础设施</option>
+<option value="AI驱动数学">AI驱动数学</option>
+<option value="Artificial Analysis">Artificial Analysis</option>
+<option value="AutoBNN">AutoBNN</option>
+<option value="CT影像">CT影像</option>
+<option value="Google Research">Google Research</option>
+<option value="IBM">IBM</option>
+<option value="ITBench-AA">ITBench-AA</option>
+<option value="NVIDIA Cosmos 3">NVIDIA Cosmos 3</option>
+<option value="Nature">Nature</option>
+<option value="Nemotron-Labs">Nemotron-Labs</option>
+<option value="OpenAI">OpenAI</option>
+<option value="PaLI架构">PaLI架构</option>
+<option value="SEEDS">SEEDS</option>
+<option value="ScreenAI">ScreenAI</option>
+<option value="Stargate">Stargate</option>
+<option value="UI理解">UI理解</option>
+<option value="不确定性量化">不确定性量化</option>
+<option value="企业IT任务">企业IT任务</option>
+<option value="医疗AI">医疗AI</option>
+<option value="单位距离问题">单位距离问题</option>
+<option value="图表理解">图表理解</option>
+<option value="基准测试">基准测试</option>
+<option value="天气预报">天气预报</option>
+<option value="密歇根">密歇根</option>
+<option value="就业创造">就业创造</option>
+<option value="开源工具">开源工具</option>
+<option value="开源数据集">开源数据集</option>
+<option value="开源模型">开源模型</option>
+<option value="扩散模型">扩散模型</option>
+<option value="扩散语言模型">扩散语言模型</option>
+<option value="推理">推理</option>
+<option value="数学猜想">数学猜想</option>
+<option value="数据中心">数据中心</option>
+<option value="数据稀缺地区">数据稀缺地区</option>
+<option value="文本生成">文本生成</option>
+<option value="时间序列预测">时间序列预测</option>
+<option value="机器学习">机器学习</option>
+<option value="概率方法">概率方法</option>
+<option value="气候变化">气候变化</option>
+<option value="洪水预报">洪水预报</option>
+<option value="物理AI">物理AI</option>
+<option value="生成式AI">生成式AI</option>
+<option value="离散几何">离散几何</option>
+<option value="肺癌筛查">肺癌筛查</option>
+<option value="行动">行动</option>
+<option value="视觉语言模型">视觉语言模型</option>
+<option value="计算机辅助诊断">计算机辅助诊断</option>
+<option value="贝叶斯神经网络">贝叶斯神经网络</option>
+<option value="高效推理">高效推理</option>
+            </select>
+
+            <div id="resultCount" class="result-count"></div>
+        </section>
+
+        <section class="feed">
+            
+        <article class="card" data-source="Google AI Blog" data-category="模型" data-tags="洪水预报||机器学习||气候变化||Google Research||数据稀缺地区||Nature" data-search="using ai to expand global access to reliable flood forecasts ai助力全球洪水预报，扩大可靠预警覆盖 google ai blog 模型 模型 google research利用机器学习技术将全球洪水预报的可靠性从0天延长至5天，尤其在数据稀缺的非洲和亚洲地区，预报精度提升至欧洲水平。相关研究成果发表于《自然》期刊。 洪水预报 机器学习 气候变化 google research 数据稀缺地区 nature">
+            <div class="meta">
+                <span class="source">Google AI Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：84.5</span>
+                <span class="time">2024-03-20T09:06:00.000-07:00</span>
+            </div>
+            <h2>
+                <a href="http://blog.research.google/2024/03/using-ai-to-expand-global-access-to.html" target="_blank" rel="noopener noreferrer">AI助力全球洪水预报，扩大可靠预警覆盖</a>
+            </h2>
+            <p class='summary'>Google Research利用机器学习技术将全球洪水预报的可靠性从0天延长至5天，尤其在数据稀缺的非洲和亚洲地区，预报精度提升至欧洲水平。相关研究成果发表于《自然》期刊。</p>
+            <div class='tags'><span class='tag'>洪水预报</span><span class='tag'>机器学习</span><span class='tag'>气候变化</span><span class='tag'>Google Research</span><span class='tag'>数据稀缺地区</span><span class='tag'>Nature</span></div>
+            <a class="button" href="http://blog.research.google/2024/03/using-ai-to-expand-global-access-to.html" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="Hugging Face Blog" data-category="模型" data-tags="NVIDIA Cosmos 3||物理AI||开源模型||推理||行动" data-search="welcome nvidia cosmos 3: the first open omni-model for physical ai reasoning and action nvidia cosmos 3：首个开源物理ai推理与行动全能模型发布 hugging face blog 模型 模型 nvidia推出cosmos 3，这是一个面向物理ai推理与行动的开源全能模型，旨在统一理解与决策能力。 nvidia cosmos 3 物理ai 开源模型 推理 行动">
+            <div class="meta">
+                <span class="source">Hugging Face Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：83.0</span>
+                <span class="time">Mon, 01 Jun 2026 04:44:55 GMT</span>
+            </div>
+            <h2>
+                <a href="https://huggingface.co/blog/nvidia/cosmos-3-for-physical-ai" target="_blank" rel="noopener noreferrer">NVIDIA Cosmos 3：首个开源物理AI推理与行动全能模型发布</a>
+            </h2>
+            <p class='summary'>NVIDIA推出Cosmos 3，这是一个面向物理AI推理与行动的开源全能模型，旨在统一理解与决策能力。</p>
+            <div class='tags'><span class='tag'>NVIDIA Cosmos 3</span><span class='tag'>物理AI</span><span class='tag'>开源模型</span><span class='tag'>推理</span><span class='tag'>行动</span></div>
+            <a class="button" href="https://huggingface.co/blog/nvidia/cosmos-3-for-physical-ai" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="OpenAI News" data-category="模型" data-tags="OpenAI||离散几何||数学猜想||单位距离问题||AI驱动数学" data-search="an openai model has disproved a central conjecture in discrete geometry openai模型推翻离散几何核心猜想 openai news 模型 模型 openai模型成功解决了持续80年的单位距离问题，推翻了一个主要的离散几何猜想，标志着ai在数学证明领域的重要里程碑。 openai 离散几何 数学猜想 单位距离问题 ai驱动数学">
+            <div class="meta">
+                <span class="source">OpenAI News</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：83.0</span>
+                <span class="time">Wed, 20 May 2026 00:00:00 GMT</span>
+            </div>
+            <h2>
+                <a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture" target="_blank" rel="noopener noreferrer">OpenAI模型推翻离散几何核心猜想</a>
+            </h2>
+            <p class='summary'>OpenAI模型成功解决了持续80年的单位距离问题，推翻了一个主要的离散几何猜想，标志着AI在数学证明领域的重要里程碑。</p>
+            <div class='tags'><span class='tag'>OpenAI</span><span class='tag'>离散几何</span><span class='tag'>数学猜想</span><span class='tag'>单位距离问题</span><span class='tag'>AI驱动数学</span></div>
+            <a class="button" href="https://openai.com/index/model-disproves-discrete-geometry-conjecture" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="Hugging Face Blog" data-category="模型" data-tags="扩散语言模型||文本生成||Nemotron-Labs||高效推理" data-search="towards speed-of-light text generation with nemotron-labs diffusion language models nemotron-labs扩散语言模型：迈向光速文本生成 hugging face blog 模型 模型 nemotron-labs提出新型扩散语言模型，旨在实现接近光速的生成速度，可能大幅提升文本生成效率。 扩散语言模型 文本生成 nemotron-labs 高效推理">
+            <div class="meta">
+                <span class="source">Hugging Face Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：82.0</span>
+                <span class="time">Sat, 23 May 2026 00:02:03 GMT</span>
+            </div>
+            <h2>
+                <a href="https://huggingface.co/blog/nvidia/nemotron-labs-diffusion" target="_blank" rel="noopener noreferrer">Nemotron-Labs扩散语言模型：迈向光速文本生成</a>
+            </h2>
+            <p class='summary'>Nemotron-Labs提出新型扩散语言模型，旨在实现接近光速的生成速度，可能大幅提升文本生成效率。</p>
+            <div class='tags'><span class='tag'>扩散语言模型</span><span class='tag'>文本生成</span><span class='tag'>Nemotron-Labs</span><span class='tag'>高效推理</span></div>
+            <a class="button" href="https://huggingface.co/blog/nvidia/nemotron-labs-diffusion" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="OpenAI News" data-category="行业/商业" data-tags="OpenAI||数据中心||AI基础设施||密歇根||Stargate||就业创造" data-search="building the infrastructure for the intelligence age in michigan openai在密歇根州启动1gw数据中心项目，推动ai基础设施建设 openai news 其他 行业/商业 openai作为stargate项目的一部分，在密歇根州破土动工建设一个1gw的数据中心，旨在扩大ai访问、创造就业机会并支持当地社区。 openai 数据中心 ai基础设施 密歇根 stargate 就业创造">
+            <div class="meta">
+                <span class="source">OpenAI News</span>
+                <span class="category">行业/商业</span>
+                <span class="score">综合分：81.0</span>
+                <span class="time">Mon, 01 Jun 2026 12:00:00 GMT</span>
+            </div>
+            <h2>
+                <a href="https://openai.com/index/stargate-michigan-data-center" target="_blank" rel="noopener noreferrer">OpenAI在密歇根州启动1GW数据中心项目，推动AI基础设施建设</a>
+            </h2>
+            <p class='summary'>OpenAI作为Stargate项目的一部分，在密歇根州破土动工建设一个1GW的数据中心，旨在扩大AI访问、创造就业机会并支持当地社区。</p>
+            <div class='tags'><span class='tag'>OpenAI</span><span class='tag'>数据中心</span><span class='tag'>AI基础设施</span><span class='tag'>密歇根</span><span class='tag'>Stargate</span><span class='tag'>就业创造</span></div>
+            <a class="button" href="https://openai.com/index/stargate-michigan-data-center" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="Google AI Blog" data-category="模型" data-tags="肺癌筛查||计算机辅助诊断||机器学习||CT影像||医疗AI" data-search="computer-aided diagnosis for lung cancer screening ai辅助肺癌ct筛查：谷歌机器学习模型性能达专家水平 google ai blog 模型 模型 google research开发了机器学习模型用于肺癌ct筛查检测，性能与专家相当，并在美日两国进行了回顾性多国研究，以评估其在实际环境中的辅助效果。 肺癌筛查 计算机辅助诊断 机器学习 ct影像 医疗ai">
+            <div class="meta">
+                <span class="source">Google AI Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：80.0</span>
+                <span class="time">2024-03-20T13:54:00.000-07:00</span>
+            </div>
+            <h2>
+                <a href="http://blog.research.google/2024/03/computer-aided-diagnosis-for-lung.html" target="_blank" rel="noopener noreferrer">AI辅助肺癌CT筛查：谷歌机器学习模型性能达专家水平</a>
+            </h2>
+            <p class='summary'>Google Research开发了机器学习模型用于肺癌CT筛查检测，性能与专家相当，并在美日两国进行了回顾性多国研究，以评估其在实际环境中的辅助效果。</p>
+            <div class='tags'><span class='tag'>肺癌筛查</span><span class='tag'>计算机辅助诊断</span><span class='tag'>机器学习</span><span class='tag'>CT影像</span><span class='tag'>医疗AI</span></div>
+            <a class="button" href="http://blog.research.google/2024/03/computer-aided-diagnosis-for-lung.html" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="Hugging Face Blog" data-category="模型" data-tags="ITBench-AA||AI Agent||企业IT任务||基准测试||IBM||Artificial Analysis" data-search="itbench-aa: frontier models score below 50% on the first benchmark for agentic enterprise it tasks — by artificial analysis and ibm itbench-aa基准测试：前沿ai agent企业it任务得分不足50% hugging face blog 模型 模型 hugging face博客报道，由artificial analysis和ibm联合推出的首个企业it agent基准测试itbench-aa结果显示，前沿模型在该任务上得分低于50%，表明agent在企业it场景下仍面临显著挑战。 itbench-aa ai agent 企业it任务 基准测试 ibm artificial analysis">
+            <div class="meta">
+                <span class="source">Hugging Face Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：79.5</span>
+                <span class="time">Wed, 27 May 2026 17:20:29 GMT</span>
+            </div>
+            <h2>
+                <a href="https://huggingface.co/blog/ibm-research/itbench-aa" target="_blank" rel="noopener noreferrer">ITBench-AA基准测试：前沿AI Agent企业IT任务得分不足50%</a>
+            </h2>
+            <p class='summary'>Hugging Face博客报道，由Artificial Analysis和IBM联合推出的首个企业IT Agent基准测试ITBench-AA结果显示，前沿模型在该任务上得分低于50%，表明Agent在企业IT场景下仍面临显著挑战。</p>
+            <div class='tags'><span class='tag'>ITBench-AA</span><span class='tag'>AI Agent</span><span class='tag'>企业IT任务</span><span class='tag'>基准测试</span><span class='tag'>IBM</span><span class='tag'>Artificial Analysis</span></div>
+            <a class="button" href="https://huggingface.co/blog/ibm-research/itbench-aa" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="Google AI Blog" data-category="模型" data-tags="ScreenAI||视觉语言模型||UI理解||图表理解||PaLI架构||开源数据集" data-search="screenai: a visual language model for ui and visually-situated language understanding screenai：用于ui和视觉场景语言理解的视觉语言模型 google ai blog 模型 模型 google research 发布 screenai 模型，基于 pali 架构和 pix2struct 的分块策略，参数仅 5b，在 ui 和图表理解任务上达到最优，并开源了三个用于评估布局理解和问答能力的新数据集。 screenai 视觉语言模型 ui理解 图表理解 pali架构 开源数据集">
+            <div class="meta">
+                <span class="source">Google AI Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：79.5</span>
+                <span class="time">2024-03-19T13:15:00.000-07:00</span>
+            </div>
+            <h2>
+                <a href="http://blog.research.google/2024/03/screenai-visual-language-model-for-ui.html" target="_blank" rel="noopener noreferrer">ScreenAI：用于UI和视觉场景语言理解的视觉语言模型</a>
+            </h2>
+            <p class='summary'>Google Research 发布 ScreenAI 模型，基于 PaLI 架构和 pix2struct 的分块策略，参数仅 5B，在 UI 和图表理解任务上达到最优，并开源了三个用于评估布局理解和问答能力的新数据集。</p>
+            <div class='tags'><span class='tag'>ScreenAI</span><span class='tag'>视觉语言模型</span><span class='tag'>UI理解</span><span class='tag'>图表理解</span><span class='tag'>PaLI架构</span><span class='tag'>开源数据集</span></div>
+            <a class="button" href="http://blog.research.google/2024/03/screenai-visual-language-model-for-ui.html" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="Google AI Blog" data-category="模型" data-tags="SEEDS||扩散模型||天气预报||不确定性量化||生成式AI||Google Research" data-search="generative ai to quantify uncertainty in weather forecasting 生成式ai量化天气预报不确定性 google ai blog 模型 模型 google推出seeds模型，这是一种基于扩散模型的生成式ai，能以极低成本高效生成天气预报集合，用于量化不确定性。该技术是概率扩散模型在气象预报领域的首批应用之一。 seeds 扩散模型 天气预报 不确定性量化 生成式ai google research">
+            <div class="meta">
+                <span class="source">Google AI Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：79.5</span>
+                <span class="time">2024-03-29T11:03:00.000-07:00</span>
+            </div>
+            <h2>
+                <a href="http://blog.research.google/2024/03/generative-ai-to-quantify-uncertainty.html" target="_blank" rel="noopener noreferrer">生成式AI量化天气预报不确定性</a>
+            </h2>
+            <p class='summary'>Google推出SEEDS模型，这是一种基于扩散模型的生成式AI，能以极低成本高效生成天气预报集合，用于量化不确定性。该技术是概率扩散模型在气象预报领域的首批应用之一。</p>
+            <div class='tags'><span class='tag'>SEEDS</span><span class='tag'>扩散模型</span><span class='tag'>天气预报</span><span class='tag'>不确定性量化</span><span class='tag'>生成式AI</span><span class='tag'>Google Research</span></div>
+            <a class="button" href="http://blog.research.google/2024/03/generative-ai-to-quantify-uncertainty.html" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+
+        <article class="card" data-source="Google AI Blog" data-category="模型" data-tags="AutoBNN||时间序列预测||贝叶斯神经网络||概率方法||开源工具||Google Research" data-search="autobnn: probabilistic time series forecasting with compositional bayesian neural networks autobnn：基于组合贝叶斯神经网络的概率时间序列预测 google ai blog 模型 模型 google research 开源了 autobnn 包，利用组合贝叶斯神经网络自动发现可解释的时间序列预测模型，并提供高质量的不确定性估计。 autobnn 时间序列预测 贝叶斯神经网络 概率方法 开源工具 google research">
+            <div class="meta">
+                <span class="source">Google AI Blog</span>
+                <span class="category">模型</span>
+                <span class="score">综合分：79.5</span>
+                <span class="time">2024-03-28T13:53:00.000-07:00</span>
+            </div>
+            <h2>
+                <a href="http://blog.research.google/2024/03/autobnn-probabilistic-time-series.html" target="_blank" rel="noopener noreferrer">AutoBNN：基于组合贝叶斯神经网络的概率时间序列预测</a>
+            </h2>
+            <p class='summary'>Google Research 开源了 AutoBNN 包，利用组合贝叶斯神经网络自动发现可解释的时间序列预测模型，并提供高质量的不确定性估计。</p>
+            <div class='tags'><span class='tag'>AutoBNN</span><span class='tag'>时间序列预测</span><span class='tag'>贝叶斯神经网络</span><span class='tag'>概率方法</span><span class='tag'>开源工具</span><span class='tag'>Google Research</span></div>
+            <a class="button" href="http://blog.research.google/2024/03/autobnn-probabilistic-time-series.html" target="_blank" rel="noopener noreferrer">打开原文</a>
+        </article>
+        
+        </section>
+
+        <footer class="footer">
+            Generated locally by OrbitAI V4.0
+        </footer>
+    </main>
+<script>
+    const searchInput = document.getElementById("searchInput");
+    const sourceFilter = document.getElementById("sourceFilter");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const tagFilter = document.getElementById("tagFilter");
+    const resultCount = document.getElementById("resultCount");
+    const cards = Array.from(document.querySelectorAll(".card"));
+
+    function updateCards() {
+        const searchValue = searchInput.value.trim().toLowerCase();
+        const selectedSource = sourceFilter.value;
+        const selectedCategory = categoryFilter.value;
+        const selectedTag = tagFilter.value;
+
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+            const cardSource = card.dataset.source;
+            const cardCategory = card.dataset.category;
+            const cardTags = card.dataset.tags || "";
+            const cardSearch = card.dataset.search;
+
+            const matchesSearch = !searchValue || cardSearch.includes(searchValue);
+            const matchesSource = selectedSource === "all" || cardSource === selectedSource;
+            const matchesCategory = selectedCategory === "all" || cardCategory === selectedCategory;
+            const matchesTag = selectedTag === "all" || cardTags.split("||").includes(selectedTag);
+
+            const shouldShow = matchesSearch && matchesSource && matchesCategory && matchesTag;
+
+            card.style.display = shouldShow ? "block" : "none";
+
+            if (shouldShow) {
+                visibleCount += 1;
+            }
+        });
+
+        resultCount.textContent = `当前显示：${visibleCount} / ${cards.length} 条`;
+    }
+
+    searchInput.addEventListener("input", updateCards);
+    sourceFilter.addEventListener("change", updateCards);
+    categoryFilter.addEventListener("change", updateCards);
+    tagFilter.addEventListener("change", updateCards);
+
+    updateCards();
+</script>
+</body>
+</html>
