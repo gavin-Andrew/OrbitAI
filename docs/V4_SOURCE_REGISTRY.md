@@ -1,0 +1,140 @@
+# OrbitAI V4 信息源注册表
+
+状态：用户已审核确认，可作为 OrbitAI V4 后续开发依据。
+
+这份文档是 V4 信息源注册表的第一版正式范围。它用于确定 OrbitAI V4 应长期关注的机构、平台、公司、人物和获取入口。后续实现 `sources.v4.json`、source registry 数据结构、RSS 映射、手动录入和观点卡片时，应优先参考本文件。
+
+## 设计原则
+
+- 信息源注册表是核心，RSS、官网、YouTube、播客、访谈、财报电话会、论文、GitHub release、手动录入等都只是获取入口。
+- 先关注少数高价值来源，不追求覆盖所有 AI 新闻。
+- 每个来源都应说明“为什么值得长期关注”，而不只是保存一个 URL。
+- 人物和机构要分开建档，但允许互相关联。例如“黄仁勋”是人物源，“NVIDIA”是机构源。
+- 能自动抓取的来源优先挂 RSS 或网页入口；不能稳定自动抓取的高价值来源先支持手动录入。
+- 来源分级采用“核心源 / 观察源 / 候选源”，后续可以升降级。
+
+## 字段口径
+
+后续如果把本文件转成 JSON 或 SQLite 表，建议每个信息源至少包含：
+
+- 名称
+- 别名
+- 类型：机构、公司、人物、研究实验室、媒体、论文源、代码仓库等
+- 分级：核心源、观察源、候选源
+- 相关产业方向
+- 主要材料类型：事实、观点，或两者都有
+- 关注理由
+- 获取入口：RSS、官网、Newsletter、YouTube、播客、手动录入、GitHub、论文订阅等
+- 当前状态：已有入口、待补入口、暂不自动化
+- 备注
+
+## V4 初始产业方向
+
+- AI Agent 与软件自动化
+- 大模型基础设施、算力与芯片
+- 人形机器人与具身智能
+- AI 与硬件、终端和生产力工具
+
+## 核心机构、公司与平台
+
+第一版先收纳 10 个核心机构、公司和平台。其他来源先进入观察源，避免第一阶段范围过大。
+
+| 名称 | 别名 | 类型 | 相关产业方向 | 材料类型 | 获取入口 | 关注理由 |
+|---|---|---|---|---|---|---|
+| OpenAI |  | 机构 | AI Agent 与软件自动化；大模型基础设施；生产力工具 | 事实 + 观点 | 已有 RSS：`https://openai.com/news/rss.xml`；官网；发布会；开发者文档；手动录入访谈 | 前沿模型、Agent、Codex、ChatGPT、开发者平台和 AI 产品化的重要源头。 |
+| Anthropic |  | 机构 | AI Agent 与软件自动化；大模型基础设施；企业 AI | 事实 + 观点 | 官网 News；研究页；政策页；Claude/Claude Code 相关页面；手动录入访谈 | Claude、Claude Code、AI safety、企业 Agent 和模型治理的重要观察对象。 |
+| Google DeepMind / Google AI | Google AI | 机构 | 大模型基础设施；Agent；具身智能；科学 AI；生产力工具 | 事实 + 观点 | 已有 Google AI Blog RSS；DeepMind 官网 News；Google Research；YouTube/Podcast 后续补充 | Gemini、Gemma、DeepMind research、Gemini Robotics、world models 和 AI science 的核心来源。 |
+| Meta AI |  | 机构 | 大模型基础设施；开源模型；AI Agent；设备生态 | 事实 + 观点 | Meta AI Blog；研究页；GitHub；手动录入访谈 | Llama、开源模型、AI 眼镜、世界模型和模型架构路线的重要来源。 |
+| SpaceXAI | xAI；xAI Corp. | 公司 / AI 平台 | 大模型基础设施；Agent；算力基础设施 | 事实 + 观点 | 官网 News；Grok 产品页；API/开发者入口；马斯克相关手动录入 | Grok、Colossus、模型训练基础设施和马斯克 AI 产业判断的重要来源。当前项目内统一使用 `SpaceXAI` 作为主名称，保留 `xAI` 作为别名以便检索历史材料和官网入口。 |
+| NVIDIA |  | 公司 | 大模型基础设施、算力与芯片；机器人；Agent 基础设施 | 事实 + 观点 | NVIDIA Blog；官网 AI/Robotics/Developer 页面；GTC 演讲；财报电话会 | GPU、数据中心、推理成本、机器人基础设施和 AI 产业供给约束的关键来源。 |
+| Microsoft / GitHub | Microsoft AI；GitHub | 公司 / 平台 | AI Agent 与软件自动化；开发者工具；企业 AI；生产力工具 | 事实 + 观点 | Microsoft AI Blog；GitHub Blog；GitHub Changelog；Build/GitHub Universe；手动录入 | Copilot、GitHub、企业 Agent、开发者工具链和软件自动化落地的核心来源。 |
+| Apple |  | 公司 | AI 与硬件、终端和生产力工具 | 事实 + 观点 | Apple Newsroom；WWDC；开发者文档；手动录入发布会 | 端侧 AI、设备内模型、隐私计算、AI 终端和生产力工具形态的重要来源。 |
+| Hugging Face |  | 平台 / 社区 | 开源模型；AI Agent；机器人；模型基础设施 | 事实 + 观点 | 已有 RSS：`https://huggingface.co/blog/feed.xml`；模型/数据集页面；GitHub | 开源模型、数据集、推理、社区实验和 LeRobot 等方向的高频信号源。 |
+| Tesla |  | 公司 | 人形机器人与具身智能；自动驾驶；AI 硬件；制造 | 事实 + 观点 | 官网；投资者关系；财报电话会；AI Day/发布会；手动录入 | Optimus、自动驾驶、制造体系、机器人商业化和马斯克硬科技判断的重要事实源。 |
+
+## 核心人物
+
+第一版先收纳 4 个核心人物。其他人物先进入观察源。
+
+人物源主要用于追踪高质量观点。第一阶段不做大规模社交媒体自动抓取，优先通过访谈、演讲、长文、发布会、财报电话会和手动录入沉淀观点卡片。
+
+| 名称 | 类型 | 关联机构 | 相关产业方向 | 获取入口 | 关注理由 |
+|---|---|---|---|---|---|
+| 马斯克 | 人物 | Tesla；SpaceXAI；SpaceX | 人形机器人；具身智能；AI 基础设施；自动驾驶 | X 暂不自动化；访谈；发布会；财报电话会；手动录入 | 对机器人、自动驾驶、AI 基础设施和硬件制造有长期判断，观点影响产业预期。 |
+| Sam Altman | 人物 | OpenAI | Agent；前沿模型；AI 产品化；基础设施 | 访谈；博客/长文；发布会；手动录入 | OpenAI 战略、模型能力、Agent 和 AI 普及路径的重要观点源。 |
+| Dario Amodei | 人物 | Anthropic | 前沿模型；AI safety；企业 AI；Agent | 访谈；Anthropic 文章；政策材料；手动录入 | Anthropic 路线、模型安全、Scaling 和企业 AI 判断的重要来源。 |
+| 黄仁勋 | 人物 | NVIDIA | 算力；芯片；数据中心；机器人；AI 基础设施 | GTC 演讲；访谈；财报电话会；手动录入 | AI 算力供给、GPU 生态、数据中心和机器人基础设施的关键观点源。 |
+
+## 观察源
+
+这些来源先进入观察层。它们有价值，但第一版不投入和核心源相同的采集成本。后续如果某个来源持续产出高价值材料，可以升级为核心源。
+
+| 名称 | 类型 | 相关产业方向 | 材料类型 | 获取入口 | 观察理由 |
+|---|---|---|---|---|---|
+| Figure AI | 公司 | 人形机器人与具身智能 | 事实 + 观点 | 官网 News；演示视频；手动录入访谈 | 人形机器人商业化、具身智能和大模型控制机器人落地的重要创业公司。 |
+| Boston Dynamics | 公司 | 人形机器人与具身智能；工业机器人 | 事实 + 观点 | 官网 Blog；YouTube；案例页 | Atlas、Spot、工业机器人落地和机器人运动控制的重要观察对象。 |
+| Unitree | 公司 | 人形机器人与具身智能；机器人硬件 | 事实 + 观点 | 官网 News；产品页；演示视频；手动录入 | 中国机器人公司中低成本硬件、四足机器人、人形机器人和量产信号的重要来源。 |
+| Demis Hassabis | 人物 | 大模型；科学 AI；Agent；具身智能 | 观点 | 访谈；DeepMind 文章；发布会；手动录入 | DeepMind 研究方向、Gemini、科学 AI 和具身智能的重要观点源。 |
+| Yann LeCun | 人物 | 开源模型；世界模型；模型架构；AI 研究路线 | 观点 | 访谈；公开演讲；文章；手动录入 | 模型架构争论、世界模型和开源路线的重要异质观点源。 |
+| Andrej Karpathy | 人物 | AI 工程；软件自动化；教育；Agent | 观点 | YouTube；课程；文章；手动录入 | 从工程和教育角度解释 Agent、软件自动化和模型使用范式，适合沉淀方法论。 |
+| Jim Keller | 人物 | 芯片；系统架构；算力约束 | 观点 | 访谈；演讲；手动录入 | 对芯片、系统架构和算力瓶颈有长期判断，可补足模型公司视角。 |
+| 李飞飞 | 人物 | 具身智能；空间智能；计算机视觉；人机协作 | 观点 | 访谈；演讲；论文/机构发布；手动录入 | 对空间智能、具身智能和人本 AI 有长期研究视角。 |
+| Alexandr Wang | 人物 | 数据；评测；政府/企业 AI 采用 | 观点 | 访谈；公司发布；政策讨论；手动录入 | 数据、评测、政府和企业 AI 落地的重要观点源。 |
+| AWS / Amazon AI | 公司 | 大模型基础设施；企业 AI；云平台 | 事实 + 观点 | AWS Blog；re:Invent；产品页；手动录入 | Bedrock、Trainium、云基础设施和企业 AI 落地重要。 |
+| Google Cloud AI | 公司 / 平台 | 大模型基础设施；企业 AI；开发者平台 | 事实 + 观点 | Google Cloud Blog；产品页；发布会 | Gemini 企业落地、TPU、AI infra 和开发者平台信号。 |
+| CoreWeave | 公司 | 算力基础设施；GPU 云；数据中心 | 事实 | 官网；新闻；财务/融资材料 | AI GPU 云、算力供给、数据中心扩张和基础设施资本开支信号。 |
+| TSMC | 公司 | 芯片制造；供应链；算力约束 | 事实 + 观点 | 官网；财报；投资者关系；新闻稿 | AI 芯片制造能力、先进制程、CoWoS/封装和供给约束关键。 |
+| ASML | 公司 | 半导体设备；供应链 | 事实 + 观点 | 官网；财报；投资者关系 | EUV/High-NA 等设备决定先进制程上限。 |
+| AMD | 公司 | GPU；CPU；AI 加速器 | 事实 + 观点 | 官网；财报；发布会 | NVIDIA 之外的重要 AI 芯片竞争者。 |
+| Broadcom | 公司 | AI ASIC；网络；数据中心基础设施 | 事实 + 观点 | 官网；财报；投资者关系 | 定制芯片、网络和数据中心基础设施的重要来源。 |
+| Arm | 公司 | 芯片架构；端侧 AI；移动生态 | 事实 + 观点 | 官网；财报；技术博客 | 端侧 AI、移动设备和低功耗计算的重要架构源。 |
+| Intel | 公司 | 芯片制造；AI 加速器；PC AI | 事实 + 观点 | 官网；财报；技术发布 | 半导体制造、PC AI 和 AI 加速器路线的观察源。 |
+| Agility Robotics | 公司 | 人形/双足机器人；仓储物流 | 事实 + 观点 | 官网；演示视频；新闻 | 商业化机器人落地和仓储场景值得观察。 |
+
+## 候选源
+
+这些来源暂时先记录，不进入第一阶段重点开发。
+
+| 名称 | 类型 | 方向 | 暂缓原因 |
+|---|---|---|---|
+| X / LinkedIn 平台级抓取 | 平台 | 观点捕捉 | 信号价值高，但噪声、权限、成本和合规复杂度较高，暂不自动化。 |
+| YouTube 全量自动抓取 | 平台 | 访谈/演讲/产品演示 | 价值高，但需要字幕、切分、去噪和来源归属流程，先支持手动链接更稳。 |
+| 财报电话会全量抓取 | 文本源 | 公司事实和管理层观点 | 价值高，但数据源、授权和解析流程需要后续单独设计。 |
+| arXiv 全量订阅 | 论文源 | 研究事实 | 信息量过大，第一版只应跟踪少量主题或由用户手动加入高价值论文。 |
+
+## 与现有 `sources.json` 的关系
+
+当前 `sources.json` 已有：
+
+```json
+[
+  {
+    "name": "OpenAI News",
+    "url": "https://openai.com/news/rss.xml",
+    "enabled": true
+  },
+  {
+    "name": "Hugging Face Blog",
+    "url": "https://huggingface.co/blog/feed.xml",
+    "enabled": true
+  },
+  {
+    "name": "Google AI Blog",
+    "url": "https://feeds.feedburner.com/blogspot/gJZg",
+    "enabled": true
+  }
+]
+```
+
+V4 不应简单新建一套和 `sources.json` 重复的 RSS 清单。更合理的方向是：
+
+1. 短期：保留 `sources.json` 作为 RSS 抓取入口。
+2. V4 第一阶段：新增 source registry 正式表，把现有 RSS 源映射到对应的机构源。
+3. 后续：让 RSS、手动录入、YouTube、播客、GitHub、论文等入口都挂在 source registry 下。
+
+## 下一步建议
+
+1. 将本文件整理为 `sources.v4.json`，作为机器可读的 V4 source registry MVP。
+2. 为现有 `sources.json` 增加到 source registry 的映射。
+3. 新增手动录入入口的最小字段。
+4. 再设计 `opinions` 表和观点卡片提取流程。

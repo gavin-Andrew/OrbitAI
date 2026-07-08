@@ -565,8 +565,8 @@ def admin_process_ai(batch_size: int = 10):
 @app.post("/admin/regenerate")
 def admin_regenerate():
     """
-    V3.5：网页端手动重新生成静态 HTML。
-    用于兼容 index.html / featured.html / daily.html。
+    V3.5：网页端手动重新生成静态 HTML 快照。
+    用于兼容 snapshots/index.html、snapshots/featured.html、snapshots/daily.html。
     """
     try:
         result = run_regenerate_static()

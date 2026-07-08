@@ -121,7 +121,7 @@ def run_ai_only(batch_size=10):
 
 def run_regenerate_static():
     """
-    重新生成静态 HTML 文件。
+    重新生成静态 HTML 快照文件。
 
     这个函数后续可供：
     - main.py 命令行流程调用
@@ -129,7 +129,8 @@ def run_regenerate_static():
 
     注意：
     当前 V3 已经主要使用 FastAPI + Jinja2 动态页面，
-    但 index.html / featured.html / daily.html 仍然作为旧静态页面兼容保留。
+    但 snapshots/index.html、snapshots/featured.html、snapshots/daily.html
+    仍然作为旧静态页面兼容保留。
     """
     updated_items = get_all_articles()
 
@@ -142,12 +143,12 @@ def run_regenerate_static():
 
     return {
         "ok": True,
-        "message": "静态 HTML 已重新生成",
+        "message": "静态 HTML 快照已重新生成",
         "total_count": len(updated_items),
         "generated_files": [
-            "index.html",
-            "featured.html",
-            "daily.html",
+            "snapshots/index.html",
+            "snapshots/featured.html",
+            "snapshots/daily.html",
         ],
         "error": None,
     }

@@ -78,8 +78,8 @@ def generate_html(
     """
     根据 data.json 里的数据生成本地 HTML 页面。
     支持生成：
-    - index.html：全部信息页
-    - featured.html：精选信息页
+    - snapshots/index.html：全部信息页
+    - snapshots/featured.html：精选信息页
     """
     if sort_by_score:
         sorted_items = sort_items_by_score(items)
@@ -529,6 +529,8 @@ def generate_html(
 </html>
 """
 
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+
     with output_file.open("w", encoding="utf-8") as file:
         file.write(html_content)
 
@@ -537,7 +539,7 @@ def generate_html(
 
 def generate_featured_html(items):
     """
-    生成 V2.4 精选页 featured.html。
+    生成 V2.4 精选页 snapshots/featured.html。
     精选页复用主页样式，但只展示综合分较高的信息。
     """
     featured_items = get_featured_items(items)
@@ -583,9 +585,9 @@ def get_today_items(items):
 
 def generate_daily_html(items):
     """
-    生成 V2.6 每日简报页 daily.html。
+    生成 V2.6 每日简报页 snapshots/daily.html。
 
-    daily.html 的定位：
+    snapshots/daily.html 的定位：
     - 只展示今天新增的信息；
     - 按 final_score 从高到低排序；
     - 再按 AI 分类分组；
@@ -931,6 +933,8 @@ def generate_daily_html(items):
 </body>
 </html>
 """
+
+    DAILY_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     with DAILY_FILE.open("w", encoding="utf-8") as file:
         file.write(html_content)

@@ -1,0 +1,700 @@
+{
+  "schema_version": "0.1",
+  "status": "adopted_schema_v0.1",
+  "status_note": "来源范围和 JSON 第一版字段结构已由用户确认采用；后续可随着网页呈现、观点卡片和数据库设计继续演进。",
+  "source_registry_doc": "docs/V4_SOURCE_REGISTRY.md",
+  "principles": [
+    "信息源注册表是核心，RSS、官网、YouTube、播客、手动录入等只是获取入口。",
+    "第一版先少量核心源，避免覆盖所有 AI 新闻。",
+    "人物和机构分开建档，但通过 related_source_ids 建立关联。",
+    "能自动抓取的入口先启用；高价值但不规整的材料先走手动录入。"
+  ],
+  "industries": [
+    {
+      "id": "ai_agents_software_automation",
+      "name": "AI Agent 与软件自动化"
+    },
+    {
+      "id": "model_infra_compute_chips",
+      "name": "大模型基础设施、算力与芯片"
+    },
+    {
+      "id": "humanoid_embodied_intelligence",
+      "name": "人形机器人与具身智能"
+    },
+    {
+      "id": "ai_hardware_devices_productivity",
+      "name": "AI 与硬件、终端和生产力工具"
+    }
+  ],
+  "sources": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "aliases": [],
+      "type": "institution",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "前沿模型、Agent、Codex、ChatGPT、开发者平台和 AI 产品化的重要源头。",
+      "collection_entries": [
+        {
+          "id": "openai_news_rss",
+          "type": "rss",
+          "label": "OpenAI News RSS",
+          "url": "https://openai.com/news/rss.xml",
+          "status": "enabled",
+          "existing_in_sources_json": true,
+          "notes": "当前 RSS 抓取入口之一。"
+        },
+        {
+          "id": "openai_manual_interviews",
+          "type": "manual",
+          "label": "访谈、发布会、长文",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于沉淀 Sam Altman、OpenAI 研究员或产品负责人的高价值观点。"
+        }
+      ],
+      "related_source_ids": [
+        "sam_altman"
+      ],
+      "ui": {
+        "card_title": "OpenAI",
+        "subtitle": "前沿模型、Agent 与开发者平台",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "已有 RSS"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "aliases": [],
+      "type": "institution",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "Claude、Claude Code、AI safety、企业 Agent 和模型治理的重要观察对象。",
+      "collection_entries": [
+        {
+          "id": "anthropic_news_web",
+          "type": "website",
+          "label": "Anthropic News",
+          "url": "https://www.anthropic.com/news",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "第一阶段可作为网页入口；RSS 可后续确认。"
+        },
+        {
+          "id": "anthropic_manual_interviews",
+          "type": "manual",
+          "label": "访谈、政策材料、长文",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于沉淀 Dario Amodei 和 Anthropic 相关观点。"
+        }
+      ],
+      "related_source_ids": [
+        "dario_amodei"
+      ],
+      "ui": {
+        "card_title": "Anthropic",
+        "subtitle": "Claude、AI safety 与企业 Agent",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "待补入口"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "google_deepmind_google_ai",
+      "name": "Google DeepMind / Google AI",
+      "aliases": [
+        "Google AI",
+        "Google DeepMind"
+      ],
+      "type": "institution",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips",
+        "humanoid_embodied_intelligence",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "Gemini、Gemma、DeepMind research、Gemini Robotics、world models 和 AI science 的核心来源。",
+      "collection_entries": [
+        {
+          "id": "google_ai_blog_rss",
+          "type": "rss",
+          "label": "Google AI Blog RSS",
+          "url": "https://feeds.feedburner.com/blogspot/gJZg",
+          "status": "enabled",
+          "existing_in_sources_json": true,
+          "notes": "当前 RSS 抓取入口之一。"
+        },
+        {
+          "id": "deepmind_news_web",
+          "type": "website",
+          "label": "Google DeepMind News",
+          "url": "https://deepmind.google/discover/blog/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于补充 DeepMind 官方研究和产品动态。"
+        }
+      ],
+      "related_source_ids": [
+        "demis_hassabis"
+      ],
+      "ui": {
+        "card_title": "Google DeepMind / Google AI",
+        "subtitle": "Gemini、科学 AI 与具身智能",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "已有 RSS"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "meta_ai",
+      "name": "Meta AI",
+      "aliases": [],
+      "type": "institution",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "Llama、开源模型、AI 眼镜、世界模型和模型架构路线的重要来源。",
+      "collection_entries": [
+        {
+          "id": "meta_ai_blog_web",
+          "type": "website",
+          "label": "Meta AI Blog",
+          "url": "https://ai.meta.com/blog/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "可先作为网页入口，后续确认是否有稳定 RSS。"
+        }
+      ],
+      "related_source_ids": [
+        "yann_lecun"
+      ],
+      "ui": {
+        "card_title": "Meta AI",
+        "subtitle": "Llama、开源模型与 AI 设备生态",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "待补入口"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "spacexai",
+      "name": "SpaceXAI",
+      "aliases": [
+        "xAI",
+        "xAI Corp."
+      ],
+      "type": "company_ai_platform",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "Grok、Colossus、模型训练基础设施和马斯克 AI 产业判断的重要来源。",
+      "collection_entries": [
+        {
+          "id": "spacexai_news_web",
+          "type": "website",
+          "label": "SpaceXAI / xAI News",
+          "url": "https://x.ai/news",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "项目内使用 SpaceXAI 作为主名称，保留 xAI 作为别名。"
+        },
+        {
+          "id": "spacexai_manual_musk",
+          "type": "manual",
+          "label": "马斯克相关访谈和发布会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "优先手动沉淀高价值观点，不做 X 平台级自动抓取。"
+        }
+      ],
+      "related_source_ids": [
+        "elon_musk"
+      ],
+      "ui": {
+        "card_title": "SpaceXAI",
+        "subtitle": "Grok、算力基础设施与马斯克 AI 路线",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "待补入口"
+        ]
+      },
+      "notes": "主名称采用用户确认的 SpaceXAI；xAI 作为别名保留。"
+    },
+    {
+      "id": "nvidia",
+      "name": "NVIDIA",
+      "aliases": [],
+      "type": "company",
+      "tier": "core",
+      "industries": [
+        "model_infra_compute_chips",
+        "humanoid_embodied_intelligence",
+        "ai_agents_software_automation"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "GPU、数据中心、推理成本、机器人基础设施和 AI 产业供给约束的关键来源。",
+      "collection_entries": [
+        {
+          "id": "nvidia_blog_web",
+          "type": "website",
+          "label": "NVIDIA Blog",
+          "url": "https://blogs.nvidia.com/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "可后续确认 RSS 或栏目级入口。"
+        },
+        {
+          "id": "nvidia_manual_gtc",
+          "type": "manual",
+          "label": "GTC 演讲和财报电话会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于沉淀黄仁勋和 NVIDIA 管理层观点。"
+        }
+      ],
+      "related_source_ids": [
+        "jensen_huang"
+      ],
+      "ui": {
+        "card_title": "NVIDIA",
+        "subtitle": "算力、芯片与机器人基础设施",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "待补入口"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "microsoft_github",
+      "name": "Microsoft / GitHub",
+      "aliases": [
+        "Microsoft AI",
+        "GitHub"
+      ],
+      "type": "company_platform",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "Copilot、GitHub、企业 Agent、开发者工具链和软件自动化落地的核心来源。",
+      "collection_entries": [
+        {
+          "id": "github_blog_web",
+          "type": "website",
+          "label": "GitHub Blog",
+          "url": "https://github.blog/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "关注 Copilot、开发者工具和软件自动化。"
+        },
+        {
+          "id": "github_changelog_web",
+          "type": "website",
+          "label": "GitHub Changelog",
+          "url": "https://github.blog/changelog/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "适合捕捉产品能力变化。"
+        }
+      ],
+      "related_source_ids": [],
+      "ui": {
+        "card_title": "Microsoft / GitHub",
+        "subtitle": "Copilot、开发者工具与企业 Agent",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "待补入口"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "apple",
+      "name": "Apple",
+      "aliases": [],
+      "type": "company",
+      "tier": "core",
+      "industries": [
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "端侧 AI、设备内模型、隐私计算、AI 终端和生产力工具形态的重要来源。",
+      "collection_entries": [
+        {
+          "id": "apple_newsroom_web",
+          "type": "website",
+          "label": "Apple Newsroom",
+          "url": "https://www.apple.com/newsroom/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "关注设备、系统和开发者生态中的 AI 变化。"
+        },
+        {
+          "id": "apple_manual_wwdc",
+          "type": "manual",
+          "label": "WWDC 与发布会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "发布会和开发者文档中的 AI 变化适合手动录入。"
+        }
+      ],
+      "related_source_ids": [],
+      "ui": {
+        "card_title": "Apple",
+        "subtitle": "端侧 AI、设备与生产力工具",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "待补入口"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "hugging_face",
+      "name": "Hugging Face",
+      "aliases": [],
+      "type": "platform_community",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips",
+        "humanoid_embodied_intelligence"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "开源模型、数据集、推理、社区实验和 LeRobot 等方向的高频信号源。",
+      "collection_entries": [
+        {
+          "id": "hugging_face_blog_rss",
+          "type": "rss",
+          "label": "Hugging Face Blog RSS",
+          "url": "https://huggingface.co/blog/feed.xml",
+          "status": "enabled",
+          "existing_in_sources_json": true,
+          "notes": "当前 RSS 抓取入口之一。"
+        }
+      ],
+      "related_source_ids": [],
+      "ui": {
+        "card_title": "Hugging Face",
+        "subtitle": "开源模型、数据集与社区实验",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "已有 RSS"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "tesla",
+      "name": "Tesla",
+      "aliases": [],
+      "type": "company",
+      "tier": "core",
+      "industries": [
+        "humanoid_embodied_intelligence",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "Optimus、自动驾驶、制造体系、机器人商业化和马斯克硬科技判断的重要事实源。",
+      "collection_entries": [
+        {
+          "id": "tesla_investor_relations_web",
+          "type": "website",
+          "label": "Tesla Investor Relations",
+          "url": "https://ir.tesla.com/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "财报、电话会和交付数据适合用于事实与管理层观点。"
+        },
+        {
+          "id": "tesla_manual_ai_day",
+          "type": "manual",
+          "label": "AI Day、发布会和访谈",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "Optimus、自动驾驶和制造相关观点优先手动录入。"
+        }
+      ],
+      "related_source_ids": [
+        "elon_musk"
+      ],
+      "ui": {
+        "card_title": "Tesla",
+        "subtitle": "Optimus、自动驾驶与机器人商业化",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "待补入口"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "elon_musk",
+      "name": "马斯克",
+      "aliases": [
+        "Elon Musk"
+      ],
+      "type": "person",
+      "tier": "core",
+      "industries": [
+        "humanoid_embodied_intelligence",
+        "model_infra_compute_chips",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "opinion"
+      ],
+      "tracking_reason": "对机器人、自动驾驶、AI 基础设施和硬件制造有长期判断，观点影响产业预期。",
+      "collection_entries": [
+        {
+          "id": "elon_musk_manual",
+          "type": "manual",
+          "label": "访谈、发布会、财报电话会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "暂不做 X 平台级自动抓取。"
+        }
+      ],
+      "related_source_ids": [
+        "tesla",
+        "spacexai"
+      ],
+      "ui": {
+        "card_title": "马斯克",
+        "subtitle": "机器人、自动驾驶与 AI 基础设施判断",
+        "primary_badges": [
+          "核心人物",
+          "观点",
+          "手动录入"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "sam_altman",
+      "name": "Sam Altman",
+      "aliases": [
+        "山姆·奥特曼"
+      ],
+      "type": "person",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "opinion"
+      ],
+      "tracking_reason": "OpenAI 战略、模型能力、Agent 和 AI 普及路径的重要观点源。",
+      "collection_entries": [
+        {
+          "id": "sam_altman_manual",
+          "type": "manual",
+          "label": "访谈、博客、长文、发布会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于沉淀可比较、可验证的观点判断。"
+        }
+      ],
+      "related_source_ids": [
+        "openai"
+      ],
+      "ui": {
+        "card_title": "Sam Altman",
+        "subtitle": "OpenAI 战略、Agent 与 AI 普及",
+        "primary_badges": [
+          "核心人物",
+          "观点",
+          "手动录入"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "dario_amodei",
+      "name": "Dario Amodei",
+      "aliases": [
+        "达里奥·阿莫迪"
+      ],
+      "type": "person",
+      "tier": "core",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips"
+      ],
+      "material_types": [
+        "opinion"
+      ],
+      "tracking_reason": "Anthropic 路线、模型安全、Scaling 和企业 AI 判断的重要来源。",
+      "collection_entries": [
+        {
+          "id": "dario_amodei_manual",
+          "type": "manual",
+          "label": "访谈、Anthropic 文章、政策材料",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于沉淀 Anthropic 相关长期判断。"
+        }
+      ],
+      "related_source_ids": [
+        "anthropic"
+      ],
+      "ui": {
+        "card_title": "Dario Amodei",
+        "subtitle": "AI safety、Scaling 与企业 AI",
+        "primary_badges": [
+          "核心人物",
+          "观点",
+          "手动录入"
+        ]
+      },
+      "notes": ""
+    },
+    {
+      "id": "jensen_huang",
+      "name": "黄仁勋",
+      "aliases": [
+        "Jensen Huang"
+      ],
+      "type": "person",
+      "tier": "core",
+      "industries": [
+        "model_infra_compute_chips",
+        "humanoid_embodied_intelligence"
+      ],
+      "material_types": [
+        "opinion"
+      ],
+      "tracking_reason": "AI 算力供给、GPU 生态、数据中心和机器人基础设施的关键观点源。",
+      "collection_entries": [
+        {
+          "id": "jensen_huang_manual",
+          "type": "manual",
+          "label": "GTC 演讲、访谈、财报电话会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于沉淀算力、芯片和机器人基础设施判断。"
+        }
+      ],
+      "related_source_ids": [
+        "nvidia"
+      ],
+      "ui": {
+        "card_title": "黄仁勋",
+        "subtitle": "算力、芯片与机器人基础设施",
+        "primary_badges": [
+          "核心人物",
+          "观点",
+          "手动录入"
+        ]
+      },
+      "notes": ""
+    }
+  ],
+  "web_view_sketch": {
+    "source_card_fields": [
+      "name",
+      "tier",
+      "type",
+      "industries",
+      "material_types",
+      "tracking_reason",
+      "collection_entries.status",
+      "related_source_ids"
+    ],
+    "source_detail_sections": [
+      "基本信息",
+      "为什么关注",
+      "获取入口",
+      "相关人物或机构",
+      "最近材料",
+      "已提取观点卡片",
+      "用户备注"
+    ]
+  }
+}

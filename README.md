@@ -71,6 +71,7 @@ OrbitAI/
 ├─ static/                    # 样式和前端逻辑
 ├─ data.json                  # 历史备份
 ├─ orbitai.db                 # SQLite 数据库
+├─ snapshots/                 # 静态 HTML 快照输出目录
 ├─ sources.json               # RSS 配置
 └─ README.md
 项目演进（简要）

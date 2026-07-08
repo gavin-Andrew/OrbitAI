@@ -23,8 +23,6 @@ Thumbs.db
 
 # Future generated files
 data.json
-index.html
-featured.html
-daily.html
+snapshots/
 # Secret config
 .env

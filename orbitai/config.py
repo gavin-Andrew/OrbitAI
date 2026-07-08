@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 
 DATA_FILE = Path("data.json")
 DATABASE_FILE = Path("orbitai.db")
-HTML_FILE = Path("index.html")
-FEATURED_FILE = Path("featured.html")
-DAILY_FILE = Path("daily.html")
+SNAPSHOT_DIR = Path("snapshots")
+HTML_FILE = SNAPSHOT_DIR / "index.html"
+FEATURED_FILE = SNAPSHOT_DIR / "featured.html"
+DAILY_FILE = SNAPSHOT_DIR / "daily.html"
 SOURCES_FILE = Path("sources.json")
 
 load_dotenv()
