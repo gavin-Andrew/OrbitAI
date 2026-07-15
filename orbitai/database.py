@@ -1,80 +1,26 @@
 import sqlite3
+from pathlib import Path
 
 from orbitai.config import DATABASE_FILE
+from orbitai.migrations import apply_migrations
 
 
-def get_connection():
+def get_connection(database_file: str | Path | None = None):
     """
     获取 SQLite 数据库连接。
     row_factory 让查询结果可以像字典一样读取字段。
     """
-    connection = sqlite3.connect(DATABASE_FILE)
+    connection = sqlite3.connect(database_file or DATABASE_FILE)
     connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA foreign_keys = ON")
     return connection
 
 
-def init_db():
+def init_db(database_file: str | Path | None = None) -> list[str]:
     """
-    初始化数据库。
-    V3.3.3 阶段主要保证 articles 表存在。
+    初始化数据库并应用尚未执行的迁移。
+
+    返回本次实际应用的迁移版本；现有调用方可以继续忽略返回值。
     """
-    with get_connection() as connection:
-        cursor = connection.cursor()
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS articles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            title_cn TEXT,
-            source TEXT,
-            link TEXT UNIQUE,
-            published TEXT,
-            fetched_at TEXT,
-            summary_original TEXT,
-            summary_cn TEXT,
-            category_rule TEXT,
-            ai_category TEXT,
-            tags TEXT,
-            scores TEXT,
-            final_score REAL,
-            processed INTEGER DEFAULT 0,
-            processed_at TEXT,
-            error TEXT,
-            error_type TEXT,
-            failed_at TEXT,
-            retry_count INTEGER DEFAULT 0,
-            created_at TEXT,
-            updated_at TEXT
-        )
-        """)
-
-        cursor.execute("PRAGMA table_info(articles)")
-        existing_columns = {
-            row["name"]
-            for row in cursor.fetchall()
-        }
-
-        required_columns = {
-            "title_cn": "TEXT",
-            "summary_cn": "TEXT",
-            "ai_category": "TEXT",
-            "tags": "TEXT",
-            "scores": "TEXT",
-            "final_score": "REAL",
-            "processed": "INTEGER DEFAULT 0",
-            "processed_at": "TEXT",
-            "error": "TEXT",
-            "error_type": "TEXT",
-            "failed_at": "TEXT",
-            "retry_count": "INTEGER DEFAULT 0",
-            "created_at": "TEXT",
-            "updated_at": "TEXT",
-        }
-
-        for column_name, column_type in required_columns.items():
-            if column_name not in existing_columns:
-                cursor.execute(
-                    f"ALTER TABLE articles ADD COLUMN {column_name} {column_type}"
-                )
-
-        connection.commit()
+    with get_connection(database_file) as connection:
+        return apply_migrations(connection)

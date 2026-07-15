@@ -1,6 +1,8 @@
 OrbitAI
 
-OrbitAI 是一个本地优先的个人 AI 信息雷达（Personal AI Information Radar）。
+OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。
+
+项目已经正式进入 V4“可追溯的 AI 动态产业档案”的开发阶段。V3 的 RSS、AI 处理、SQLite 文章库和本地 Web App 继续作为信息材料基础；V4 将逐步加入产业、赛道、参与者、关键事件和原始来源之间的可追溯关系。总体路径见 `docs/ORBITAI_ROADMAP.md`，当前实现规格草案见 `docs/V4_INDUSTRY_DOSSIER_SPEC.md`。
 
 它的目标是帮助用户持续收集、整理、浏览和管理 AI 及科技相关信息，避免被信息洪流淹没，同时保持完全可控、可观察的本地环境。
 
@@ -53,6 +55,19 @@ uvicorn app:app --reload
 http://127.0.0.1:8000
 
 访问首页、精选页、每日简报及状态页。
+
+数据库迁移：
+
+```powershell
+python -m orbitai.migrations status
+python -m orbitai.migrations up
+```
+
+运行聚焦测试：
+
+```powershell
+python -m unittest discover -s tests -v
+```
 
 项目结构（核心部分）
 OrbitAI/
