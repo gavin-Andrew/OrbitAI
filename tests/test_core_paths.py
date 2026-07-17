@@ -25,14 +25,17 @@ class CorePathTests(unittest.TestCase):
     def test_current_project_paths_are_absolute_and_centralized(self):
         expected_paths = {
             "PROJECT_ROOT": PROJECT_ROOT,
-            "DATA_FILE": PROJECT_ROOT / "data.json",
-            "DATABASE_FILE": PROJECT_ROOT / "orbitai.db",
-            "SNAPSHOT_DIR": PROJECT_ROOT / "snapshots",
-            "SOURCES_FILE": PROJECT_ROOT / "sources.json",
-            "SOURCE_REGISTRY_FILE": PROJECT_ROOT / "sources.v4.json",
+            "DATA_FILE": PROJECT_ROOT / "data" / "archive" / "data.json",
+            "DATABASE_FILE": PROJECT_ROOT / "var" / "orbitai.db",
+            "SNAPSHOT_DIR": PROJECT_ROOT / "var" / "snapshots",
+            "SOURCES_FILE": PROJECT_ROOT / "data" / "registries" / "sources.json",
+            "SOURCE_REGISTRY_FILE": (
+                PROJECT_ROOT / "data" / "registries" / "sources.v4.json"
+            ),
             "CATALOG_SEED_FILE": (
                 PROJECT_ROOT
                 / "data"
+                / "seeds"
                 / "catalog"
                 / "foundation_models.v4.1.json"
             ),
@@ -89,7 +92,7 @@ from orbitai.core.config import (
 
 expected_root = Path(os.environ["ORBITAI_EXPECTED_ROOT"])
 assert PROJECT_ROOT == expected_root
-assert DATABASE_FILE == expected_root / "orbitai.db"
+assert DATABASE_FILE == expected_root / "var" / "orbitai.db"
 assert STATIC_DIR == expected_root / "static"
 assert TEMPLATES_DIR == expected_root / "templates"
 assert any(route.path == "/industries/{industry_slug}" for route in app.routes)

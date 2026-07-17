@@ -4,7 +4,7 @@
 
 方向更新：信息源注册表仍然是 V4 的基础，但后续应优先把来源映射到企业、人物、事件和原始文档。观点卡片继续保留，作为事件档案中的观点层，而不是 V4 唯一的最终产物。
 
-这份文档是 V4 信息源注册表的第一版正式范围。它用于确定 OrbitAI V4 应长期关注的机构、平台、公司、人物和获取入口。后续实现 `sources.v4.json`、source registry 数据结构、RSS 映射、手动录入和观点卡片时，应优先参考本文件。
+这份文档是 V4 信息源注册表的第一版正式范围。它用于确定 OrbitAI V4 应长期关注的机构、平台、公司、人物和获取入口。后续维护 `data/registries/sources.v4.json`、source registry 数据结构、RSS 映射、手动录入和观点卡片时，应优先参考本文件。
 
 ## 设计原则
 
@@ -104,9 +104,9 @@
 | 财报电话会全量抓取 | 文本源 | 公司事实和管理层观点 | 价值高，但数据源、授权和解析流程需要后续单独设计。 |
 | arXiv 全量订阅 | 论文源 | 研究事实 | 信息量过大，第一版只应跟踪少量主题或由用户手动加入高价值论文。 |
 
-## 与现有 `sources.json` 的关系
+## 与现有 `data/registries/sources.json` 的关系
 
-当前 `sources.json` 已有：
+当前 `data/registries/sources.json` 已有：
 
 ```json
 [
@@ -128,16 +128,16 @@
 ]
 ```
 
-V4 不应简单新建一套和 `sources.json` 重复的 RSS 清单。更合理的方向是：
+V4 不应简单新建一套和 `data/registries/sources.json` 重复的 RSS 清单。更合理的方向是：
 
-1. 短期：保留 `sources.json` 作为 RSS 抓取入口。
+1. 短期：保留 `data/registries/sources.json` 作为 RSS 抓取入口。
 2. V4 第一阶段：新增 source registry 正式表，把现有 RSS 源映射到对应的机构源。
 3. 后续：让 RSS、手动录入、YouTube、播客、GitHub、论文等入口都挂在 source registry 下。
 
 ## 下一步建议
 
-1. 将本文件整理为 `sources.v4.json`，作为机器可读的 V4 source registry MVP。
-2. 为现有 `sources.json` 增加到 source registry 的映射。
+1. 将本文件整理为 `data/registries/sources.v4.json`，作为机器可读的 V4 source registry MVP。
+2. 为现有 `data/registries/sources.json` 增加到 source registry 的映射。
 3. 新增手动录入入口的最小字段。
 4. 将来源身份映射到企业、机构和人物档案。
 5. 设计事件、事件来源和原始文档之间的关联。

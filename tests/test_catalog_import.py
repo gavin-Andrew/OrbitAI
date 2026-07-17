@@ -18,8 +18,14 @@ from orbitai.database import get_connection, init_db
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SEED_FILE = PROJECT_ROOT / "data" / "catalog" / "foundation_models.v4.1.json"
-SOURCE_REGISTRY_FILE = PROJECT_ROOT / "sources.v4.json"
+SEED_FILE = (
+    PROJECT_ROOT
+    / "data"
+    / "seeds"
+    / "catalog"
+    / "foundation_models.v4.1.json"
+)
+SOURCE_REGISTRY_FILE = PROJECT_ROOT / "data" / "registries" / "sources.v4.json"
 CATALOG_TABLES = (
     "industries",
     "segments",

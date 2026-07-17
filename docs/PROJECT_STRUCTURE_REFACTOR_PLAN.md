@@ -362,6 +362,8 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 4：运行数据和配置文件归位
 
+执行状态：**已于 2026-07-17 完成。** 用户明确同意进入阶段 4 后，正式活动数据库已经通过 SQLite Backup API 切换到 `var/orbitai.db`；版本控制配置已归入 `data/`，旧 JSON 和快照已归档到新位置，根数据库只读保留且不再由应用访问。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE4.md`，字段级对账见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE4_DATA_RECONCILIATION.md`。
+
 #### 目标
 
 把版本控制资产与本地运行资产分开，并确保路径切换不会创建错误的空数据库。
@@ -523,7 +525,7 @@ python -m orbitai.catalog_import preview --summary-only
 
 1. **计划确认（已完成，2026-07-17）**：用户已确认本文件成为本轮重构的正式行动依据。
 2. **检查点确认（已完成，2026-07-17）**：用户已授权；`codex/project-structure-refactor` 分支、重构前 Git 检查点和经验证的 SQLite Backup API 备份已经建立。
-3. **行为切换确认（Web 已完成，数据库路径未授权）**：用户已于 2026-07-17 确认阶段 2-B，授权切换默认首页和旧页面 URL；本次确认不包含阶段 4 的正式数据库路径切换。
+3. **行为切换确认（已完成，2026-07-17）**：用户先确认阶段 2-B 的默认首页和旧页面 URL 切换，随后在已被明确告知阶段 4 包含正式数据库路径切换后，同意进入阶段 4；`var/orbitai.db` 现为唯一活动数据库。本授权不包含删除根数据库副本。
 4. **清退确认**：授权删除旧静态链路、兼容包装、根数据库副本和旧路由。
 
 在第 1 次确认前不开始移动代码；在后续确认前，可以完成对应门槛之前的只读审查和非破坏性准备，但不能越过门槛执行破坏性操作。

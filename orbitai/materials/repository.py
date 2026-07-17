@@ -1,8 +1,14 @@
 import json
 from datetime import datetime
 
-from orbitai.core.database import get_connection, init_db
+from orbitai.core.database import get_connection, init_db as initialize_database
 from orbitai.materials.fields import create_empty_ai_fields
+
+
+def init_db() -> list[str]:
+    """检查活动数据库并应用迁移，但不允许普通业务访问创建空库。"""
+
+    return initialize_database(allow_create=False)
 
 
 def parse_tags(tags_text):

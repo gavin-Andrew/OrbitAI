@@ -100,15 +100,21 @@ OrbitAI/
 │  └─ text_utils.py
 ├─ templates/                 # dossier/materials/admin 分层模板
 ├─ static/                    # shared 与三类页面的分层前端资源
-├─ data.json                  # 历史备份
-├─ orbitai.db                 # SQLite 数据库
-├─ snapshots/                 # 静态 HTML 快照输出目录
-├─ sources.json               # RSS 配置
+├─ data/
+│  ├─ seeds/catalog/          # V4.1 可审核名册种子
+│  ├─ registries/             # RSS 配置与 V4 来源注册表
+│  └─ archive/data.json       # Git 忽略的旧 JSON 历史备份
+├─ var/                       # Git 忽略的本地运行数据
+│  ├─ orbitai.db              # 当前唯一活动 SQLite 数据库
+│  ├─ backups/                # SQLite Backup API 备份
+│  └─ snapshots/              # 静态 HTML 兼容输出
 └─ README.md
 
 Web 规范入口为 `/industries/artificial-intelligence`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。`/` 使用 HTTP 307 临时重定向进入 AI 产业目录；旧材料页和状态页 URL 继续保留，并以 307 重定向到对应规范地址。
 
 活动业务代码应直接从 `orbitai.materials`、`orbitai.catalog`、`orbitai.web` 或 `orbitai.core` 导入。根 `orbitai/*.py` 中对应的旧模块只用于短期兼容，等待后续确认清退。
+
+根目录 `orbitai.db` 目前仅作为阶段 4 前的只读保留副本，不是活动数据库。普通页面访问如果找不到 `var/orbitai.db` 会明确失败，不会静默创建空数据库。
 
 项目演进（简要）
 V1.x：本地 RSS 抓取与静态 HTML 展示。

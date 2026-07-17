@@ -37,7 +37,7 @@ def load_industry_catalog(
 ) -> dict[str, Any] | None:
     """读取并整理一张产业目录页面所需的全部数据。"""
 
-    init_db(database_file)
+    init_db(database_file, allow_create=False)
 
     with get_connection(database_file) as connection:
         repository = CatalogRepository(connection)

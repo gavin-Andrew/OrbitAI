@@ -39,8 +39,12 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 - `tests/`：当前聚焦测试，优先覆盖数据库迁移和 V4 核心数据约束。
 - `templates/dossier/`、`templates/materials/`、`templates/admin/`：按页面职责拆分的 Jinja2 模板。
 - `static/shared/`、`static/dossier/`、`static/materials/`、`static/admin/`：共享基础样式和各页面边界的前端资源。
-- `orbitai.db`：本地 SQLite 数据库。
-- `snapshots/`：静态 HTML 快照输出目录，包含 `index.html`、`featured.html`、`daily.html`。
+- `var/orbitai.db`：当前唯一活动的本地 SQLite 数据库；根 `orbitai.db` 只作为阶段 4 前副本保留，不再由应用读写。
+- `var/backups/`：经 SQLite Backup API 创建并校验的本地数据库备份。
+- `var/snapshots/`：静态 HTML 快照兼容输出目录，包含 `index.html`、`featured.html`、`daily.html`。
+- `data/registries/`：RSS 来源配置和 V4 来源注册表。
+- `data/seeds/catalog/`：可审核的 V4.1 名册种子。
+- `data/archive/data.json`：已完成字段级对账的旧 JSON 历史备份；它保留 SQLite 中没有的逐维评分与处理时间，当前不得删除。
 
 除非用户明确要求更大的存储改造，否则继续把 SQLite 作为 MVP 数据库。PostgreSQL、向量数据库和全文搜索引擎都是未来选项，不是默认选择。
 
@@ -75,7 +79,7 @@ V4 全阶段采用单赛道纵向试点：第一个且当前唯一的深度试�
 
 单赛道只限制当前内容范围，不限制系统模型。数据库、仓储、路由和页面能力应保持赛道通用，不能把“通用基础模型”硬编码成唯一业务对象；完整闭环验证通过后，再按同一套能力逐步补充其他赛道。
 
-V4.1 首批名册范围已经确认采用 6 个组织和 6 位人物；具体对象、身份边界、核查状态和种子字段以 `docs/V4_1_CATALOG_SPEC.md` 与 `data/catalog/foundation_models.v4.1.json` 为准。未经用户再次确认，不在 V4.1 横向扩充参与者名单；种子中的草案字段不能因为写入文件就被视为已确认事实。
+V4.1 首批名册范围已经确认采用 6 个组织和 6 位人物；具体对象、身份边界、核查状态和种子字段以 `docs/V4_1_CATALOG_SPEC.md` 与 `data/seeds/catalog/foundation_models.v4.1.json` 为准。未经用户再次确认，不在 V4.1 横向扩充参与者名单；种子中的草案字段不能因为写入文件就被视为已确认事实。
 
 2026-07-16，V4.1 首批名册已经完成中文逐项审核、显式授权和首次事务写入；正式审核记录见 `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`。后续修改种子或数据库名册时，仍必须先生成预览，不得把首次授权解释为对未来修改的永久授权。
 
@@ -171,6 +175,12 @@ python -m unittest tests.test_web_structure -v
 
 ```powershell
 python -m unittest tests.test_core_paths -v
+```
+
+运行数据路径、配置文件归位和数据库防错测试：
+
+```powershell
+python -m unittest tests.test_runtime_paths -v
 ```
 
 材料、目录、展示和静态生成模块边界测试：

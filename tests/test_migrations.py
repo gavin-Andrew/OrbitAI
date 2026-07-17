@@ -163,7 +163,10 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual(article["link"], "https://example.com/legacy")
 
     def test_segment_kinds_upgrade_to_confirmed_four_groups(self):
-        with get_connection(self.database_file) as connection:
+        with get_connection(
+            self.database_file,
+            allow_create=True,
+        ) as connection:
             self.assertEqual(
                 apply_migrations(connection, target_version="0003"),
                 ["0001", "0002", "0003"],

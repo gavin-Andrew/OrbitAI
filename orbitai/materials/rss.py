@@ -20,11 +20,11 @@ from orbitai.text_utils import clean_html
 
 def load_sources():
     """
-    从 sources.json 读取 RSS 信息源。
+    从 data/registries/sources.json 读取 RSS 信息源。
     只返回 enabled 为 true 的信源。
     """
     if not SOURCES_FILE.exists():
-        print("⚠️ 未找到 sources.json，无法读取信息源。")
+        print("⚠️ 未找到 data/registries/sources.json，无法读取信息源。")
         return []
 
     try:
@@ -32,7 +32,7 @@ def load_sources():
             sources = json.load(file)
 
         if not isinstance(sources, list):
-            print("⚠️ sources.json 格式错误：最外层应该是列表。")
+            print("⚠️ RSS 来源配置格式错误：最外层应该是列表。")
             return []
 
         enabled_sources = []
@@ -57,7 +57,7 @@ def load_sources():
         return enabled_sources
 
     except json.JSONDecodeError:
-        print("⚠️ sources.json 不是有效 JSON，请检查格式。")
+        print("⚠️ RSS 来源配置不是有效 JSON，请检查格式。")
         return []
 
 def parse_rss_with_retry(

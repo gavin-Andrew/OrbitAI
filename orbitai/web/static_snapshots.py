@@ -40,10 +40,10 @@ def generate_html(
     sort_by_score=False,
 ):
     """
-    根据 data.json 里的数据生成本地 HTML 页面。
+    根据传入材料生成本地 HTML 页面。
     支持生成：
-    - snapshots/index.html：全部信息页
-    - snapshots/featured.html：精选信息页
+    - var/snapshots/index.html：全部信息页
+    - var/snapshots/featured.html：精选信息页
     """
     if sort_by_score:
         sorted_items = sort_items_by_score(items)
@@ -503,7 +503,7 @@ def generate_html(
 
 def generate_featured_html(items):
     """
-    生成 V2.4 精选页 snapshots/featured.html。
+    生成 V2.4 精选页 var/snapshots/featured.html。
     精选页复用主页样式，但只展示综合分较高的信息。
     """
     featured_items = get_featured_items(items)
@@ -519,9 +519,9 @@ def generate_featured_html(items):
 
 def generate_daily_html(items):
     """
-    生成 V2.6 每日简报页 snapshots/daily.html。
+    生成 V2.6 每日简报页 var/snapshots/daily.html。
 
-    snapshots/daily.html 的定位：
+    var/snapshots/daily.html 的定位：
     - 只展示今天新增的信息；
     - 按 final_score 从高到低排序；
     - 再按 AI 分类分组；

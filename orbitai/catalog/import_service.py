@@ -738,7 +738,7 @@ def validate_catalog_seed(
         from_id = operation.get("from_source_id")
         to_ids = operation.get("to_source_ids", [])
         if source_registry is not None and from_id not in registry_by_id:
-            result.add("error", "missing_legacy_source", f"{path}.from_source_id", "拆分源在 sources.v4.json 中不存在。")
+            result.add("error", "missing_legacy_source", f"{path}.from_source_id", "拆分源在 data/registries/sources.v4.json 中不存在。")
         if from_id in source_ids:
             result.add("error", "legacy_source_still_active", path, "拆分后的旧组合来源不能继续作为活动来源。")
         for target_id in to_ids:
@@ -751,7 +751,7 @@ def validate_catalog_seed(
             "warning",
             "source_registry_not_checked",
             "source_registry_file",
-            "未提供 sources.v4.json，因此没有校验复用和拆分来源。",
+            "未提供 data/registries/sources.v4.json，因此没有校验复用和拆分来源。",
         )
     else:
         for source_index, source in enumerate(seed["sources"]):
@@ -759,7 +759,7 @@ def validate_catalog_seed(
             action = source.get("registry_action")
             source_id = source.get("id")
             if action == "map_existing" and source_id not in registry_by_id:
-                result.add("error", "missing_legacy_source", f"{path}.id", "map_existing 来源在 sources.v4.json 中不存在。")
+                result.add("error", "missing_legacy_source", f"{path}.id", "map_existing 来源在 data/registries/sources.v4.json 中不存在。")
             if action == "propose_create" and source_id in registry_by_id:
                 result.add("error", "legacy_source_already_exists", f"{path}.registry_action", "来源已经存在，不应标记 propose_create。")
             if action == "create_from_split" and source_id not in split_targets:
@@ -770,7 +770,7 @@ def validate_catalog_seed(
                         "error",
                         "missing_legacy_entry",
                         f"{path}.entries[{entry_index}].id",
-                        "标记为现有入口，但在 sources.v4.json 中不存在。",
+                        "标记为现有入口，但在 data/registries/sources.v4.json 中不存在。",
                     )
 
     return result
@@ -952,7 +952,7 @@ def _build_preview(
 
         reason = "数据库中不存在，将在显式 apply 时创建。"
         if record.action_hint == "map_existing":
-            reason = "复用 sources.v4.json 的来源身份，并映射到 V4 数据表。"
+            reason = "复用 data/registries/sources.v4.json 的来源身份，并映射到 V4 数据表。"
         elif record.action_hint == "create_from_split":
             reason = "根据已确认拆分操作创建新的来源身份。"
         elif record.action_hint == "intentionally_unbound":

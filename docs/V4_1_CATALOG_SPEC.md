@@ -10,8 +10,8 @@
 - `docs/V4_INDUSTRY_DOSSIER_SPEC.md`
 - `docs/V4_1_CATALOG_IMPORT_GUIDE.md`
 - `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`
-- `data/catalog/foundation_models.v4.1.json`
-- `sources.v4.json`
+- `data/seeds/catalog/foundation_models.v4.1.json`
+- `data/registries/sources.v4.json`
 
 ## 1. 本阶段目标
 
@@ -178,7 +178,7 @@ V4.0 已经提供 V4.1 所需的主要物理表。V4.1 优先复用这些表：
 
 ## 6. 来源注册表映射
 
-`sources.v4.json` 是来源注册表，不是参与者名册。V4.1 的映射遵循：
+`data/registries/sources.v4.json` 是来源注册表，不是参与者名册。V4.1 的映射遵循：
 
 - 来源身份可以映射一个组织或一个人物，但不能同时映射两者。
 - RSS、官网、访谈和手动录入只是 `source_entries`，不能替代 `sources`。
@@ -201,7 +201,7 @@ V4.0 已经提供 V4.1 所需的主要物理表。V4.1 优先复用这些表：
 
 ## 7. 种子文件规则
 
-`data/catalog/foundation_models.v4.1.json` 是可审核的策划输入，不是数据库真相。它应满足：
+`data/seeds/catalog/foundation_models.v4.1.json` 是可审核的策划输入，不是数据库真相。它应满足：
 
 - 明确标记 `status=draft`。
 - 显式保存 4 条 `segment_groups`，并保证 26 个赛道全部使用其中一个 `segment_kind`。
@@ -214,7 +214,7 @@ V4.0 已经提供 V4.1 所需的主要物理表。V4.1 优先复用这些表：
 
 ## 8. 实现切片与当前状态
 
-截至 2026-07-16，V4.1-A 与 V4.1-B 已经实现并通过临时数据库测试；名册经用户逐项审核和明确授权后，已成功写入正式 `orbitai.db`。写后预览全部为 `unchanged`，审核记录见 `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`，技术背景见 `docs/V4_1_CATALOG_IMPORT_GUIDE.md`。
+截至 2026-07-16，V4.1-A 与 V4.1-B 已经实现并通过临时数据库测试；名册经用户逐项审核和明确授权后，已成功首次写入根数据库。阶段 4 后的正式活动数据库为 `var/orbitai.db`；写后预览全部为 `unchanged`，审核记录见 `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`，技术背景见 `docs/V4_1_CATALOG_IMPORT_GUIDE.md`。
 
 ### V4.1-A：仓储与索引（已实现）
 
@@ -224,7 +224,7 @@ V4.0 已经提供 V4.1 所需的主要物理表。V4.1 优先复用这些表：
 
 ### V4.1-B：导入预览（已实现）
 
-- 读取种子和 `sources.v4.json`。
+- 读取种子和 `data/registries/sources.v4.json`。
 - 输出 `create`、`create_from_split`、`map_existing`、`intentionally_unbound`、`unchanged`、`update_preview`、`conflict` 和 `blocked`。
 - 默认只预览；显式 `--apply` 才允许写库。
 - 导入失败时整批回滚，不留下半套名册。
