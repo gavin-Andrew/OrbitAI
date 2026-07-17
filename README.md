@@ -11,7 +11,7 @@ OrbitAI 强调：
 小步迭代，易用且低复杂度。
 本地运行：数据库 + 网页访问，无公网部署，无用户系统。
 模块化与可扩展性：便于长期维护和功能扩展。
-信息闭环：RSS 抓取 → 数据存储 → AI 处理 → 网页展示 → 状态监控。
+信息闭环：RSS 抓取 → 数据存储 → AI 处理 → 动态网页展示 → 状态监控。
 核心功能
 信息抓取：支持从多源 RSS 获取 AI/科技信息。
 数据存储：本地 SQLite 数据库为主存储，保持历史信息备份。
@@ -20,14 +20,15 @@ AI 处理：
 信息分类、标签提取。
 多维度评分与综合分（final_score）。
 本地 Web 页面：
-/：全部信息。
-/featured：精选信息。
-/daily：每日新增信息简报。
-/status：系统运行状态与错误监控。
+/：临时重定向到人工智能产业目录。
+/industries/artificial-intelligence：当前 AI 产业目录工程验证页。
+/materials：材料收件箱。
+/materials/featured：精选材料。
+/materials/daily：每日新增材料简报。
+/admin/status：系统运行状态与错误监控。
 后台手动操作：
 RSS 抓取。
 AI 批量处理。
-静态 HTML 再生成。
 API 接口：
 /api/items
 /api/featured
@@ -54,7 +55,15 @@ uvicorn app:app --reload
 浏览器访问：
 http://127.0.0.1:8000
 
-访问首页、精选页、每日简报及状态页。
+访问产业目录、材料收件箱、精选页、每日简报及状态页。
+
+运行材料更新流程：
+
+```powershell
+python main.py
+```
+
+该命令执行 RSS 抓取和 AI 处理并写回 SQLite，不再生成静态 HTML 快照。
 
 数据库迁移：
 
@@ -85,19 +94,10 @@ OrbitAI/
 │  ├─ catalog/                # 名册导入、仓储与目录服务活动实现
 │  ├─ web/app.py              # FastAPI 应用组装
 │  ├─ web/view_helpers.py     # 动态页面展示辅助函数
-│  ├─ web/static_snapshots.py # 临时保留的静态快照生成实现
 │  ├─ web/routes/             # dossier/materials/admin/api 活动路由
-│  ├─ config.py               # 旧导入兼容包装
-│  ├─ database.py             # 旧导入兼容包装
-│  ├─ migrations.py           # 旧导入与 CLI 兼容包装
-│  ├─ data_utils.py           # 旧文章字段/JSON 导入兼容包装
-│  ├─ rss_fetcher.py          # 旧 RSS 导入兼容包装
-│  ├─ ai_client.py            # 旧 AI 客户端导入兼容包装
-│  ├─ ai_processor.py         # 旧 AI 处理导入兼容包装
-│  ├─ scoring.py              # 旧评分导入兼容包装
-│  ├─ catalog_*.py            # 旧目录导入与 CLI 兼容包装
-│  ├─ html_generator.py       # 旧展示/快照导入兼容包装
-│  └─ text_utils.py
+│  ├─ migrations.py           # 稳定迁移 CLI 包装
+│  ├─ catalog_import.py       # 稳定名册导入 CLI 包装
+│  └─ text_utils.py           # 通用文本辅助函数
 ├─ templates/                 # dossier/materials/admin 分层模板
 ├─ static/                    # shared 与三类页面的分层前端资源
 ├─ data/
@@ -107,12 +107,12 @@ OrbitAI/
 ├─ var/                       # Git 忽略的本地运行数据
 │  ├─ orbitai.db              # 当前唯一活动 SQLite 数据库
 │  ├─ backups/                # SQLite Backup API 备份
-│  └─ snapshots/              # 静态 HTML 兼容输出
+│  └─ snapshots/              # 待单独确认删除的历史快照，不再生成
 └─ README.md
 
 Web 规范入口为 `/industries/artificial-intelligence`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。`/` 使用 HTTP 307 临时重定向进入 AI 产业目录；旧材料页和状态页 URL 继续保留，并以 307 重定向到对应规范地址。
 
-活动业务代码应直接从 `orbitai.materials`、`orbitai.catalog`、`orbitai.web` 或 `orbitai.core` 导入。根 `orbitai/*.py` 中对应的旧模块只用于短期兼容，等待后续确认清退。
+活动业务代码应直接从 `orbitai.materials`、`orbitai.catalog`、`orbitai.web` 或 `orbitai.core` 导入。阶段 5 已删除无调用方的旧扁平导入包装；只有迁移和名册导入两个稳定 CLI 包装继续保留。
 
 根目录 `orbitai.db` 目前仅作为阶段 4 前的只读保留副本，不是活动数据库。普通页面访问如果找不到 `var/orbitai.db` 会明确失败，不会静默创建空数据库。
 
@@ -125,7 +125,7 @@ Jinja2 模板渲染。
 Web 交互增强。
 SQLite 数据库化。
 状态页与错误管理。
-网页端手动操作与静态兼容。
+网页端手动操作。
 V3.6：本地 Web 稳定版收官，长期使用可控、页面与后台功能完整。
 开发原则
 保持本地可运行闭环。

@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from orbitai.database import get_connection, init_db
+from orbitai.core.database import get_connection, init_db
 from orbitai.migrations import (
     apply_migrations,
     get_applied_migrations,

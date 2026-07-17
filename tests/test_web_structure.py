@@ -35,7 +35,6 @@ class WebStructureTests(unittest.TestCase):
             ("GET", "/admin/status"),
             ("POST", "/admin/fetch"),
             ("POST", "/admin/process-ai"),
-            ("POST", "/admin/regenerate"),
             ("GET", "/api/items"),
             ("GET", "/api/featured"),
             ("GET", "/api/daily"),
@@ -85,6 +84,8 @@ class WebStructureTests(unittest.TestCase):
         self.assertIn("/static/admin/app.js", response.text)
         self.assertIn('href="/materials"', response.text)
         self.assertIn('href="/admin/status"', response.text)
+        self.assertNotIn("/admin/regenerate", response.text)
+        self.assertNotIn("重新生成静态 HTML", response.text)
 
     def test_root_and_legacy_urls_use_temporary_redirects(self):
         expected_redirects = {

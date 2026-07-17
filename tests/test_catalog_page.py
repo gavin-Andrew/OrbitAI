@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from app import app
 from orbitai.catalog.import_service import apply_catalog_seed, load_json_document
 from orbitai.catalog.service import load_industry_catalog
-from orbitai.database import get_connection, init_db
+from orbitai.core.database import get_connection, init_db
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

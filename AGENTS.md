@@ -20,28 +20,27 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 当前应用是一个本地 Python Web App：
 
 - `app.py`：FastAPI 兼容启动入口，只从 `orbitai.web.app` 导出 `app` 与应用工厂。
-- `main.py`：RSS、AI 处理、SQLite 和静态生成流程调度。
+- `main.py`：RSS、AI 处理和 SQLite 材料更新流程调度；动态页面直接读库，不再生成静态 HTML。
 - `orbitai/core/config.py`：集中定义项目根目录、当前运行文件路径和环境配置；路径不再依赖启动时的工作目录。
 - `orbitai/core/database.py`：SQLite 连接与初始化。
 - `orbitai/core/migrations.py`：SQLite 版本迁移、状态检查和受保护回滚。
-- `orbitai/config.py`、`orbitai/database.py`、`orbitai/migrations.py`：旧导入和 CLI 的薄兼容包装；新活动代码应直接使用 `orbitai.core`。
-- `orbitai/materials/`：文章字段、SQLite 文章仓储、RSS、AI 客户端与处理、评分等材料能力的活动实现；`legacy_json.py` 只临时保留待对账清退的旧 `data.json` 读写。
+- `orbitai/materials/`：文章字段、SQLite 文章仓储、RSS、AI 客户端与处理、评分等材料能力的活动实现。
 - `orbitai/catalog/repository.py`：V4.1 名册集中读写与目录查询的活动实现。
 - `orbitai/catalog/service.py`：把产业、四大分组、赛道和参与者整理成页面数据。
 - `orbitai/catalog/import_service.py`：名册校验、只读预览与显式事务写入实现。
 - `orbitai/web/app.py`：FastAPI 应用组装与静态目录挂载。
 - `orbitai/web/routes/`：按 `dossier`、`materials`、`admin`、`api` 拆分的活动 Web 路由。
 - `orbitai/web/view_helpers.py`：动态页面使用的展示字段、日期筛选与模板上下文辅助函数。
-- `orbitai/web/static_snapshots.py`：等待后续清退的静态 HTML 快照生成实现；动态 Web 页面不得新增对它的依赖。
 - 当前规范页面地址为 `/industries/{industry_slug}`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`；`/` 使用 HTTP 307 临时重定向到 AI 产业目录，旧材料页与状态页地址也使用 307 重定向到对应规范地址。
-- `orbitai/repository.py`、`rss_fetcher.py`、`ai_client.py`、`ai_processor.py`、`scoring.py`、`data_utils.py`、`catalog_repository.py`、`catalog_service.py`、`catalog_import.py`、`html_generator.py`：旧导入或 CLI 的薄兼容包装；新活动代码禁止继续引用这些旧路径。
-- `orbitai/`：除薄兼容包装外，活动实现按 `core`、`materials`、`catalog`、`web` 职责组织。
+- `orbitai/migrations.py` 与 `orbitai/catalog_import.py`：仍受支持的稳定 CLI 包装；活动实现分别位于 `core/migrations.py` 与 `catalog/import_service.py`。
+- 静态快照生成、旧 `data.json` 读写、空 `models.py` 和其他旧扁平导入包装已在阶段 5 退役，不得重新作为兼容路径引入。
+- `orbitai/`：活动实现按 `core`、`materials`、`catalog`、`web` 职责组织；`text_utils.py` 继续提供通用文本辅助函数。
 - `tests/`：当前聚焦测试，优先覆盖数据库迁移和 V4 核心数据约束。
 - `templates/dossier/`、`templates/materials/`、`templates/admin/`：按页面职责拆分的 Jinja2 模板。
 - `static/shared/`、`static/dossier/`、`static/materials/`、`static/admin/`：共享基础样式和各页面边界的前端资源。
 - `var/orbitai.db`：当前唯一活动的本地 SQLite 数据库；根 `orbitai.db` 只作为阶段 4 前副本保留，不再由应用读写。
 - `var/backups/`：经 SQLite Backup API 创建并校验的本地数据库备份。
-- `var/snapshots/`：静态 HTML 快照兼容输出目录，包含 `index.html`、`featured.html`、`daily.html`。
+- `var/snapshots/`：仅保留阶段 4 前生成的三个历史快照文件；活动代码不再生成或读取它们，删除仍需用户单独确认。
 - `data/registries/`：RSS 来源配置和 V4 来源注册表。
 - `data/seeds/catalog/`：可审核的 V4.1 名册种子。
 - `data/archive/data.json`：已完成字段级对账的旧 JSON 历史备份；它保留 SQLite 中没有的逐维评分与处理时间，当前不得删除。
@@ -171,7 +170,7 @@ Web 路由与页面资源边界聚焦测试：
 python -m unittest tests.test_web_structure -v
 ```
 
-项目根路径、旧导入和迁移 CLI 兼容测试：
+项目根路径和稳定迁移 CLI 测试：
 
 ```powershell
 python -m unittest tests.test_core_paths -v
@@ -183,10 +182,10 @@ python -m unittest tests.test_core_paths -v
 python -m unittest tests.test_runtime_paths -v
 ```
 
-材料、目录、展示和静态生成模块边界测试：
+已退役模块边界与 `main.py` 新流程语义测试：
 
 ```powershell
-python -m unittest tests.test_module_boundaries -v
+python -m unittest tests.test_module_boundaries tests.test_main_pipeline -v
 ```
 
 不要把 `preview` 和 `apply` 视为等价操作；前者只读，后者会应用待执行迁移并写入业务数据。

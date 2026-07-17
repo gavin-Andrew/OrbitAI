@@ -10,19 +10,13 @@ DATA_DIR = PROJECT_ROOT / "data"
 SEEDS_DIR = DATA_DIR / "seeds"
 CATALOG_DATA_DIR = SEEDS_DIR / "catalog"
 REGISTRIES_DIR = DATA_DIR / "registries"
-ARCHIVE_DIR = DATA_DIR / "archive"
 VAR_DIR = PROJECT_ROOT / "var"
 BACKUP_DIR = VAR_DIR / "backups"
 TEMPLATES_DIR = PROJECT_ROOT / "templates"
 STATIC_DIR = PROJECT_ROOT / "static"
 
 # 版本控制资产位于 data/，本地运行资产位于 var/。
-DATA_FILE = ARCHIVE_DIR / "data.json"
 DATABASE_FILE = VAR_DIR / "orbitai.db"
-SNAPSHOT_DIR = VAR_DIR / "snapshots"
-HTML_FILE = SNAPSHOT_DIR / "index.html"
-FEATURED_FILE = SNAPSHOT_DIR / "featured.html"
-DAILY_FILE = SNAPSHOT_DIR / "daily.html"
 SOURCES_FILE = REGISTRIES_DIR / "sources.json"
 SOURCE_REGISTRY_FILE = REGISTRIES_DIR / "sources.v4.json"
 CATALOG_SEED_FILE = CATALOG_DATA_DIR / "foundation_models.v4.1.json"
@@ -82,17 +76,11 @@ __all__ = [
     "SEEDS_DIR",
     "CATALOG_DATA_DIR",
     "REGISTRIES_DIR",
-    "ARCHIVE_DIR",
     "VAR_DIR",
     "BACKUP_DIR",
     "TEMPLATES_DIR",
     "STATIC_DIR",
-    "DATA_FILE",
     "DATABASE_FILE",
-    "SNAPSHOT_DIR",
-    "HTML_FILE",
-    "FEATURED_FILE",
-    "DAILY_FILE",
     "SOURCES_FILE",
     "SOURCE_REGISTRY_FILE",
     "CATALOG_SEED_FILE",

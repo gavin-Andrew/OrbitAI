@@ -7,12 +7,6 @@ from orbitai.materials.repository import (
 )
 from orbitai.materials.rss import load_sources, fetch_rss
 from orbitai.materials.ai_processor import process_ai_items
-from orbitai.core.config import DAILY_FILE, FEATURED_FILE, HTML_FILE, PROJECT_ROOT
-from orbitai.web.static_snapshots import (
-    generate_html,
-    generate_featured_html,
-    generate_daily_html,
-)
 
 
 def run_fetch_only():
@@ -27,7 +21,7 @@ def run_fetch_only():
     existing_links = get_existing_links_from_db()
 
     print(f"\n当前 SQLite 已保存信息数量：{len(existing_items)}")
-    print("✅ 当前主数据源：SQLite var/orbitai.db")
+    print("当前主数据源：SQLite var/orbitai.db")
 
     sources = load_sources()
     all_new_items = []
@@ -37,12 +31,12 @@ def run_fetch_only():
             new_items = fetch_rss(source, existing_links)
             all_new_items.extend(new_items)
     else:
-        print("\n⚠️ 没有可用信息源，本次只检查已有数据库内容。")
+        print("\n没有可用信息源，本次只检查已有数据库内容。")
 
     if all_new_items:
         result = insert_articles(all_new_items)
 
-        print("\n✅ RSS 新内容已写入 SQLite")
+        print("\nRSS 新内容已写入 SQLite")
         print(f"本次抓取新内容：{len(all_new_items)} 条")
         print(f"成功写入：{result['inserted']} 条")
         print(f"跳过重复/无效：{result['skipped']} 条")
@@ -58,7 +52,7 @@ def run_fetch_only():
             "error": None,
         }
 
-    print("\n✅ 没有发现新的 RSS 内容。")
+    print("\n没有发现新的 RSS 内容。")
 
     return {
         "ok": True,
@@ -83,7 +77,7 @@ def run_ai_only(batch_size=10):
     articles = get_unprocessed_articles(limit=batch_size)
 
     if not articles:
-        print("✅ 没有未处理的文章。")
+        print("没有未处理的文章。")
 
         return {
             "ok": True,
@@ -107,7 +101,7 @@ def run_ai_only(batch_size=10):
         else:
             fail_count += 1
 
-    print(f"✅ 本轮 AI 处理完成：成功 {success_count} 条，失败 {fail_count} 条")
+    print(f"本轮 AI 处理完成：成功 {success_count} 条，失败 {fail_count} 条")
 
     return {
         "ok": True,
@@ -120,83 +114,28 @@ def run_ai_only(batch_size=10):
     }
 
 
-def run_regenerate_static():
-    """
-    重新生成静态 HTML 快照文件。
-
-    这个函数后续可供：
-    - main.py 命令行流程调用
-    - FastAPI 的 POST /admin/regenerate 调用
-
-    注意：
-    当前 V3 已经主要使用 FastAPI + Jinja2 动态页面，
-    但 var/snapshots/index.html、featured.html、daily.html
-    仍然作为旧静态页面兼容保留。
-    """
-    updated_items = get_all_articles()
-
-    generate_html(updated_items)
-    generate_featured_html(updated_items)
-    generate_daily_html(updated_items)
-
-    print("✅ 静态 HTML 已重新生成")
-    print(f"当前 SQLite 总信息数量：{len(updated_items)}")
-
-    return {
-        "ok": True,
-        "message": "静态 HTML 快照已重新生成",
-        "total_count": len(updated_items),
-        "generated_files": [
-            HTML_FILE.relative_to(PROJECT_ROOT).as_posix(),
-            FEATURED_FILE.relative_to(PROJECT_ROOT).as_posix(),
-            DAILY_FILE.relative_to(PROJECT_ROOT).as_posix(),
-        ],
-        "error": None,
-    }
-
-
 def run_full_pipeline(batch_size=10):
     """
     执行完整更新流程：
 
     1. RSS 抓取并写入 SQLite
     2. AI 处理并写回 SQLite
-    3. 重新生成静态 HTML
-
-    这是原 main() 的完整流程封装。
+    动态 Web 页面直接读取 SQLite；本流程不再生成静态 HTML 快照。
     """
-    print("🚀 OrbitAI V3.5 - RSS + AI + SQLite + Static HTML")
+    print("OrbitAI - RSS + AI + SQLite 材料更新流程")
 
     fetch_result = run_fetch_only()
     ai_result = run_ai_only(batch_size=batch_size)
-    regenerate_result = run_regenerate_static()
 
-    print("✅ V3.6 完整流程运行结束。")
+    print("材料更新流程运行结束。")
 
     return {
         "ok": True,
-        "message": "完整流程运行结束",
+        "message": "材料更新流程运行结束",
         "fetch": fetch_result,
         "ai": ai_result,
-        "regenerate": regenerate_result,
         "error": None,
     }
-
-
-def process_new_rss():
-    """
-    兼容旧函数名。
-    后续如果其他文件仍然调用 process_new_rss()，不会被破坏。
-    """
-    return run_fetch_only()
-
-
-def process_unprocessed_ai(batch_size=10):
-    """
-    兼容旧函数名。
-    后续如果其他文件仍然调用 process_unprocessed_ai()，不会被破坏。
-    """
-    return run_ai_only(batch_size=batch_size)
 
 
 def main():

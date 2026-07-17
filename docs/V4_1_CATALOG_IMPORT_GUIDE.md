@@ -10,9 +10,9 @@
 
 新增或调整的主要部分：
 
-- `orbitai/catalog_repository.py`：把名册对象转换为数据库记录，集中执行查询和只增不改写入。
-- `orbitai/catalog_import.py`：加载 JSON、校验种子、比较数据库、输出预览，并在显式确认后执行事务写入。
-- `orbitai/migrations.py` 的 `0005` 迁移：为名称、别名、赛道反向关系、任职和来源映射建立查询索引。
+- `orbitai/catalog/repository.py`：把名册对象转换为数据库记录，集中执行查询和只增不改写入。
+- `orbitai/catalog/import_service.py`：加载 JSON、校验种子、比较数据库、输出预览，并在显式确认后执行事务写入；`orbitai/catalog_import.py` 继续提供稳定 CLI 入口。
+- `orbitai/core/migrations.py` 的 `0005` 迁移：为名称、别名、赛道反向关系、任职和来源映射建立查询索引。
 - `tests/test_catalog_import.py`：验证只读预览、身份冲突、幂等、用户修改保护和事务回滚。
 - `tests/test_migrations.py`：验证 `0005` 索引迁移。
 

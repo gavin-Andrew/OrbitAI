@@ -17,11 +17,6 @@ class RuntimePathTests(unittest.TestCase):
         self.assertEqual(config.VAR_DIR, PROJECT_ROOT / "var")
         self.assertEqual(config.DATABASE_FILE, PROJECT_ROOT / "var" / "orbitai.db")
         self.assertEqual(
-            config.SNAPSHOT_DIR,
-            PROJECT_ROOT / "var" / "snapshots",
-        )
-        self.assertEqual(config.DATA_FILE, PROJECT_ROOT / "data" / "archive" / "data.json")
-        self.assertEqual(
             config.SOURCES_FILE,
             PROJECT_ROOT / "data" / "registries" / "sources.json",
         )
@@ -37,6 +32,15 @@ class RuntimePathTests(unittest.TestCase):
             / "catalog"
             / "foundation_models.v4.1.json",
         )
+
+        for retired_name in (
+            "DATA_FILE",
+            "SNAPSHOT_DIR",
+            "HTML_FILE",
+            "FEATURED_FILE",
+            "DAILY_FILE",
+        ):
+            self.assertFalse(hasattr(config, retired_name), retired_name)
 
     def test_read_connection_refuses_to_create_a_missing_database(self):
         with tempfile.TemporaryDirectory() as temp_dir:

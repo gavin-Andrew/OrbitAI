@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, RedirectResponse
 
-from main import run_ai_only, run_fetch_only, run_regenerate_static
+from main import run_ai_only, run_fetch_only
 from orbitai.materials.repository import get_status_summary
 from orbitai.web.templating import templates
 from orbitai.web.view_helpers import (
@@ -97,15 +97,5 @@ def admin_process_ai(batch_size: int = 10):
     try:
         batch_size = max(1, min(batch_size, 50))
         return build_admin_response(run_ai_only(batch_size=batch_size))
-    except Exception as error:
-        return build_admin_error_response(error)
-
-
-@router.post("/admin/regenerate")
-def admin_regenerate():
-    """重新生成兼容用静态 HTML 快照。"""
-
-    try:
-        return build_admin_response(run_regenerate_static())
     except Exception as error:
         return build_admin_error_response(error)

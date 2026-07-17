@@ -14,7 +14,7 @@ from orbitai.catalog.import_service import (
     validate_catalog_seed,
 )
 from orbitai.catalog.repository import iter_catalog_records
-from orbitai.database import get_connection, init_db
+from orbitai.core.database import get_connection, init_db
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent

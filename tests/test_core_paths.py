@@ -5,8 +5,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from orbitai import config as legacy_config
-from orbitai import database as legacy_database
 from orbitai import migrations as legacy_migrations
 from orbitai.catalog.import_service import (
     DEFAULT_DATABASE_FILE,
@@ -14,7 +12,6 @@ from orbitai.catalog.import_service import (
     DEFAULT_SOURCE_REGISTRY_FILE,
 )
 from orbitai.core import config as core_config
-from orbitai.core import database as core_database
 from orbitai.core import migrations as core_migrations
 
 
@@ -25,9 +22,7 @@ class CorePathTests(unittest.TestCase):
     def test_current_project_paths_are_absolute_and_centralized(self):
         expected_paths = {
             "PROJECT_ROOT": PROJECT_ROOT,
-            "DATA_FILE": PROJECT_ROOT / "data" / "archive" / "data.json",
             "DATABASE_FILE": PROJECT_ROOT / "var" / "orbitai.db",
-            "SNAPSHOT_DIR": PROJECT_ROOT / "var" / "snapshots",
             "SOURCES_FILE": PROJECT_ROOT / "data" / "registries" / "sources.json",
             "SOURCE_REGISTRY_FILE": (
                 PROJECT_ROOT / "data" / "registries" / "sources.v4.json"
@@ -48,18 +43,7 @@ class CorePathTests(unittest.TestCase):
             self.assertTrue(actual.is_absolute(), name)
             self.assertEqual(actual, expected, name)
 
-    def test_legacy_modules_forward_to_core_implementations(self):
-        self.assertIs(legacy_config.PROJECT_ROOT, core_config.PROJECT_ROOT)
-        self.assertIs(legacy_config.DATABASE_FILE, core_config.DATABASE_FILE)
-        self.assertIs(
-            legacy_database.get_connection,
-            core_database.get_connection,
-        )
-        self.assertIs(legacy_database.init_db, core_database.init_db)
-        self.assertIs(
-            legacy_database.apply_migrations,
-            core_database.apply_migrations,
-        )
+    def test_stable_migration_cli_forwards_to_core_implementation(self):
         self.assertIs(
             legacy_migrations.apply_migrations,
             core_migrations.apply_migrations,

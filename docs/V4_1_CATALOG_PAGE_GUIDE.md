@@ -63,7 +63,7 @@ CSS：决定颜色、间距、卡片和手机端布局
 
 ### 4.1 仓储层：从数据库取货
 
-文件：`orbitai/catalog_repository.py`
+文件：`orbitai/catalog/repository.py`
 
 新增的读取方法负责：
 
@@ -76,7 +76,7 @@ CSS：决定颜色、间距、卡片和手机端布局
 
 ### 4.2 目录服务：把原料整理成页面数据
 
-文件：`orbitai/catalog_service.py`
+文件：`orbitai/catalog/service.py`
 
 数据库保存了每个赛道的 `segment_kind`，目录服务根据它把赛道装进固定顺序的四大分组。
 
