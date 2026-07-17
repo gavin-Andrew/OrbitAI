@@ -1,3 +1,5 @@
+"""材料更新命令行编排测试。"""
+
 import unittest
 from unittest.mock import patch
 

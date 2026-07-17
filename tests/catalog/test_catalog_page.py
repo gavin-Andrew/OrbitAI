@@ -1,3 +1,5 @@
+"""产业目录服务与动态页面测试。"""
+
 import tempfile
 import unittest
 from pathlib import Path
@@ -11,7 +13,7 @@ from orbitai.catalog.service import load_industry_catalog
 from orbitai.core.database import get_connection, init_db
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SEED_FILE = (
     PROJECT_ROOT
     / "data"

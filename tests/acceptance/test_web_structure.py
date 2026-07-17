@@ -1,3 +1,5 @@
+"""Web 路由、重定向与前端资源边界验收测试。"""
+
 import unittest
 from unittest.mock import patch
 

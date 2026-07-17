@@ -1,3 +1,5 @@
+"""SQLite 版本迁移、约束与受保护回滚测试。"""
+
 import sqlite3
 import tempfile
 import unittest

@@ -1,3 +1,5 @@
+"""产业名册导入、校验与事务写入测试。"""
+
 import copy
 import sqlite3
 import tempfile
@@ -17,7 +19,7 @@ from orbitai.catalog.repository import iter_catalog_records
 from orbitai.core.database import get_connection, init_db
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SEED_FILE = (
     PROJECT_ROOT
     / "data"

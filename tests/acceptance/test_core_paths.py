@@ -1,3 +1,5 @@
+"""项目路径、跨目录启动与稳定 CLI 入口验收测试。"""
+
 import os
 import subprocess
 import sys
@@ -15,7 +17,7 @@ from orbitai.core import config as core_config
 from orbitai.core import migrations as core_migrations
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 class CorePathTests(unittest.TestCase):

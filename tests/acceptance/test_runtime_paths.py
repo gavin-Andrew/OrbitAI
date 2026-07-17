@@ -1,3 +1,5 @@
+"""运行数据路径、缺库保护与版本控制资产验收测试。"""
+
 import json
 import tempfile
 import unittest
@@ -9,7 +11,7 @@ from orbitai.core.database import get_connection, init_db
 from orbitai.materials import repository
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 class RuntimePathTests(unittest.TestCase):

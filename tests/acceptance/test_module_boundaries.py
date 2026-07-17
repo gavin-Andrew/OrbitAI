@@ -1,3 +1,5 @@
+"""职责包边界、退役模块与稳定 CLI 包装验收测试。"""
+
 import os
 import subprocess
 import sys
@@ -12,7 +14,7 @@ from orbitai.core import migrations
 from orbitai.core.database import init_db
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 RETIRED_MODULES = (
     "orbitai/config.py",
