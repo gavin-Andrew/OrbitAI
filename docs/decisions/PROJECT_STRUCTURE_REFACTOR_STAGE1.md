@@ -1,10 +1,12 @@
 # OrbitAI 项目结构重构阶段 1 执行记录
 
+类别：结构重构决策记录
+
 状态：**阶段 1 已完成。** 提交本记录的 Git 提交是阶段 1 检查点。
 
 日期：2026-07-17
 
-对应计划：`docs/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
+对应计划：`docs/decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
 
 阶段 0 检查点：`53701fcae7e70fa4a092435ad047692d6ab40b41`
 
@@ -94,7 +96,7 @@ orbitai/
 
 ## 5. 新增测试
 
-新增 `tests/test_core_paths.py`，包含 5 项测试：
+新增测试现位于 `tests/acceptance/test_core_paths.py`，包含 5 项测试：
 
 1. 当前项目路径全部为绝对路径并与实际位置一致。
 2. 旧模块导出与 `core` 活动实现是同一对象。

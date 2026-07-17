@@ -1,10 +1,12 @@
 # OrbitAI 项目结构重构阶段 3 执行记录
 
+类别：结构重构决策记录
+
 状态：**阶段 3 已完成。**
 
 日期：2026-07-17
 
-对应计划：`docs/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
+对应计划：`docs/decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
 
 阶段 2-B 检查点：`818b3d7624012ba178e9e8fdf3fd50cc0a8172d1`
 
@@ -68,7 +70,7 @@ orbitai/catalog/
 
 ## 6. 自动化保护
 
-新增 `tests/test_module_boundaries.py`，覆盖：
+新增测试现位于 `tests/acceptance/test_module_boundaries.py`，覆盖：
 
 - 材料旧路径与新活动实现导出同一对象。
 - 目录旧路径与新活动实现导出同一对象。

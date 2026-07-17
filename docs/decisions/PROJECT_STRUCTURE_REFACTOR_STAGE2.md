@@ -1,10 +1,12 @@
 # OrbitAI 项目结构重构阶段 2 执行记录
 
+类别：结构重构决策记录
+
 状态：**阶段 2 已完成。** 阶段 2-A 行为等价拆分和经用户确认的阶段 2-B 行为切换均已落地。
 
 日期：2026-07-17
 
-对应计划：`docs/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
+对应计划：`docs/decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
 
 阶段 1 检查点：`3222e67a77b17fdb8d29a8536d08a8332fa2f4a2`
 
@@ -69,7 +71,7 @@ static/
 
 ## 5. 自动化保护
 
-新增 `tests/test_web_structure.py`，覆盖：
+新增测试现位于 `tests/acceptance/test_web_structure.py`，覆盖：
 
 - 17 条旧业务路由与 4 条新页面路由的完整集合。
 - 三个规范材料地址继续返回页面，并加载共享与材料资源。
@@ -77,7 +79,7 @@ static/
 - `/` 与六个旧页面地址返回精确的 307 状态码和目标地址。
 - 六个分层 CSS/JavaScript 资源可访问，原单体资源地址不再存在。
 
-`tests/test_catalog_page.py` 的测试桩已迁到新的 dossier 路由模块，并增加产业页资源边界断言；四大分组、26 个赛道、首批名册与通用“已建设/待建设”判断继续由原有聚焦测试保护。
+`tests/catalog/test_catalog_page.py` 的测试桩已迁到新的 dossier 路由模块，并增加产业页资源边界断言；四大分组、26 个赛道、首批名册与通用“已建设/待建设”判断继续由原有聚焦测试保护。
 
 ## 6. 阶段边界
 

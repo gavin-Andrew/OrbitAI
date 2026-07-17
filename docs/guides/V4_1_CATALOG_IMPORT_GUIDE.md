@@ -1,5 +1,7 @@
 # OrbitAI V4.1 名册导入实现与学习说明
 
+类别：操作与实现指南
+
 状态：实现说明；V4.1-A 仓储与索引、V4.1-B 校验/预览/幂等写入已经实现。名册经用户审核授权后，已于 2026-07-16 首次写入根数据库；阶段 4 后的正式活动数据库为 `var/orbitai.db`。
 
 版本：2026-07-16
@@ -13,8 +15,8 @@
 - `orbitai/catalog/repository.py`：把名册对象转换为数据库记录，集中执行查询和只增不改写入。
 - `orbitai/catalog/import_service.py`：加载 JSON、校验种子、比较数据库、输出预览，并在显式确认后执行事务写入；`orbitai/catalog_import.py` 继续提供稳定 CLI 入口。
 - `orbitai/core/migrations.py` 的 `0005` 迁移：为名称、别名、赛道反向关系、任职和来源映射建立查询索引。
-- `tests/test_catalog_import.py`：验证只读预览、身份冲突、幂等、用户修改保护和事务回滚。
-- `tests/test_migrations.py`：验证 `0005` 索引迁移。
+- `tests/catalog/test_catalog_import.py`：验证只读预览、身份冲突、幂等、用户修改保护和事务回滚。
+- `tests/migrations/test_migrations.py`：验证 `0005` 索引迁移。
 
 本次没有实现页面。名册已经通过“预览—人工审核—显式授权—事务写入”的流程进入正式数据库；页面浏览属于 V4.1-C，人工纠错属于 V4.1-D。
 
@@ -207,7 +209,7 @@ python -m orbitai.catalog_import apply `
 
 ## 8. 下一步决策点
 
-中文逐项审核和首次正式写库已经完成，审核记录保存在 `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`。以后修改种子或名册时，仍须重新生成预览并重点审核：
+中文逐项审核和首次正式写库已经完成，审核记录保存在 `docs/decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md`。以后修改种子或名册时，仍须重新生成预览并重点审核：
 
 - 6 个组织和 6 位人物的规范名称与别名。
 - Google 来源拆分操作。

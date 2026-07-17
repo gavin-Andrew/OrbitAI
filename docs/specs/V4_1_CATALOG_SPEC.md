@@ -1,15 +1,17 @@
 # OrbitAI V4.1 产业与参与者名册实现规格
 
+类别：实现规格
+
 状态：实现规格草案；“整个 V4 先只跑通一个赛道”、试点选择“通用基础模型（含大语言模型）”、首批 6 个组织与 6 位人物、V4.1 写库前 5 项处理建议，以及首个页面必须完整呈现四大目录分组，均已经用户确认。具体别名、任职日期和来源入口仍属于名册种子草案，必须经过导入预览和人工复核后才能写成正式名册。
 
 版本：2026-07-15
 
 关联文件：
 
-- `docs/ORBITAI_ROADMAP.md`
-- `docs/V4_INDUSTRY_DOSSIER_SPEC.md`
-- `docs/V4_1_CATALOG_IMPORT_GUIDE.md`
-- `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`
+- `docs/product/ORBITAI_ROADMAP.md`
+- `docs/specs/V4_INDUSTRY_DOSSIER_SPEC.md`
+- `docs/guides/V4_1_CATALOG_IMPORT_GUIDE.md`
+- `docs/decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md`
 - `data/seeds/catalog/foundation_models.v4.1.json`
 - `data/registries/sources.v4.json`
 
@@ -214,7 +216,7 @@ V4.0 已经提供 V4.1 所需的主要物理表。V4.1 优先复用这些表：
 
 ## 8. 实现切片与当前状态
 
-截至 2026-07-16，V4.1-A 与 V4.1-B 已经实现并通过临时数据库测试；名册经用户逐项审核和明确授权后，已成功首次写入根数据库。阶段 4 后的正式活动数据库为 `var/orbitai.db`；写后预览全部为 `unchanged`，审核记录见 `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`，技术背景见 `docs/V4_1_CATALOG_IMPORT_GUIDE.md`。
+截至 2026-07-16，V4.1-A 与 V4.1-B 已经实现并通过临时数据库测试；名册经用户逐项审核和明确授权后，已成功首次写入根数据库。阶段 4 后的正式活动数据库为 `var/orbitai.db`；写后预览全部为 `unchanged`，审核记录见 `docs/decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md`，技术背景见 `docs/guides/V4_1_CATALOG_IMPORT_GUIDE.md`。
 
 ### V4.1-A：仓储与索引（已实现）
 
@@ -248,7 +250,7 @@ python -m orbitai.catalog_import apply --confirm-seed-id v4_1_foundation_models_
 - 待开发：人物详情页。
 - 待开发：来源映射和冲突预览页。
 
-首个页面实现与通俗技术说明见 `docs/V4_1_CATALOG_PAGE_GUIDE.md`。
+首个页面实现与通俗技术说明见 `docs/guides/V4_1_CATALOG_PAGE_GUIDE.md`。
 
 ### V4.1-D：人工纠错（待开发）
 

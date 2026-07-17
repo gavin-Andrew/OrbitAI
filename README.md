@@ -2,7 +2,7 @@ OrbitAI
 
 OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。
 
-项目已经正式进入 V4“可追溯的 AI 动态产业档案”的开发阶段。V3 的 RSS、AI 处理、SQLite 文章库和本地 Web App 继续作为信息材料基础；V4 将逐步加入产业、赛道、参与者、关键事件和原始来源之间的可追溯关系。总体路径见 `docs/ORBITAI_ROADMAP.md`，当前实现规格草案见 `docs/V4_INDUSTRY_DOSSIER_SPEC.md`。
+项目已经正式进入 V4“可追溯的 AI 动态产业档案”的开发阶段。V3 的 RSS、AI 处理、SQLite 文章库和本地 Web App 继续作为信息材料基础；V4 将逐步加入产业、赛道、参与者、关键事件和原始来源之间的可追溯关系。总体路径见 `docs/product/ORBITAI_ROADMAP.md`，当前实现规格草案见 `docs/specs/V4_INDUSTRY_DOSSIER_SPEC.md`。
 
 它的目标是帮助用户持续收集、整理、浏览和管理 AI 及科技相关信息，避免被信息洪流淹没，同时保持完全可控、可观察的本地环境。
 
@@ -78,13 +78,15 @@ python -m orbitai.migrations up
 python -m unittest discover -s tests -v
 ```
 
-项目路径与兼容入口测试：
+项目路径与稳定 CLI 入口测试：
 
 ```powershell
-python -m unittest tests.test_core_paths -v
+python -m unittest tests.acceptance.test_core_paths -v
 ```
 
 项目结构（核心部分）
+
+```text
 OrbitAI/
 ├─ app.py                     # 薄 FastAPI 兼容启动入口
 ├─ main.py                    # RSS + AI + SQLite 流程调度
@@ -100,6 +102,17 @@ OrbitAI/
 │  └─ text_utils.py           # 通用文本辅助函数
 ├─ templates/                 # dossier/materials/admin 分层模板
 ├─ static/                    # shared 与三类页面的分层前端资源
+├─ tests/
+│  ├─ materials/              # 材料更新流程测试
+│  ├─ catalog/                # 名册与产业目录测试
+│  ├─ migrations/             # SQLite 迁移测试
+│  └─ acceptance/             # 路径、模块和 Web 验收测试
+├─ docs/
+│  ├─ product/                # 产品目标、路线图与长期方向
+│  ├─ specs/                  # 实现规格
+│  ├─ guides/                 # 操作与实现指南
+│  ├─ decisions/              # 审核、决策和阶段退出记录
+│  └─ archive/                # 已失效但仍有历史价值的说明
 ├─ data/
 │  ├─ seeds/catalog/          # V4.1 可审核名册种子
 │  ├─ registries/             # RSS 配置与 V4 来源注册表
@@ -109,6 +122,9 @@ OrbitAI/
 │  ├─ backups/                # SQLite Backup API 备份
 │  └─ snapshots/              # 待单独确认删除的历史快照，不再生成
 └─ README.md
+```
+
+文档入口与分类说明见 `docs/README.md`。
 
 Web 规范入口为 `/industries/artificial-intelligence`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。`/` 使用 HTTP 307 临时重定向进入 AI 产业目录；旧材料页和状态页 URL 继续保留，并以 307 重定向到对应规范地址。
 

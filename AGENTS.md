@@ -2,7 +2,7 @@
 
 这份文件是 Codex 和其他编程代理在本仓库中的工作指南。开始任何代码修改前，先阅读本文件。
 
-`PROJECT_GOALS.md` 是产品愿景和战略背景，不是日常编码指南。常规代码修改不需要每次重读它；当任务涉及产品方向、V4 范围、路线取舍，或本指南不足以做判断时，再查阅 `PROJECT_GOALS.md`。
+`docs/product/PROJECT_GOALS.md` 是产品愿景和战略背景，不是日常编码指南。常规代码修改不需要每次重读它；当任务涉及产品方向、V4 范围、路线取舍，或本指南不足以做判断时，再查阅该文件。
 
 ## 项目方向
 
@@ -35,7 +35,8 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 - `orbitai/migrations.py` 与 `orbitai/catalog_import.py`：仍受支持的稳定 CLI 包装；活动实现分别位于 `core/migrations.py` 与 `catalog/import_service.py`。
 - 静态快照生成、旧 `data.json` 读写、空 `models.py` 和其他旧扁平导入包装已在阶段 5 退役，不得重新作为兼容路径引入。
 - `orbitai/`：活动实现按 `core`、`materials`、`catalog`、`web` 职责组织；`text_utils.py` 继续提供通用文本辅助函数。
-- `tests/`：当前聚焦测试，优先覆盖数据库迁移和 V4 核心数据约束。
+- `tests/materials/`、`tests/catalog/`、`tests/migrations/`、`tests/acceptance/`：按职责组织材料、目录、迁移和跨模块验收测试。
+- `docs/product/`、`docs/specs/`、`docs/guides/`、`docs/decisions/`、`docs/archive/`：分别保存产品方向、实现规格、操作指南、审核/决策记录和失效历史说明；入口索引为 `docs/README.md`。
 - `templates/dossier/`、`templates/materials/`、`templates/admin/`：按页面职责拆分的 Jinja2 模板。
 - `static/shared/`、`static/dossier/`、`static/materials/`、`static/admin/`：共享基础样式和各页面边界的前端资源。
 - `var/orbitai.db`：当前唯一活动的本地 SQLite 数据库；根 `orbitai.db` 只作为阶段 4 前副本保留，不再由应用读写。
@@ -59,13 +60,13 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 - 新增研究功能时，尽量在数据模型中区分事实、观点、证据、预测和验证状态。
 - AI 生成摘要、分类、观点卡片或分析字段时，必须保留原始来源。
 - 不用流畅的 AI 文案掩盖证据不足或数据不确定。
-- 明确区分本地动态 Web App 和 GitHub 静态部署快照。
+- 当前产品只使用本地动态 Web App；如未来重新引入公开只读导出，必须另写规格，不能恢复已退役的旧快照链路。
 - 不提交密钥或 `.env` 值。
 - 数据库结构变更必须新增版本迁移，不再把新的临时 `ALTER TABLE` 直接堆进 `init_db()`。
 
 ## V4 产品优先级
 
-V4 当前名称和主线是“可追溯的 AI 动态产业档案”。总体路径见 `docs/ORBITAI_ROADMAP.md`；该路线图已经用户审核确认，是 OrbitAI 长期阶段划分和 V4 方向的正式依据。各阶段开始前仍应另写实现规格，不要把远期概念模型一次性塞入当前版本。
+V4 当前名称和主线是“可追溯的 AI 动态产业档案”。总体路径见 `docs/product/ORBITAI_ROADMAP.md`；该路线图已经用户审核确认，是 OrbitAI 长期阶段划分和 V4 方向的正式依据。各阶段开始前仍应另写实现规格，不要把远期概念模型一次性塞入当前版本。
 
 V4 首先解决“怎样把 AI 产业讲清楚”，不立即建设完整产业分析引擎。核心组织路径是：
 
@@ -78,13 +79,13 @@ V4 全阶段采用单赛道纵向试点：第一个且当前唯一的深度试�
 
 单赛道只限制当前内容范围，不限制系统模型。数据库、仓储、路由和页面能力应保持赛道通用，不能把“通用基础模型”硬编码成唯一业务对象；完整闭环验证通过后，再按同一套能力逐步补充其他赛道。
 
-V4.1 首批名册范围已经确认采用 6 个组织和 6 位人物；具体对象、身份边界、核查状态和种子字段以 `docs/V4_1_CATALOG_SPEC.md` 与 `data/seeds/catalog/foundation_models.v4.1.json` 为准。未经用户再次确认，不在 V4.1 横向扩充参与者名单；种子中的草案字段不能因为写入文件就被视为已确认事实。
+V4.1 首批名册范围已经确认采用 6 个组织和 6 位人物；具体对象、身份边界、核查状态和种子字段以 `docs/specs/V4_1_CATALOG_SPEC.md` 与 `data/seeds/catalog/foundation_models.v4.1.json` 为准。未经用户再次确认，不在 V4.1 横向扩充参与者名单；种子中的草案字段不能因为写入文件就被视为已确认事实。
 
-2026-07-16，V4.1 首批名册已经完成中文逐项审核、显式授权和首次事务写入；正式审核记录见 `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`。后续修改种子或数据库名册时，仍必须先生成预览，不得把首次授权解释为对未来修改的永久授权。
+2026-07-16，V4.1 首批名册已经完成中文逐项审核、显式授权和首次事务写入；正式审核记录见 `docs/decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md`。后续修改种子或数据库名册时，仍必须先生成预览，不得把首次授权解释为对未来修改的永久授权。
 
 V4.1-C 的首个产业目录页面已经实现，动态地址为 `/industries/artificial-intelligence`。页面按固定顺序显示四大分组和全部 26 个赛道，并根据赛道当前关联的组织、人物数量判断“已建设”或“待建设”；该判断保持赛道通用，不得改成对试点 ID 的硬编码。当前页面底部只提供首批名册摘要，独立赛道、组织、人物详情页和来源映射页仍待后续开发。
 
-当前 V4.1-C 页面只是在沿用既有 Jinja2 和 CSS 基础上建立的工程验证页，不代表最终面向用户的产品界面。用户已经明确最终 V4 页面方向：默认入口直接呈现完整的 AI 产业结构，上方使用“产业结构、企业档案、人物档案”三个一级选项；点击赛道后进入独立赛道页，赛道页上部介绍赛道及其可追溯的发展历程，下部按企业展示发展时间线，后续把已确认事件挂到时间线上并允许继续进入事件档案。四大分组之间的产业关系留到后续产业分析阶段，其他顶层产业也属于远期范围。完整方向见 `docs/V4_PRODUCT_PAGE_VISION.md`。在通用基础模型试点完整跑通前，不为了接近最终视觉而大规模重写现有 Jinja2 和 CSS；试点完成后再统一进行用户界面重设计。
+当前 V4.1-C 页面只是在沿用既有 Jinja2 和 CSS 基础上建立的工程验证页，不代表最终面向用户的产品界面。用户已经明确最终 V4 页面方向：默认入口直接呈现完整的 AI 产业结构，上方使用“产业结构、企业档案、人物档案”三个一级选项；点击赛道后进入独立赛道页，赛道页上部介绍赛道及其可追溯的发展历程，下部按企业展示发展时间线，后续把已确认事件挂到时间线上并允许继续进入事件档案。四大分组之间的产业关系留到后续产业分析阶段，其他顶层产业也属于远期范围。完整方向见 `docs/product/V4_PRODUCT_PAGE_VISION.md`。在通用基础模型试点完整跑通前，不为了接近最终视觉而大规模重写现有 Jinja2 和 CSS；试点完成后再统一进行用户界面重设计。
 
 V4.1 首个页面必须按“人工智能产业 -> 四大目录分组 -> 26 个赛道”组织内容。核心能力、基础设施、产品与应用、外部环境四大分组都是不可省略的正式层级；当前只有“通用基础模型”允许进入深度内容，其他赛道显示待建设，但四大类和空白入口仍须完整可见。
 
@@ -161,31 +162,31 @@ python -m orbitai.catalog_import apply --confirm-seed-id v4_1_foundation_models_
 V4.1-C 产业目录页面聚焦测试：
 
 ```powershell
-python -m unittest tests.test_catalog_page -v
+python -m unittest tests.catalog.test_catalog_page -v
 ```
 
 Web 路由与页面资源边界聚焦测试：
 
 ```powershell
-python -m unittest tests.test_web_structure -v
+python -m unittest tests.acceptance.test_web_structure -v
 ```
 
 项目根路径和稳定迁移 CLI 测试：
 
 ```powershell
-python -m unittest tests.test_core_paths -v
+python -m unittest tests.acceptance.test_core_paths -v
 ```
 
 运行数据路径、配置文件归位和数据库防错测试：
 
 ```powershell
-python -m unittest tests.test_runtime_paths -v
+python -m unittest tests.acceptance.test_runtime_paths -v
 ```
 
 已退役模块边界与 `main.py` 新流程语义测试：
 
 ```powershell
-python -m unittest tests.test_module_boundaries tests.test_main_pipeline -v
+python -m unittest tests.acceptance.test_module_boundaries tests.materials.test_main_pipeline -v
 ```
 
 不要把 `preview` 和 `apply` 视为等价操作；前者只读，后者会应用待执行迁移并写入业务数据。
@@ -202,4 +203,4 @@ uvicorn app:app --reload
 pip install -r requirements.txt
 ```
 
-目前还没有完整测试套件，但已经有数据库迁移的聚焦测试。新增有风险的路由、数据库或 AI 处理逻辑时，应继续补小而聚焦的测试，或记录清楚手动验证路径。
+当前共有 45 项聚焦与跨模块验收测试，但仍不代表覆盖所有网络、AI 供应商和人工工作流。新增有风险的路由、数据库或 AI 处理逻辑时，应继续补小而聚焦的测试，或记录清楚手动验证路径。

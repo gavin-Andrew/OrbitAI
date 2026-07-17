@@ -1,10 +1,12 @@
 # OrbitAI 项目结构重构阶段 4 执行记录
 
+类别：结构重构决策记录
+
 状态：**阶段 4 已完成。**
 
 日期：2026-07-17
 
-对应计划：`docs/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
+对应计划：`docs/decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
 
 阶段 3 检查点：`5c5ac0a6215695da92f6cb192f448799d68e3988`
 
@@ -65,7 +67,7 @@ Backup API 生成文件的物理哈希可以不同于源文件；完整性、迁
 
 ## 4. 旧 JSON 与快照归位
 
-旧 JSON 已完成链接和 1008 个字段值的对账，详见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE4_DATA_RECONCILIATION.md`。它保留 SQLite 中没有的逐维评分和处理时间，因此只是从根目录移动到 `data/archive/data.json`，没有删除。
+旧 JSON 已完成链接和 1008 个字段值的对账，详见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE4_DATA_RECONCILIATION.md`。它保留 SQLite 中没有的逐维评分和处理时间，因此只是从根目录移动到 `data/archive/data.json`，没有删除。
 
 三个现有静态快照移动前后哈希一致：
 
@@ -85,7 +87,7 @@ Backup API 生成文件的物理哈希可以不同于源文件；完整性、迁
 
 ## 6. 自动化保护
 
-新增 `tests/test_runtime_paths.py`，覆盖：
+新增测试现位于 `tests/acceptance/test_runtime_paths.py`，覆盖：
 
 - 运行数据与版本控制配置的集中路径。
 - 普通连接拒绝创建缺失数据库。

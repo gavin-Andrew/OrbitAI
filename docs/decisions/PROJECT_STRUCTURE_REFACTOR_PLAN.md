@@ -1,6 +1,8 @@
 # OrbitAI 项目结构重构行动计划
 
-状态：**用户已于 2026-07-17 审核确认，作为本轮项目结构重构的正式行动依据。** 默认首页、正式数据库路径和旧链路清退仍须遵守本文约定的后续确认门槛。
+类别：结构重构决策记录
+
+状态：**阶段 0 至 6 已于 2026-07-17 全部实施并通过自动验证，等待用户最终验收确认本轮重构闭环。** 根数据库副本、旧 JSON 归档、历史快照实物和兼容 URL 仍遵守各自的后续确认门槛。
 
 版本：2026-07-17
 
@@ -259,7 +261,7 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 1：建立包骨架与集中路径
 
-执行状态：**已于 2026-07-17 完成。** `core` 活动实现、旧模块兼容包装、职责包骨架、绝对项目路径和聚焦测试均已落地；数据库、种子、页面资源与路由没有移动或切换。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE1.md`。
+执行状态：**已于 2026-07-17 完成。** `core` 活动实现、旧模块兼容包装、职责包骨架、绝对项目路径和聚焦测试均已落地；数据库、种子、页面资源与路由没有移动或切换。执行证据见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE1.md`。
 
 #### 目标
 
@@ -292,7 +294,7 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 2：拆分 Web 路由、模板和静态资源
 
-执行状态：**已于 2026-07-17 完成。** 阶段 2-A 已完成应用组装、四类路由、三套模板和分层静态资源拆分；用户随后明确确认阶段 2-B，`/` 与旧页面 URL 已按路由草案切换为 HTTP 307 临时重定向。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE2.md`。
+执行状态：**已于 2026-07-17 完成。** 阶段 2-A 已完成应用组装、四类路由、三套模板和分层静态资源拆分；用户随后明确确认阶段 2-B，`/` 与旧页面 URL 已按路由草案切换为 HTTP 307 临时重定向。执行证据见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE2.md`。
 
 #### 目标
 
@@ -327,7 +329,7 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 3：材料与目录模块归位
 
-执行状态：**已于 2026-07-17 完成。** 材料与目录活动实现已经迁入职责包，动态展示辅助函数和静态快照生成实现已经分离；旧扁平模块只保留薄兼容包装，旧 JSON 与静态生成兼容实现等待阶段 5 的独立清退确认。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE3.md`。
+执行状态：**已于 2026-07-17 完成。** 材料与目录活动实现已经迁入职责包，动态展示辅助函数和静态快照生成实现已经分离；旧扁平模块只保留薄兼容包装，旧 JSON 与静态生成兼容实现等待阶段 5 的独立清退确认。执行证据见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE3.md`。
 
 #### 目标
 
@@ -362,7 +364,7 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 4：运行数据和配置文件归位
 
-执行状态：**已于 2026-07-17 完成。** 用户明确同意进入阶段 4 后，正式活动数据库已经通过 SQLite Backup API 切换到 `var/orbitai.db`；版本控制配置已归入 `data/`，旧 JSON 和快照已归档到新位置，根数据库只读保留且不再由应用访问。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE4.md`，字段级对账见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE4_DATA_RECONCILIATION.md`。
+执行状态：**已于 2026-07-17 完成。** 用户明确同意进入阶段 4 后，正式活动数据库已经通过 SQLite Backup API 切换到 `var/orbitai.db`；版本控制配置已归入 `data/`，旧 JSON 和快照已归档到新位置，根数据库只读保留且不再由应用访问。执行证据见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE4.md`，字段级对账见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE4_DATA_RECONCILIATION.md`。
 
 #### 目标
 
@@ -408,7 +410,7 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 5：退役静态快照与旧兼容实现
 
-执行状态：**已于 2026-07-17 完成已授权的代码清退。** 静态生成、旧 JSON 读写、`/admin/regenerate`、空模块和无调用方的旧扁平包装已经删除；仍作为正式命令入口的迁移与名册导入 CLI 包装继续保留。根数据库副本、旧 JSON 归档、三个现存快照文件和兼容 URL 路由未删除，等待分别确认。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE5.md`。
+执行状态：**已于 2026-07-17 完成已授权的代码清退。** 静态生成、旧 JSON 读写、`/admin/regenerate`、空模块和无调用方的旧扁平包装已经删除；仍作为正式命令入口的迁移与名册导入 CLI 包装继续保留。根数据库副本、旧 JSON 归档、三个现存快照文件和兼容 URL 路由未删除，等待分别确认。执行证据见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE5.md`。
 
 #### 目标
 
@@ -453,6 +455,8 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 6：测试、文档和指南归位
 
+执行状态：**已于 2026-07-17 完成实施与技术验收，等待用户最终确认。** 测试已按四类职责归位并形成独立检查点 `a120952`；文档已按五类职责归位，README、AGENTS 和全仓引用已经同步。执行证据见 `docs/decisions/PROJECT_STRUCTURE_REFACTOR_STAGE6.md`。
+
 #### 目标
 
 让代码结构、测试结构和项目说明保持一致，避免重构完成后指南继续描述旧路径。
@@ -493,6 +497,8 @@ python -m orbitai.catalog_import preview --summary-only
 - 所有自动验证通过。
 - 已记录一次本地应用行为验收。
 - 用户确认本轮项目结构重构完成。
+
+当前状态：前三项已经满足；最后一项等待用户查看阶段 6 结果后明确确认。
 
 ## 9. 提交与检查点策略
 

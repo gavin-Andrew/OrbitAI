@@ -1,10 +1,12 @@
 # OrbitAI 项目结构重构阶段 0 基线报告
 
+类别：结构重构决策记录
+
 状态：**阶段 0 已完成。** 用户已明确授权，重构分支已经建立，SQLite 备份已经验证；提交本报告的 Git 提交即为重构前检查点。
 
 记录时间：2026-07-17 11:59:26 +08:00
 
-对应计划：`docs/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
+对应计划：`docs/decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
 
 ## 1. Git 基线
 
@@ -22,7 +24,7 @@
 - `orbitai/migrations.py`
   - 新增迁移 `0005 catalog_lookup_indexes_v1`。
   - 为产业、赛道、组织、人物、别名、来源和反向关系查询增加索引。
-- `tests/test_migrations.py`
+- `tests/migrations/test_migrations.py`
   - 更新迁移版本预期。
   - 新增目录索引测试并保持受保护回滚测试。
 - `data/catalog/foundation_models.v4.1.json`
@@ -34,9 +36,9 @@
   - 名册写入、状态读取和产业目录查询。
 - `orbitai/catalog_service.py`
   - 按四大分组组织赛道，并依据参与者关系计算“已建设/待建设”。
-- `tests/test_catalog_import.py`
+- `tests/catalog/test_catalog_import.py`
   - 覆盖校验、只读预览、幂等写入、冲突保护和事务回滚。
-- `tests/test_catalog_page.py`
+- `tests/catalog/test_catalog_page.py`
   - 覆盖 26 赛道分组、赛道通用状态判断、页面渲染和 404。
 
 ### 2.2 V4.1-C 产业目录页面
@@ -56,25 +58,25 @@
 
 - `AGENTS.md`
   - 增加 V4 单赛道约束、V4.1 名册与目录页现状、页面长期方向和验证命令。
-- `docs/ORBITAI_ROADMAP.md`
+- `docs/product/ORBITAI_ROADMAP.md`
   - 将通用基础模型试点和 V4.1 起点更新为已确认状态。
-- `docs/V4_INDUSTRY_DOSSIER_SPEC.md`
+- `docs/specs/V4_INDUSTRY_DOSSIER_SPEC.md`
   - 补充 V4.1—V4.5 单赛道边界和页面长期方向。
-- `PROJECT_GOALS.md` -> `docs/PROJECT_GOALS.md`
+- 项目目标文档已归位至 `docs/product/PROJECT_GOALS.md`
   - 属于文档移动，同时增加已确认的单赛道约束，因此内容并非逐字节相同。
-- `docs/V4_1_CATALOG_SPEC.md`
-- `docs/V4_1_CATALOG_IMPORT_GUIDE.md`
-- `docs/V4_1_CATALOG_REVIEW_CHECKLIST.md`
-- `docs/V4_1_CATALOG_PAGE_GUIDE.md`
-- `docs/V4_PRODUCT_PAGE_VISION.md`
+- `docs/specs/V4_1_CATALOG_SPEC.md`
+- `docs/guides/V4_1_CATALOG_IMPORT_GUIDE.md`
+- `docs/decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md`
+- `docs/guides/V4_1_CATALOG_PAGE_GUIDE.md`
+- `docs/product/V4_PRODUCT_PAGE_VISION.md`
 
 审核清单顶部已经记录“全部项目确认、无修改、无暂缓、正式写库授权是”和实际写库结果。下方未勾选的选项是特意保留的原始逐项审核模板，不代表审核尚未完成。
 
 ### 2.4 本轮项目结构重构依据
 
-- `docs/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
+- `docs/decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
   - 用户已于 2026-07-17 确认其为正式行动依据。
-- `docs/PROJECT_STRUCTURE_REFACTOR_BASELINE.md`
+- `docs/decisions/PROJECT_STRUCTURE_REFACTOR_BASELINE.md`
   - 本报告，记录重构前可复查基线。
 
 ## 3. 审查结论

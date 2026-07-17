@@ -1,10 +1,12 @@
 # OrbitAI 项目结构重构阶段 5 执行记录
 
+类别：结构重构决策记录
+
 状态：**阶段 5 的代码清退已完成；实物与 URL 清退项继续等待分别确认。**
 
 日期：2026-07-17
 
-对应计划：`docs/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
+对应计划：`docs/decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`
 
 阶段 4 检查点：`a9fe9a8f`
 
@@ -67,9 +69,9 @@
 
 ## 5. 自动化保护
 
-- 新增 `tests/test_main_pipeline.py`，确认完整材料流程只调用抓取和 AI 处理，并且不再返回静态生成结果。
-- `tests/test_module_boundaries.py` 改为确认 14 个退役模块不存在，活动实现不再导入旧路径，并保护两个稳定 CLI 包装。
-- `tests/test_web_structure.py` 确认 `/admin/regenerate` 不再暴露、管理页不再显示静态生成按钮，同时继续保护尚未清退的兼容 URL。
+- 新增 `tests/materials/test_main_pipeline.py`，确认完整材料流程只调用抓取和 AI 处理，并且不再返回静态生成结果。
+- `tests/acceptance/test_module_boundaries.py` 改为确认 14 个退役模块不存在，活动实现不再导入旧路径，并保护两个稳定 CLI 包装。
+- `tests/acceptance/test_web_structure.py` 确认 `/admin/regenerate` 不再暴露、管理页不再显示静态生成按钮，同时继续保护尚未清退的兼容 URL。
 - 目录、迁移和核心路径测试改为直接导入活动实现。
 
 ## 6. 文档同步
