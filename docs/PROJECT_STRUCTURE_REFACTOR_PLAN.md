@@ -292,6 +292,8 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 2：拆分 Web 路由、模板和静态资源
 
+执行状态：**阶段 2-A 行为等价拆分已于 2026-07-17 完成；阶段 2-B 行为切换待用户确认。** 应用组装、四类路由、三套模板和分层静态资源已经落地，新旧 URL 当前同时直接渲染原有内容；`/` 尚未切换，旧 URL 也尚未改为重定向。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE2.md`。
+
 #### 目标
 
 解除产业目录对旧信息流 `base.html` 和单体 `style.css` 的结构依赖，同时保持当前视觉和业务行为。

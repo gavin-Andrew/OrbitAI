@@ -19,7 +19,7 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 
 当前应用是一个本地 Python Web App：
 
-- `app.py`：FastAPI 本地服务入口。
+- `app.py`：FastAPI 兼容启动入口，只从 `orbitai.web.app` 导出 `app` 与应用工厂。
 - `main.py`：RSS、AI 处理、SQLite 和静态生成流程调度。
 - `orbitai/core/config.py`：集中定义项目根目录、当前运行文件路径和环境配置；路径不再依赖启动时的工作目录。
 - `orbitai/core/database.py`：SQLite 连接与初始化。
@@ -27,11 +27,14 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 - `orbitai/config.py`、`orbitai/database.py`、`orbitai/migrations.py`：旧导入和 CLI 的薄兼容包装；新活动代码应直接使用 `orbitai.core`。
 - `orbitai/catalog_repository.py`：V4.1 名册集中读写与目录查询。
 - `orbitai/catalog_service.py`：把产业、四大分组、赛道和参与者整理成页面数据。
-- `orbitai/materials/`、`orbitai/catalog/`、`orbitai/web/routes/`：项目结构重构阶段 1 建立的职责包；材料、目录和路由实现将在后续对应阶段小步迁入，当前不能把空包误写成已完成迁移。
+- `orbitai/web/app.py`：FastAPI 应用组装与静态目录挂载。
+- `orbitai/web/routes/`：按 `dossier`、`materials`、`admin`、`api` 拆分的活动 Web 路由。
+- `orbitai/web/view_helpers.py`：动态材料页面使用的展示字段与模板上下文辅助函数。
+- `orbitai/materials/`、`orbitai/catalog/`：项目结构重构建立的职责包；材料和目录实现仍将在后续阶段小步迁入，当前不能把包骨架误写成已完成迁移。
 - `orbitai/`：配置、RSS、AI、数据库、仓储、评分、渲染和文本处理等核心模块。
 - `tests/`：当前聚焦测试，优先覆盖数据库迁移和 V4 核心数据约束。
-- `templates/`：Jinja2 页面模板。
-- `static/`：前端静态资源。
+- `templates/dossier/`、`templates/materials/`、`templates/admin/`：按页面职责拆分的 Jinja2 模板。
+- `static/shared/`、`static/dossier/`、`static/materials/`、`static/admin/`：共享基础样式和各页面边界的前端资源。
 - `orbitai.db`：本地 SQLite 数据库。
 - `snapshots/`：静态 HTML 快照输出目录，包含 `index.html`、`featured.html`、`daily.html`。
 
@@ -152,6 +155,12 @@ V4.1-C 产业目录页面聚焦测试：
 
 ```powershell
 python -m unittest tests.test_catalog_page -v
+```
+
+Web 路由与页面资源边界聚焦测试：
+
+```powershell
+python -m unittest tests.test_web_structure -v
 ```
 
 项目根路径、旧导入和迁移 CLI 兼容测试：

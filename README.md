@@ -77,13 +77,15 @@ python -m unittest tests.test_core_paths -v
 
 项目结构（核心部分）
 OrbitAI/
-├─ app.py                     # FastAPI 本地服务入口
+├─ app.py                     # 薄 FastAPI 兼容启动入口
 ├─ main.py                    # RSS + AI + SQLite 流程调度
 ├─ orbitai/                   # 功能模块
 │  ├─ core/                   # 配置、数据库和迁移的活动实现
-│  ├─ materials/              # 材料能力目标包，后续阶段迁入实现
-│  ├─ catalog/                # 产业目录能力目标包，后续阶段迁入实现
-│  ├─ web/routes/             # Web 路由目标包，后续阶段迁入实现
+│  ├─ materials/              # 材料能力目标包，后续阶段迁入业务实现
+│  ├─ catalog/                # 产业目录能力目标包，后续阶段迁入业务实现
+│  ├─ web/app.py              # FastAPI 应用组装
+│  ├─ web/view_helpers.py     # 动态页面展示辅助函数
+│  ├─ web/routes/             # dossier/materials/admin/api 活动路由
 │  ├─ config.py               # 旧导入兼容包装
 │  ├─ database.py             # 旧导入兼容包装
 │  ├─ migrations.py           # 旧导入与 CLI 兼容包装
@@ -94,13 +96,16 @@ OrbitAI/
 │  ├─ scoring.py
 │  ├─ html_generator.py
 │  └─ text_utils.py
-├─ templates/                 # Jinja2 页面模板
-├─ static/                    # 样式和前端逻辑
+├─ templates/                 # dossier/materials/admin 分层模板
+├─ static/                    # shared 与三类页面的分层前端资源
 ├─ data.json                  # 历史备份
 ├─ orbitai.db                 # SQLite 数据库
 ├─ snapshots/                 # 静态 HTML 快照输出目录
 ├─ sources.json               # RSS 配置
 └─ README.md
+
+Web 结构重构期间，`/`、`/featured`、`/daily` 和 `/status` 仍保持原行为；同时已提供 `/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。默认首页与旧 URL 重定向会在单独确认后切换。
+
 项目演进（简要）
 V1.x：本地 RSS 抓取与静态 HTML 展示。
 V2.x：接入 AI 处理，生成中文标题、摘要、分类、标签和多维评分，增加精选页与每日简报。

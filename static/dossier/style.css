@@ -1,0 +1,319 @@
+/* V4.1-C 产业目录 */
+.catalog-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.catalog-intro,
+.catalog-group,
+.pilot-roster {
+    background: white;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.catalog-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(220px, 0.8fr);
+    gap: 22px;
+    align-items: center;
+    margin-bottom: 18px;
+    padding: 24px;
+    border-radius: 22px;
+}
+
+.catalog-kicker,
+.catalog-group-index {
+    margin: 0 0 6px;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.catalog-intro h2,
+.pilot-roster h2 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 24px;
+}
+
+.catalog-intro p,
+.pilot-roster-header p {
+    margin: 0;
+    color: #4b5563;
+}
+
+.catalog-boundary {
+    display: grid;
+    gap: 4px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: #eff6ff;
+    color: #1e3a8a;
+}
+
+.catalog-boundary span {
+    color: #31558b;
+    font-size: 14px;
+}
+
+.catalog-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 22px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.catalog-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.legend-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+}
+
+.legend-dot--pilot {
+    background: #2563eb;
+    box-shadow: 0 0 0 4px #dbeafe;
+}
+
+.legend-dot--pending {
+    background: #cbd5e1;
+}
+
+.catalog-groups {
+    display: grid;
+    gap: 22px;
+}
+
+.catalog-group {
+    padding: 24px;
+    border-radius: 22px;
+    border-top: 4px solid #2563eb;
+}
+
+.catalog-group--infrastructure {
+    border-top-color: #0f766e;
+}
+
+.catalog-group--product_application {
+    border-top-color: #7c3aed;
+}
+
+.catalog-group--external_environment {
+    border-top-color: #b45309;
+}
+
+.catalog-group-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.catalog-group-header h2 {
+    margin: 0 0 6px;
+    font-size: 26px;
+}
+
+.catalog-group-header p:not(.catalog-group-index) {
+    max-width: 660px;
+    margin: 0;
+    color: #64748b;
+}
+
+.catalog-group-count {
+    flex: 0 0 auto;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.segment-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.segment-card {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 17px;
+    background: #f8fafc;
+}
+
+.segment-card--pilot {
+    border-color: #93c5fd;
+    background: linear-gradient(145deg, #eff6ff, #ffffff);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+}
+
+.segment-card-topline,
+.participant-panel-title,
+.pilot-roster-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.segment-status {
+    display: inline-flex;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.segment-status--pilot {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.segment-status--pending {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+.segment-number {
+    color: #94a3b8;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.segment-card h3 {
+    margin: 13px 0 7px;
+    color: #0f172a;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.segment-description {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.segment-participant-count {
+    margin: 13px 0 0;
+    color: #1e40af;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.segment-link,
+.back-to-catalog {
+    display: inline-block;
+    margin-top: 12px;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.segment-link:hover,
+.back-to-catalog:hover {
+    text-decoration: underline;
+}
+
+.pilot-roster {
+    scroll-margin-top: 20px;
+    margin-top: 28px;
+    padding: 26px;
+    border-radius: 22px;
+}
+
+.pilot-roster-header {
+    margin-bottom: 22px;
+}
+
+.pilot-roster-header > div {
+    max-width: 690px;
+}
+
+.back-to-catalog {
+    flex: 0 0 auto;
+    margin-top: 0;
+}
+
+.participant-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.participant-panel {
+    padding: 18px;
+    border-radius: 17px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.participant-panel-title {
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.participant-panel-title h3 {
+    margin: 0;
+    font-size: 19px;
+}
+
+.participant-panel-title span {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.participant-list {
+    display: grid;
+    gap: 8px;
+}
+
+.participant-item {
+    display: grid;
+    gap: 2px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+}
+
+.participant-item strong {
+    color: #111827;
+}
+
+.participant-item span {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+@media (max-width: 720px) {
+    .catalog-stats,
+    .segment-grid,
+    .participant-columns,
+    .catalog-intro {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog-group-header,
+    .pilot-roster-header {
+        display: grid;
+    }
+
+    .catalog-group-count {
+        justify-self: start;
+    }
+}

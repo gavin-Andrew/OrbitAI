@@ -90,14 +90,23 @@ class IndustryCatalogPageTests(unittest.TestCase):
         )
 
         with (
-            patch("app.load_industry_catalog", return_value=catalog),
-            patch("app.get_status_summary", return_value={"version": "test"}),
+            patch(
+                "orbitai.web.routes.dossier.load_industry_catalog",
+                return_value=catalog,
+            ),
+            patch(
+                "orbitai.web.routes.dossier.get_status_summary",
+                return_value={"version": "test"},
+            ),
         ):
             response = TestClient(app).get(
                 "/industries/artificial-intelligence"
             )
 
         self.assertEqual(response.status_code, 200)
+        self.assertIn("/static/shared/base.css", response.text)
+        self.assertIn("/static/dossier/style.css", response.text)
+        self.assertNotIn("/static/style.css", response.text)
         for expected_text in (
             "核心能力",
             "基础设施",
@@ -111,7 +120,10 @@ class IndustryCatalogPageTests(unittest.TestCase):
             self.assertIn(expected_text, response.text)
 
     def test_unknown_industry_returns_404(self):
-        with patch("app.load_industry_catalog", return_value=None):
+        with patch(
+            "orbitai.web.routes.dossier.load_industry_catalog",
+            return_value=None,
+        ):
             response = TestClient(app).get("/industries/not-found")
 
         self.assertEqual(response.status_code, 404)
