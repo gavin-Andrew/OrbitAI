@@ -793,6 +793,48 @@ def _rollback_segment_kinds_v1(connection: sqlite3.Connection) -> None:
     )
 
 
+CATALOG_LOOKUP_INDEXES_V1 = (
+    "CREATE INDEX idx_industries_name_nocase "
+    "ON industries(name COLLATE NOCASE)",
+    "CREATE INDEX idx_segments_name_nocase "
+    "ON segments(name COLLATE NOCASE)",
+    "CREATE INDEX idx_industry_segments_segment_id "
+    "ON industry_segments(segment_id)",
+    "CREATE INDEX idx_organizations_name_nocase "
+    "ON organizations(name COLLATE NOCASE)",
+    "CREATE INDEX idx_organization_aliases_alias_nocase "
+    "ON organization_aliases(alias COLLATE NOCASE)",
+    "CREATE INDEX idx_people_name_nocase "
+    "ON people(name COLLATE NOCASE)",
+    "CREATE INDEX idx_person_aliases_alias_nocase "
+    "ON person_aliases(alias COLLATE NOCASE)",
+    "CREATE INDEX idx_person_roles_organization_id "
+    "ON person_organization_roles(organization_id)",
+    "CREATE INDEX idx_organization_segments_segment_id "
+    "ON organization_segments(segment_id)",
+    "CREATE INDEX idx_person_segments_segment_id "
+    "ON person_segments(segment_id)",
+    "CREATE INDEX idx_sources_organization_id "
+    "ON sources(organization_id)",
+    "CREATE INDEX idx_sources_person_id "
+    "ON sources(person_id)",
+)
+
+
+def _create_catalog_lookup_indexes_v1(connection: sqlite3.Connection) -> None:
+    """为 V4.1 名册检索和反向关系查询建立索引。"""
+
+    _execute_statements(connection, CATALOG_LOOKUP_INDEXES_V1)
+
+
+def _drop_catalog_lookup_indexes_v1(connection: sqlite3.Connection) -> None:
+    """移除 V4.1 名册查询索引，不删除业务数据。"""
+
+    for statement in reversed(CATALOG_LOOKUP_INDEXES_V1):
+        index_name = statement.split()[2]
+        connection.execute(f"DROP INDEX IF EXISTS {index_name}")
+
+
 MIGRATIONS = (
     Migration("0001", "articles_baseline", _create_articles_baseline),
     Migration(
@@ -814,6 +856,12 @@ MIGRATIONS = (
         _upgrade_segment_kinds_v1,
         _rollback_segment_kinds_v1,
         destructive_down=True,
+    ),
+    Migration(
+        "0005",
+        "catalog_lookup_indexes_v1",
+        _create_catalog_lookup_indexes_v1,
+        _drop_catalog_lookup_indexes_v1,
     ),
 )
 

@@ -47,7 +47,7 @@ class MigrationTests(unittest.TestCase):
     def test_fresh_database_applies_all_migrations_once(self):
         self.assertEqual(
             init_db(self.database_file),
-            ["0001", "0002", "0003", "0004"],
+            ["0001", "0002", "0003", "0004", "0005"],
         )
         self.assertEqual(init_db(self.database_file), [])
 
@@ -64,7 +64,31 @@ class MigrationTests(unittest.TestCase):
         self.assertTrue(EXPECTED_V4_TABLES.issubset(table_names))
         self.assertEqual(
             [item["version"] for item in applied],
-            ["0001", "0002", "0003", "0004"],
+            ["0001", "0002", "0003", "0004", "0005"],
+        )
+
+    def test_catalog_lookup_indexes_are_created(self):
+        init_db(self.database_file)
+
+        with get_connection(self.database_file) as connection:
+            index_names = {
+                row["name"]
+                for row in connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'index'"
+                ).fetchall()
+            }
+
+        self.assertTrue(
+            {
+                "idx_organizations_name_nocase",
+                "idx_organization_aliases_alias_nocase",
+                "idx_people_name_nocase",
+                "idx_person_aliases_alias_nocase",
+                "idx_organization_segments_segment_id",
+                "idx_person_segments_segment_id",
+                "idx_sources_organization_id",
+                "idx_sources_person_id",
+            }.issubset(index_names)
         )
 
     def test_confirmed_event_type_rules_are_seeded(self):
@@ -231,7 +255,10 @@ class MigrationTests(unittest.TestCase):
                 """
             )
 
-            self.assertEqual(apply_migrations(connection), ["0004"])
+            self.assertEqual(
+                apply_migrations(connection, target_version="0004"),
+                ["0004"],
+            )
             connection.execute(
                 """
                 INSERT INTO segments (id, name, slug, segment_kind)
@@ -486,6 +513,10 @@ class MigrationTests(unittest.TestCase):
         init_db(self.database_file)
 
         with get_connection(self.database_file) as connection:
+            self.assertEqual(
+                rollback_last_migration(connection),
+                "0005",
+            )
             with self.assertRaises(RuntimeError):
                 rollback_last_migration(connection)
 

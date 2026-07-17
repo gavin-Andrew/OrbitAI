@@ -1,0 +1,1262 @@
+{
+  "schema_version": "0.1",
+  "seed_id": "v4_1_foundation_models_roster",
+  "status": "draft",
+  "version_date": "2026-07-15",
+  "spec_file": "docs/V4_1_CATALOG_SPEC.md",
+  "source_registry_file": "sources.v4.json",
+  "status_note": "单赛道范围、四大类目录、首批 6 个组织与 6 位人物，以及 5 项写库前处理决定已经用户确认；实际写库仍须经过导入预览与人工复核。",
+  "confirmed_scope": {
+    "industry_id": "artificial_intelligence",
+    "pilot_segment_id": "general_foundation_models",
+    "pilot_segment_name": "通用基础模型（含大语言模型）",
+    "segment_group_count": 4,
+    "segment_count": 26,
+    "organization_count": 6,
+    "person_count": 6,
+    "participant_source_count": 12,
+    "supplemental_source_count": 1,
+    "first_page_hierarchy": [
+      "artificial_intelligence",
+      "segment_groups",
+      "segments"
+    ],
+    "single_segment_until_v4_exit": true
+  },
+  "import_policy": {
+    "default_mode": "preview",
+    "explicit_apply_required": true,
+    "transactional": true,
+    "idempotent": true,
+    "overwrite_user_changes": false,
+    "block_unresolved_mappings": true,
+    "review_names_and_aliases_in_preview": true
+  },
+  "verification_statuses": [
+    "official_verified",
+    "secondary_verified",
+    "needs_primary_source",
+    "needs_review"
+  ],
+  "verification_sources": [
+    {
+      "id": "openai_residency_2026",
+      "publisher": "OpenAI",
+      "source_class": "official",
+      "url": "https://openai.com/residency/",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "organization:openai",
+        "role:sam_altman:openai"
+      ]
+    },
+    {
+      "id": "anthropic_builder_summit_bengaluru",
+      "publisher": "Anthropic",
+      "source_class": "official",
+      "url": "https://www.anthropic.com/events/builder-summit-bengaluru",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "organization:anthropic",
+        "role:dario_amodei:anthropic"
+      ]
+    },
+    {
+      "id": "google_deepmind_about",
+      "publisher": "Google DeepMind",
+      "source_class": "official",
+      "url": "https://deepmind.google/about/",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "organization:google_deepmind",
+        "role:demis_hassabis:google_deepmind"
+      ]
+    },
+    {
+      "id": "meta_ai_about",
+      "publisher": "Meta AI",
+      "source_class": "official",
+      "url": "https://ai.meta.com/about/",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "organization:meta_ai"
+      ]
+    },
+    {
+      "id": "meta_ai_yann_lecun_profile",
+      "publisher": "Meta AI",
+      "source_class": "official",
+      "url": "https://ai.meta.com/people/yann-lecun/",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "person:yann_lecun",
+        "role:yann_lecun:meta_ai"
+      ]
+    },
+    {
+      "id": "deepseek_model_disclosure",
+      "publisher": "DeepSeek",
+      "source_class": "official",
+      "url": "https://cdn.deepseek.com/policies/zh-CN/model-algorithm-disclosure.html",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "organization:deepseek"
+      ]
+    },
+    {
+      "id": "spacexai_company",
+      "publisher": "SpaceXAI",
+      "source_class": "official",
+      "url": "https://x.ai/company",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "organization:spacexai"
+      ]
+    },
+    {
+      "id": "reuters_liang_wenfeng_profile_2025",
+      "publisher": "Reuters",
+      "source_class": "secondary",
+      "url": "https://www.investing.com/news/stock-market-news/deepseek-founder-liang-wenfeng-puts-focus-on-chinese-innovation-3834073",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "person:liang_wenfeng",
+        "role:liang_wenfeng:deepseek"
+      ]
+    },
+    {
+      "id": "axios_spacexai_grok_4_5_2026",
+      "publisher": "Axios",
+      "source_class": "secondary",
+      "url": "https://www.axios.com/2026/07/08/spacexai-grok-new-model",
+      "verified_on": "2026-07-15",
+      "supports": [
+        "person:elon_musk",
+        "role:elon_musk:spacexai"
+      ]
+    }
+  ],
+  "industries": [
+    {
+      "id": "artificial_intelligence",
+      "name": "人工智能产业",
+      "slug": "artificial-intelligence",
+      "description": "围绕人工智能核心能力、基础设施、产品与应用以及外部环境形成的产业范围。",
+      "status": "active"
+    }
+  ],
+  "segment_groups": [
+    {
+      "id": "core_capability",
+      "name": "核心能力",
+      "display_order": 1,
+      "description": "直接形成模型智能能力的模型、推理、智能体与世界模型赛道。",
+      "segment_count": 5,
+      "content_status": "contains_pilot"
+    },
+    {
+      "id": "infrastructure",
+      "name": "基础设施",
+      "display_order": 2,
+      "description": "支撑模型训练、部署和运行的数据、芯片、算力与能源等基础条件。",
+      "segment_count": 6,
+      "content_status": "directory_only"
+    },
+    {
+      "id": "product_application",
+      "name": "产品与应用",
+      "display_order": 3,
+      "description": "将 AI 能力转化为工具、终端、机器人和行业应用的产品层。",
+      "segment_count": 8,
+      "content_status": "directory_only"
+    },
+    {
+      "id": "external_environment",
+      "name": "外部环境",
+      "display_order": 4,
+      "description": "影响 AI 产业发展的政策、安全、资本、人才、社区与采用环境。",
+      "segment_count": 7,
+      "content_status": "directory_only"
+    }
+  ],
+  "segments": [
+    {
+      "id": "general_foundation_models",
+      "name": "通用基础模型（含大语言模型）",
+      "slug": "general-foundation-models",
+      "segment_kind": "core_capability",
+      "description": "能够在多种任务和场景中复用的通用基础模型，包括大语言模型。",
+      "status": "active",
+      "content_status": "pilot_active"
+    },
+    {
+      "id": "multimodal_understanding_generation",
+      "name": "多模态理解与生成",
+      "slug": "multimodal-understanding-generation",
+      "segment_kind": "core_capability",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "reasoning_planning",
+      "name": "推理与规划",
+      "slug": "reasoning-planning",
+      "segment_kind": "core_capability",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "agent_core_capabilities",
+      "name": "智能体核心能力",
+      "slug": "agent-core-capabilities",
+      "segment_kind": "core_capability",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "world_models_physical_intelligence",
+      "name": "世界模型与物理智能",
+      "slug": "world-models-physical-intelligence",
+      "segment_kind": "core_capability",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "data",
+      "name": "数据",
+      "slug": "data",
+      "segment_kind": "infrastructure",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "ai_chips",
+      "name": "AI 芯片",
+      "slug": "ai-chips",
+      "segment_kind": "infrastructure",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "advanced_process_packaging_semiconductor_equipment",
+      "name": "先进制程、封装和半导体设备",
+      "slug": "advanced-process-packaging-semiconductor-equipment",
+      "segment_kind": "infrastructure",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "cloud_compute_platforms",
+      "name": "云计算和算力平台",
+      "slug": "cloud-compute-platforms",
+      "segment_kind": "infrastructure",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "networks_data_centers",
+      "name": "网络和数据中心",
+      "slug": "networks-data-centers",
+      "segment_kind": "infrastructure",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "power_energy_cooling",
+      "name": "电力、能源和冷却",
+      "slug": "power-energy-cooling",
+      "segment_kind": "infrastructure",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "ai_agents_software_automation",
+      "name": "AI Agent 与软件自动化",
+      "slug": "ai-agents-software-automation",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "ai_coding_productivity",
+      "name": "AI 编程和生产力工具",
+      "slug": "ai-coding-productivity",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "ai_search_assistants_content",
+      "name": "AI 搜索、助手和内容产品",
+      "slug": "ai-search-assistants-content",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "ai_devices_hardware",
+      "name": "AI 终端和智能硬件",
+      "slug": "ai-devices-hardware",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "embodied_intelligence_robotics",
+      "name": "具身智能与机器人",
+      "slug": "embodied-intelligence-robotics",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "autonomous_driving",
+      "name": "自动驾驶",
+      "slug": "autonomous-driving",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "industry_applications",
+      "name": "医疗、教育、金融、制造等行业应用",
+      "slug": "industry-applications",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "ai_for_science",
+      "name": "科学 AI",
+      "slug": "ai-for-science",
+      "segment_kind": "product_application",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "policy_regulation",
+      "name": "政策与监管",
+      "slug": "policy-regulation",
+      "segment_kind": "external_environment",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "safety_governance_standards",
+      "name": "安全治理和标准",
+      "slug": "safety-governance-standards",
+      "segment_kind": "external_environment",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "capital_financing",
+      "name": "资本和融资",
+      "slug": "capital-financing",
+      "segment_kind": "external_environment",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "talent",
+      "name": "人才",
+      "slug": "talent",
+      "segment_kind": "external_environment",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "open_source_community",
+      "name": "开源社区",
+      "slug": "open-source-community",
+      "segment_kind": "external_environment",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "customer_developer_user_adoption",
+      "name": "客户、开发者和用户采用",
+      "slug": "customer-developer-user-adoption",
+      "segment_kind": "external_environment",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    },
+    {
+      "id": "international_trade_supply_restrictions",
+      "name": "国际贸易与供应限制",
+      "slug": "international-trade-supply-restrictions",
+      "segment_kind": "external_environment",
+      "description": "",
+      "status": "active",
+      "content_status": "directory_only"
+    }
+  ],
+  "industry_segments": [
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "V4 全阶段深度试点。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "multimodal_understanding_generation",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "reasoning_planning",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "agent_core_capabilities",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "world_models_physical_intelligence",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "data",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "ai_chips",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "advanced_process_packaging_semiconductor_equipment",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "cloud_compute_platforms",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "networks_data_centers",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "power_energy_cooling",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "ai_agents_software_automation",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "ai_coding_productivity",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "ai_search_assistants_content",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "ai_devices_hardware",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "embodied_intelligence_robotics",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "autonomous_driving",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "industry_applications",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "ai_for_science",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "policy_regulation",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "safety_governance_standards",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "capital_financing",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "talent",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "open_source_community",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "customer_developer_user_adoption",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    },
+    {
+      "industry_id": "artificial_intelligence",
+      "segment_id": "international_trade_supply_restrictions",
+      "relationship_type": "contains",
+      "is_primary": 1,
+      "notes": "目录骨架，暂未建设。"
+    }
+  ],
+  "organizations": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "aliases": [],
+      "organization_type": "ai_company",
+      "homepage_url": "https://openai.com/",
+      "description": "开发通用基础模型、开发者平台和 AI 产品的研究与产品组织。",
+      "status": "active",
+      "founded_on": null,
+      "ended_on": null,
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "openai_residency_2026"
+      ],
+      "notes": "V4.1 先按品牌和研究组织层级建档，不拆分内部法律实体。"
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "aliases": [],
+      "organization_type": "ai_company",
+      "homepage_url": "https://www.anthropic.com/",
+      "description": "从事前沿模型、AI 安全研究和 Claude 产品开发的公司。",
+      "status": "active",
+      "founded_on": null,
+      "ended_on": null,
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "anthropic_builder_summit_bengaluru"
+      ],
+      "notes": "V4.1 先按品牌和研究组织层级建档。"
+    },
+    {
+      "id": "google_deepmind",
+      "name": "Google DeepMind",
+      "aliases": [
+        "DeepMind"
+      ],
+      "organization_type": "corporate_ai_lab",
+      "homepage_url": "https://deepmind.google/",
+      "description": "Google 旗下从事前沿人工智能研究、模型和科学应用的组织。",
+      "status": "active",
+      "founded_on": null,
+      "ended_on": null,
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "google_deepmind_about"
+      ],
+      "notes": "不把 Google AI 自动视为普通别名；来源注册表中两者按已确认决定拆分。"
+    },
+    {
+      "id": "meta_ai",
+      "name": "Meta AI",
+      "aliases": [
+        "AI at Meta"
+      ],
+      "organization_type": "corporate_ai_lab",
+      "homepage_url": "https://ai.meta.com/",
+      "description": "Meta 内部从事基础研究、模型、基础设施和 AI 产品创新的组织。",
+      "status": "active",
+      "founded_on": null,
+      "ended_on": null,
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "meta_ai_about"
+      ],
+      "notes": "本记录不等同于 Meta Platforms 整个公司。"
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "aliases": [
+        "深度求索"
+      ],
+      "organization_type": "ai_company",
+      "homepage_url": "https://www.deepseek.com/",
+      "description": "专注于通用基础模型和模型基础技术研究、采用开放路线的研究团队与产品品牌。",
+      "status": "active",
+      "founded_on": null,
+      "ended_on": null,
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "deepseek_model_disclosure"
+      ],
+      "notes": "先按品牌级身份建档；关联法律实体是否拆分留待后续确认。"
+    },
+    {
+      "id": "spacexai",
+      "name": "SpaceXAI",
+      "aliases": [
+        "xAI",
+        "xAI Corp."
+      ],
+      "organization_type": "ai_company",
+      "homepage_url": "https://x.ai/",
+      "description": "开发 Grok 系列通用模型、AI 产品和相关基础设施的组织。",
+      "status": "active",
+      "founded_on": null,
+      "ended_on": null,
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "spacexai_company"
+      ],
+      "notes": "采用项目确认的当前主名称；历史 xAI 与 SpaceXAI 的承继关系留到 V4.2 事件表达。"
+    }
+  ],
+  "people": [
+    {
+      "id": "sam_altman",
+      "name": "Sam Altman",
+      "aliases": [
+        "山姆·奥特曼"
+      ],
+      "description": "OpenAI 领导者，试点中用于追踪模型路线、产品化与产业判断。",
+      "status": "active",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "openai_residency_2026"
+      ]
+    },
+    {
+      "id": "dario_amodei",
+      "name": "Dario Amodei",
+      "aliases": [
+        "达里奥·阿莫迪"
+      ],
+      "description": "Anthropic 联合创始人和领导者，试点中用于追踪前沿模型与 AI 安全路线。",
+      "status": "active",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "anthropic_builder_summit_bengaluru"
+      ]
+    },
+    {
+      "id": "demis_hassabis",
+      "name": "Demis Hassabis",
+      "aliases": [
+        "戴密斯·哈萨比斯",
+        "德米斯·哈萨比斯"
+      ],
+      "description": "Google DeepMind 联合创始人和领导者，试点中用于追踪通用模型与科学 AI 路线。",
+      "status": "active",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "google_deepmind_about"
+      ]
+    },
+    {
+      "id": "yann_lecun",
+      "name": "Yann LeCun",
+      "aliases": [
+        "杨立昆",
+        "扬·勒昆"
+      ],
+      "description": "Meta AI 研究领导者，试点中用于追踪开放研究、基础模型和替代架构观点。",
+      "status": "active",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "meta_ai_yann_lecun_profile"
+      ]
+    },
+    {
+      "id": "liang_wenfeng",
+      "name": "梁文锋",
+      "aliases": [
+        "Liang Wenfeng",
+        "Wenfeng Liang"
+      ],
+      "description": "DeepSeek 创始人，试点中用于追踪中国通用基础模型、开源和工程效率路线。",
+      "status": "active",
+      "verification_status": "secondary_verified",
+      "verification_source_ids": [
+        "reuters_liang_wenfeng_profile_2025"
+      ]
+    },
+    {
+      "id": "elon_musk",
+      "name": "马斯克",
+      "aliases": [
+        "Elon Musk",
+        "埃隆·马斯克"
+      ],
+      "description": "SpaceXAI 领导者，试点中用于追踪 Grok、算力基础设施和模型路线判断。",
+      "status": "active",
+      "verification_status": "secondary_verified",
+      "verification_source_ids": [
+        "axios_spacexai_grok_4_5_2026"
+      ]
+    }
+  ],
+  "person_organization_roles": [
+    {
+      "person_id": "sam_altman",
+      "organization_id": "openai",
+      "role_title": "CEO",
+      "started_on": "",
+      "ended_on": null,
+      "is_current": 1,
+      "notes": "官网支持当前职务；本草案不推断任职起始日期。",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "openai_residency_2026"
+      ]
+    },
+    {
+      "person_id": "dario_amodei",
+      "organization_id": "anthropic",
+      "role_title": "联合创始人兼 CEO",
+      "started_on": "",
+      "ended_on": null,
+      "is_current": 1,
+      "notes": "官网支持当前职务；本草案不推断任职起始日期。",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "anthropic_builder_summit_bengaluru"
+      ]
+    },
+    {
+      "person_id": "demis_hassabis",
+      "organization_id": "google_deepmind",
+      "role_title": "联合创始人兼 CEO",
+      "started_on": "",
+      "ended_on": null,
+      "is_current": 1,
+      "notes": "官网支持当前职务；本草案不推断任职起始日期。",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "google_deepmind_about"
+      ]
+    },
+    {
+      "person_id": "yann_lecun",
+      "organization_id": "meta_ai",
+      "role_title": "首席 AI 科学家",
+      "started_on": "2013-12",
+      "ended_on": null,
+      "is_current": 1,
+      "notes": "Meta AI 人物页说明其于 2013 年 12 月加入 Facebook AI Research。",
+      "verification_status": "official_verified",
+      "verification_source_ids": [
+        "meta_ai_yann_lecun_profile"
+      ]
+    },
+    {
+      "person_id": "liang_wenfeng",
+      "organization_id": "deepseek",
+      "role_title": "创始人",
+      "started_on": "2023",
+      "ended_on": null,
+      "is_current": 1,
+      "notes": "当前由可靠二手来源支持，后续仍需补充一手来源。",
+      "verification_status": "needs_primary_source",
+      "verification_source_ids": [
+        "reuters_liang_wenfeng_profile_2025"
+      ]
+    },
+    {
+      "person_id": "elon_musk",
+      "organization_id": "spacexai",
+      "role_title": "CEO",
+      "started_on": "",
+      "ended_on": null,
+      "is_current": 1,
+      "notes": "当前由可靠二手来源支持；SpaceXAI 与历史 xAI 的承继边界及任职起点仍待一手来源补强。",
+      "verification_status": "needs_primary_source",
+      "verification_source_ids": [
+        "axios_spacexai_grok_4_5_2026"
+      ]
+    }
+  ],
+  "organization_segments": [
+    {
+      "organization_id": "openai",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点组织。"
+    },
+    {
+      "organization_id": "anthropic",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点组织。"
+    },
+    {
+      "organization_id": "google_deepmind",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点组织。"
+    },
+    {
+      "organization_id": "meta_ai",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点组织。"
+    },
+    {
+      "organization_id": "deepseek",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点组织。"
+    },
+    {
+      "organization_id": "spacexai",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点组织。"
+    }
+  ],
+  "person_segments": [
+    {
+      "person_id": "sam_altman",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点人物。"
+    },
+    {
+      "person_id": "dario_amodei",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点人物。"
+    },
+    {
+      "person_id": "demis_hassabis",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点人物。"
+    },
+    {
+      "person_id": "yann_lecun",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点人物。"
+    },
+    {
+      "person_id": "liang_wenfeng",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点人物。"
+    },
+    {
+      "person_id": "elon_musk",
+      "segment_id": "general_foundation_models",
+      "relationship_type": "participant",
+      "notes": "首批试点人物。"
+    }
+  ],
+  "source_registry_operations": [
+    {
+      "operation": "split",
+      "from_source_id": "google_deepmind_google_ai",
+      "to_source_ids": [
+        "google_deepmind",
+        "google_ai"
+      ],
+      "status": "confirmed",
+      "notes": "将原组合来源拆成参与者来源 Google DeepMind 与补充来源 Google AI；实际写入仍通过导入预览确认。"
+    }
+  ],
+  "sources": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "source_type": "organization",
+      "tier": "core",
+      "organization_id": "openai",
+      "person_id": null,
+      "registry_action": "map_existing",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 OpenAI 的模型、研究、开发者平台和产品发布。",
+      "notes": "复用 sources.v4.json 现有来源。",
+      "entries": [
+        {
+          "id": "openai_news_rss",
+          "entry_type": "rss",
+          "label": "OpenAI News RSS",
+          "url": "https://openai.com/news/rss.xml",
+          "status": "enabled",
+          "existing_in_sources_json": 1,
+          "notes": "复用现有 RSS。"
+        }
+      ]
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "source_type": "organization",
+      "tier": "core",
+      "organization_id": "anthropic",
+      "person_id": null,
+      "registry_action": "map_existing",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 Claude、前沿模型研究、AI 安全和政策材料。",
+      "notes": "复用 sources.v4.json 现有来源。",
+      "entries": [
+        {
+          "id": "anthropic_news_web",
+          "entry_type": "website",
+          "label": "Anthropic News",
+          "url": "https://www.anthropic.com/news",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "复用现有规划入口。"
+        }
+      ]
+    },
+    {
+      "id": "google_deepmind",
+      "name": "Google DeepMind",
+      "source_type": "organization",
+      "tier": "core",
+      "organization_id": "google_deepmind",
+      "person_id": null,
+      "registry_action": "create_from_split",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 Google DeepMind 的前沿模型、基础研究和科学 AI 材料。",
+      "notes": "由 sources.v4.json 的组合来源拆分，并明确映射到 Google DeepMind 参与者。",
+      "entries": [
+        {
+          "id": "deepmind_news_web",
+          "entry_type": "website",
+          "label": "Google DeepMind News",
+          "url": "https://deepmind.google/discover/blog/",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "该入口可明确映射 Google DeepMind。"
+        }
+      ]
+    },
+    {
+      "id": "google_ai",
+      "name": "Google AI",
+      "source_type": "organization",
+      "tier": "watched",
+      "organization_id": null,
+      "person_id": null,
+      "registry_action": "create_from_split",
+      "mapping_status": "intentionally_unbound",
+      "tracking_reason": "保留 Google AI Blog 中超出 Google DeepMind 参与者边界的补充材料。",
+      "notes": "由 sources.v4.json 的组合来源拆分；本期不为它新增参与者身份，也不计入 12 个核心参与者来源。",
+      "entries": [
+        {
+          "id": "google_ai_blog_rss",
+          "entry_type": "rss",
+          "label": "Google AI Blog RSS",
+          "url": "https://feeds.feedburner.com/blogspot/gJZg",
+          "status": "enabled",
+          "existing_in_sources_json": 1,
+          "notes": "保留为补充来源，不自动映射为 Google DeepMind 材料。"
+        }
+      ]
+    },
+    {
+      "id": "meta_ai",
+      "name": "Meta AI",
+      "source_type": "organization",
+      "tier": "core",
+      "organization_id": "meta_ai",
+      "person_id": null,
+      "registry_action": "map_existing",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 Meta AI 的基础研究、模型和开放生态材料。",
+      "notes": "复用 sources.v4.json 现有来源。",
+      "entries": [
+        {
+          "id": "meta_ai_blog_web",
+          "entry_type": "website",
+          "label": "Meta AI Blog",
+          "url": "https://ai.meta.com/blog/",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "复用现有规划入口。"
+        }
+      ]
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "source_type": "organization",
+      "tier": "core",
+      "organization_id": "deepseek",
+      "person_id": null,
+      "registry_action": "propose_create",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 DeepSeek 的模型发布、技术报告、开源权重和 API 变化。",
+      "notes": "sources.v4.json 尚无该来源，V4.1 提议新增。",
+      "entries": [
+        {
+          "id": "deepseek_news_web",
+          "entry_type": "website",
+          "label": "DeepSeek API News",
+          "url": "https://api-docs.deepseek.com/zh-cn/news/",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "官方模型发布与 API 变更入口。"
+        }
+      ]
+    },
+    {
+      "id": "spacexai",
+      "name": "SpaceXAI",
+      "source_type": "organization",
+      "tier": "core",
+      "organization_id": "spacexai",
+      "person_id": null,
+      "registry_action": "map_existing",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 Grok 模型、产品、研究和算力基础设施。",
+      "notes": "复用 sources.v4.json 现有来源，并沿用项目确认的主名称。",
+      "entries": [
+        {
+          "id": "spacexai_news_web",
+          "entry_type": "website",
+          "label": "SpaceXAI News",
+          "url": "https://x.ai/news",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "复用现有规划入口。"
+        }
+      ]
+    },
+    {
+      "id": "sam_altman",
+      "name": "Sam Altman",
+      "source_type": "person",
+      "tier": "core",
+      "organization_id": null,
+      "person_id": "sam_altman",
+      "registry_action": "map_existing",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 OpenAI 战略、模型能力和产品化判断。",
+      "notes": "复用 sources.v4.json 现有人物源。",
+      "entries": [
+        {
+          "id": "sam_altman_manual",
+          "entry_type": "manual",
+          "label": "访谈、博客、长文和发布会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "高价值材料先手动录入。"
+        }
+      ]
+    },
+    {
+      "id": "dario_amodei",
+      "name": "Dario Amodei",
+      "source_type": "person",
+      "tier": "core",
+      "organization_id": null,
+      "person_id": "dario_amodei",
+      "registry_action": "map_existing",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 Anthropic 路线、Scaling、AI 安全和企业 AI 判断。",
+      "notes": "复用 sources.v4.json 现有人物源。",
+      "entries": [
+        {
+          "id": "dario_amodei_manual",
+          "entry_type": "manual",
+          "label": "访谈、Anthropic 文章和政策材料",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "高价值材料先手动录入。"
+        }
+      ]
+    },
+    {
+      "id": "demis_hassabis",
+      "name": "Demis Hassabis",
+      "source_type": "person",
+      "tier": "core",
+      "organization_id": null,
+      "person_id": "demis_hassabis",
+      "registry_action": "propose_create",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 Google DeepMind 的通用模型、科学 AI 和长期研究判断。",
+      "notes": "sources.v4.json 只有悬空 related_source_id，V4.1 提议补齐人物源。",
+      "entries": [
+        {
+          "id": "demis_hassabis_manual",
+          "entry_type": "manual",
+          "label": "访谈、演讲、Google DeepMind 文章和发布会",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "高价值材料先手动录入。"
+        }
+      ]
+    },
+    {
+      "id": "yann_lecun",
+      "name": "Yann LeCun",
+      "source_type": "person",
+      "tier": "core",
+      "organization_id": null,
+      "person_id": "yann_lecun",
+      "registry_action": "propose_create",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪基础模型架构、世界模型、开放研究和异质观点。",
+      "notes": "sources.v4.json 只有悬空 related_source_id，V4.1 提议补齐人物源。",
+      "entries": [
+        {
+          "id": "yann_lecun_profile_web",
+          "entry_type": "website",
+          "label": "Yann LeCun - AI at Meta",
+          "url": "https://ai.meta.com/people/yann-lecun/",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "人物身份和研究入口。"
+        }
+      ]
+    },
+    {
+      "id": "liang_wenfeng",
+      "name": "梁文锋",
+      "source_type": "person",
+      "tier": "core",
+      "organization_id": null,
+      "person_id": "liang_wenfeng",
+      "registry_action": "propose_create",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 DeepSeek 的模型路线、开源策略、工程效率和产业判断。",
+      "notes": "sources.v4.json 尚无该人物源，V4.1 提议新增；一手固定入口仍待补充。",
+      "entries": [
+        {
+          "id": "liang_wenfeng_manual",
+          "entry_type": "manual",
+          "label": "访谈、演讲和公开材料",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "暂不假设存在稳定的个人官方入口。"
+        }
+      ]
+    },
+    {
+      "id": "elon_musk",
+      "name": "马斯克",
+      "source_type": "person",
+      "tier": "core",
+      "organization_id": null,
+      "person_id": "elon_musk",
+      "registry_action": "map_existing",
+      "mapping_status": "confirmed",
+      "tracking_reason": "追踪 SpaceXAI、Grok、算力基础设施和模型路线判断。",
+      "notes": "复用 sources.v4.json 现有人物源；本试点不接入 X 平台级自动抓取。",
+      "entries": [
+        {
+          "id": "elon_musk_manual",
+          "entry_type": "manual",
+          "label": "访谈、发布会和公开材料",
+          "url": null,
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "高价值材料先手动录入。"
+        }
+      ]
+    }
+  ]
+}

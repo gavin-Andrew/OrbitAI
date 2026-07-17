@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
 </head>
 <body>
-    <main class="page">
+    <main class="page" id="top">
         <section class="header">
             <div class="header-main">
                 <div>
@@ -18,10 +18,11 @@
 
                 <div class="status-pill">
                     <span class="status-dot"></span>
-                    {{ status.version }}
+                    {% block header_badge %}{{ status.version }}{% endblock %}
                 </div>
             </div>
 
+            {% block header_stats %}
             <div class="stats stats-grid">
                 <span class="stat">
                     <strong>{{ stat_label }}</strong>
@@ -45,9 +46,11 @@
                 </span>
                 {% endif %}
             </div>
+            {% endblock %}
         </section>
 
         <nav class="nav">
+            <a class="nav-link {% if active_page == 'industry_catalog' %}active{% endif %}" href="{{ url_for('industry_catalog_page', industry_slug='artificial-intelligence') }}">产业目录</a>
             <a class="nav-link {% if active_page == 'index' %}active{% endif %}" href="/">全部信息</a>
             <a class="nav-link {% if active_page == 'featured' %}active{% endif %}" href="/featured">精选信息</a>
             <a class="nav-link {% if active_page == 'daily' %}active{% endif %}" href="/daily">每日简报</a>
@@ -58,7 +61,7 @@
         {% block content %}{% endblock %}
 
         <footer class="footer">
-            Generated dynamically by OrbitAI V3.6 · {{ generated_at }}
+            Generated dynamically by {% block footer_product %}OrbitAI V3.6{% endblock %} · {{ generated_at }}
         </footer>
     </main>
 

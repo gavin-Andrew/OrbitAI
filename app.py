@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from orbitai.repository import get_all_articles, get_status_summary
+from orbitai.catalog_service import load_industry_catalog
 from orbitai.ai_processor import item_is_ai_complete
 from orbitai.scoring import get_featured_items, sort_items_by_score
 from orbitai.html_generator import (
@@ -510,6 +511,35 @@ def daily_html_page(request: Request):
     兼容旧静态 HTML 导航链接。
     """
     return daily_page(request)
+
+
+@app.get("/industries/{industry_slug}")
+def industry_catalog_page(request: Request, industry_slug: str):
+    """V4.1-C：显示一个产业的四大分组和完整赛道目录。"""
+
+    catalog = load_industry_catalog(industry_slug)
+    if catalog is None:
+        raise HTTPException(status_code=404, detail="未找到该产业目录")
+
+    status = {
+        **get_status_summary(),
+        "version": "V4.1-C",
+    }
+
+    return templates.TemplateResponse(
+        request=request,
+        name="industry_catalog.html",
+        context={
+            "request": request,
+            "page_title": catalog["industry"]["name"],
+            "page_subtitle": "从四大目录分组进入 26 个 AI 产业赛道",
+            "active_page": "industry_catalog",
+            "catalog": catalog,
+            "status": status,
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        },
+    )
+
 
 @app.get("/status")
 def status_page(request: Request):
