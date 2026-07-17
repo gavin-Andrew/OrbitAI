@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 
-from orbitai.database import get_connection, init_db
+from orbitai.core.database import get_connection, init_db
 from orbitai.data_utils import create_empty_ai_fields
 
 

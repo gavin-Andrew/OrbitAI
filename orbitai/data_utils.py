@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timezone
 
-from orbitai.config import DATA_FILE
+from orbitai.core.config import DATA_FILE
 from orbitai.text_utils import clean_html
 
 

@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from orbitai.core.config import STATIC_DIR, TEMPLATES_DIR
 from orbitai.repository import get_all_articles, get_status_summary
 from orbitai.catalog_service import load_industry_catalog
 from orbitai.ai_processor import item_is_ai_complete
@@ -30,9 +31,9 @@ app = FastAPI(
     version="3.6.0",
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
 def build_admin_response(result: dict):

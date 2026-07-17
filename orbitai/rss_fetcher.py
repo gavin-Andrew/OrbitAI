@@ -7,7 +7,7 @@ from urllib.request import Request, urlopen
 import certifi
 import feedparser
 
-from orbitai.config import (
+from orbitai.core.config import (
     SOURCES_FILE,
     RSS_MAX_ITEMS_PER_SOURCE,
     RSS_RETRY_TIMES,

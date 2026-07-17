@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from orbitai.catalog_repository import CatalogRepository
-from orbitai.database import get_connection, init_db
+from orbitai.core.database import get_connection, init_db
 
 
 # 四大分组的名称、解释和顺序属于页面展示规则。

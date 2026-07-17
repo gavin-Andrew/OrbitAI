@@ -259,6 +259,8 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 1：建立包骨架与集中路径
 
+执行状态：**已于 2026-07-17 完成。** `core` 活动实现、旧模块兼容包装、职责包骨架、绝对项目路径和聚焦测试均已落地；数据库、种子、页面资源与路由没有移动或切换。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE1.md`。
+
 #### 目标
 
 建立新职责目录，但暂不改变路由、页面、数据库位置和业务行为。

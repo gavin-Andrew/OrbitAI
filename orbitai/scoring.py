@@ -1,4 +1,4 @@
-from orbitai.config import (
+from orbitai.core.config import (
     AI_SCORE_KEYS,
     FINAL_SCORE_WEIGHTS,
     FEATURED_SCORE_THRESHOLD,

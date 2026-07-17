@@ -1,7 +1,7 @@
 from datetime import datetime
 from html import escape
 
-from orbitai.config import (
+from orbitai.core.config import (
     HTML_FILE,
     FEATURED_FILE,
     DAILY_FILE,

@@ -3,7 +3,7 @@ import re
 from datetime import datetime, timezone
 
 from orbitai.ai_client import create_ai_client, request_chat_completion
-from orbitai.config import (
+from orbitai.core.config import (
     AI_PROVIDER,
     AI_BASE_URL,
     AI_MODEL,

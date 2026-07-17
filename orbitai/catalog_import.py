@@ -19,15 +19,17 @@ from orbitai.catalog_repository import (
     CatalogSchemaError,
     iter_catalog_records,
 )
-from orbitai.database import get_connection, init_db
-
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_SEED_FILE = (
-    PROJECT_ROOT / "data" / "catalog" / "foundation_models.v4.1.json"
+from orbitai.core.config import (
+    CATALOG_SEED_FILE,
+    DATABASE_FILE,
+    SOURCE_REGISTRY_FILE,
 )
-DEFAULT_SOURCE_REGISTRY_FILE = PROJECT_ROOT / "sources.v4.json"
-DEFAULT_DATABASE_FILE = PROJECT_ROOT / "orbitai.db"
+from orbitai.core.database import get_connection, init_db
+
+
+DEFAULT_SEED_FILE = CATALOG_SEED_FILE
+DEFAULT_SOURCE_REGISTRY_FILE = SOURCE_REGISTRY_FILE
+DEFAULT_DATABASE_FILE = DATABASE_FILE
 
 ID_PATTERN = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*$")
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")

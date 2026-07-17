@@ -69,12 +69,24 @@ python -m orbitai.migrations up
 python -m unittest discover -s tests -v
 ```
 
+项目路径与兼容入口测试：
+
+```powershell
+python -m unittest tests.test_core_paths -v
+```
+
 项目结构（核心部分）
 OrbitAI/
 ├─ app.py                     # FastAPI 本地服务入口
 ├─ main.py                    # RSS + AI + SQLite 流程调度
 ├─ orbitai/                   # 功能模块
-│  ├─ config.py
+│  ├─ core/                   # 配置、数据库和迁移的活动实现
+│  ├─ materials/              # 材料能力目标包，后续阶段迁入实现
+│  ├─ catalog/                # 产业目录能力目标包，后续阶段迁入实现
+│  ├─ web/routes/             # Web 路由目标包，后续阶段迁入实现
+│  ├─ config.py               # 旧导入兼容包装
+│  ├─ database.py             # 旧导入兼容包装
+│  ├─ migrations.py           # 旧导入与 CLI 兼容包装
 │  ├─ data_utils.py
 │  ├─ rss_fetcher.py
 │  ├─ ai_client.py

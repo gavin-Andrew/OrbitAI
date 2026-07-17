@@ -2,7 +2,7 @@ import json
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from orbitai.config import (
+from orbitai.core.config import (
     AI_API_KEY,
     AI_BASE_URL,
     AI_MODEL,
