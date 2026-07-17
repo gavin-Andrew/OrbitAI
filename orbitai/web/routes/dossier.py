@@ -4,8 +4,8 @@ from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request
 
-from orbitai.catalog_service import load_industry_catalog
-from orbitai.repository import get_status_summary
+from orbitai.catalog.service import load_industry_catalog
+from orbitai.materials.repository import get_status_summary
 from orbitai.web.templating import templates
 
 

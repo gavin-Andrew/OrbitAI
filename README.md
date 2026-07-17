@@ -81,20 +81,22 @@ OrbitAI/
 ├─ main.py                    # RSS + AI + SQLite 流程调度
 ├─ orbitai/                   # 功能模块
 │  ├─ core/                   # 配置、数据库和迁移的活动实现
-│  ├─ materials/              # 材料能力目标包，后续阶段迁入业务实现
-│  ├─ catalog/                # 产业目录能力目标包，后续阶段迁入业务实现
+│  ├─ materials/              # 字段、仓储、RSS、AI 与评分活动实现
+│  ├─ catalog/                # 名册导入、仓储与目录服务活动实现
 │  ├─ web/app.py              # FastAPI 应用组装
 │  ├─ web/view_helpers.py     # 动态页面展示辅助函数
+│  ├─ web/static_snapshots.py # 临时保留的静态快照生成实现
 │  ├─ web/routes/             # dossier/materials/admin/api 活动路由
 │  ├─ config.py               # 旧导入兼容包装
 │  ├─ database.py             # 旧导入兼容包装
 │  ├─ migrations.py           # 旧导入与 CLI 兼容包装
-│  ├─ data_utils.py
-│  ├─ rss_fetcher.py
-│  ├─ ai_client.py
-│  ├─ ai_processor.py
-│  ├─ scoring.py
-│  ├─ html_generator.py
+│  ├─ data_utils.py           # 旧文章字段/JSON 导入兼容包装
+│  ├─ rss_fetcher.py          # 旧 RSS 导入兼容包装
+│  ├─ ai_client.py            # 旧 AI 客户端导入兼容包装
+│  ├─ ai_processor.py         # 旧 AI 处理导入兼容包装
+│  ├─ scoring.py              # 旧评分导入兼容包装
+│  ├─ catalog_*.py            # 旧目录导入与 CLI 兼容包装
+│  ├─ html_generator.py       # 旧展示/快照导入兼容包装
 │  └─ text_utils.py
 ├─ templates/                 # dossier/materials/admin 分层模板
 ├─ static/                    # shared 与三类页面的分层前端资源
@@ -105,6 +107,8 @@ OrbitAI/
 └─ README.md
 
 Web 规范入口为 `/industries/artificial-intelligence`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。`/` 使用 HTTP 307 临时重定向进入 AI 产业目录；旧材料页和状态页 URL 继续保留，并以 307 重定向到对应规范地址。
+
+活动业务代码应直接从 `orbitai.materials`、`orbitai.catalog`、`orbitai.web` 或 `orbitai.core` 导入。根 `orbitai/*.py` 中对应的旧模块只用于短期兼容，等待后续确认清退。
 
 项目演进（简要）
 V1.x：本地 RSS 抓取与静态 HTML 展示。

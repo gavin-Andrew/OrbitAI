@@ -8,7 +8,7 @@ from pathlib import Path
 from orbitai import config as legacy_config
 from orbitai import database as legacy_database
 from orbitai import migrations as legacy_migrations
-from orbitai.catalog_import import (
+from orbitai.catalog.import_service import (
     DEFAULT_DATABASE_FILE,
     DEFAULT_SEED_FILE,
     DEFAULT_SOURCE_REGISTRY_FILE,

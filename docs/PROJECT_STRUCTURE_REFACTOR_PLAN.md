@@ -327,6 +327,8 @@ python -m orbitai.catalog_import preview --summary-only
 
 ### 阶段 3：材料与目录模块归位
 
+执行状态：**已于 2026-07-17 完成。** 材料与目录活动实现已经迁入职责包，动态展示辅助函数和静态快照生成实现已经分离；旧扁平模块只保留薄兼容包装，旧 JSON 与静态生成兼容实现等待阶段 5 的独立清退确认。执行证据见 `docs/PROJECT_STRUCTURE_REFACTOR_STAGE3.md`。
+
 #### 目标
 
 把活动业务代码迁入按职责命名的包，停止以 V3/V4 区分活动模块。

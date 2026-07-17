@@ -5,10 +5,14 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, RedirectResponse
 
 from main import run_ai_only, run_fetch_only, run_regenerate_static
-from orbitai.html_generator import get_display_category, get_display_title
-from orbitai.repository import get_status_summary
+from orbitai.materials.repository import get_status_summary
 from orbitai.web.templating import templates
-from orbitai.web.view_helpers import get_display_score, get_short_summary
+from orbitai.web.view_helpers import (
+    get_display_category,
+    get_display_score,
+    get_display_title,
+    get_short_summary,
+)
 
 
 router = APIRouter()

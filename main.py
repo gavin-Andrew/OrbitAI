@@ -1,13 +1,13 @@
-from orbitai.repository import (
+from orbitai.materials.repository import (
     get_all_articles,
     get_existing_links_from_db,
     insert_articles,
     get_unprocessed_articles,
     update_article_ai,
 )
-from orbitai.rss_fetcher import load_sources, fetch_rss
-from orbitai.ai_processor import process_ai_items
-from orbitai.html_generator import (
+from orbitai.materials.rss import load_sources, fetch_rss
+from orbitai.materials.ai_processor import process_ai_items
+from orbitai.web.static_snapshots import (
     generate_html,
     generate_featured_html,
     generate_daily_html,

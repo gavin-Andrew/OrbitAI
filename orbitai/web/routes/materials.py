@@ -3,11 +3,12 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 
-from orbitai.html_generator import get_display_category, get_today_items
-from orbitai.scoring import get_featured_items, sort_items_by_score
+from orbitai.materials.scoring import get_featured_items, sort_items_by_score
 from orbitai.web.templating import templates
 from orbitai.web.view_helpers import (
     build_template_context,
+    get_display_category,
+    get_today_items,
     is_ai_processed_for_display,
     load_articles_from_db,
     sort_items_by_time,

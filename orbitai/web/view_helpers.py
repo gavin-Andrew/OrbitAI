@@ -4,16 +4,58 @@ from datetime import datetime
 
 from fastapi import Request
 
-from orbitai.ai_processor import item_is_ai_complete
-from orbitai.html_generator import (
-    get_display_category,
-    get_display_summary,
-    get_display_title,
-    get_today_items,
-)
-from orbitai.repository import get_all_articles, get_status_summary
-from orbitai.scoring import get_featured_items
+from orbitai.materials.ai_processor import item_is_ai_complete
+from orbitai.materials.repository import get_all_articles, get_status_summary
+from orbitai.materials.scoring import get_featured_items
 from orbitai.text_utils import clean_html, truncate_text
+
+
+def get_display_title(item: dict) -> str:
+    """优先返回 AI 中文标题，缺失时回退到原始标题。"""
+
+    title_cn = item.get("ai", {}).get("title_cn", "")
+    if title_cn:
+        return title_cn
+    return item.get("title", "无标题")
+
+
+def get_display_summary(item: dict) -> str:
+    """优先返回 AI 中文摘要，缺失时回退到原始摘要。"""
+
+    ai_summary = item.get("ai", {}).get("summary", "")
+    if ai_summary:
+        return ai_summary
+    return item.get("summary_original", "")
+
+
+def get_display_category(item: dict) -> str:
+    """优先返回 AI 分类，缺失时回退到规则分类。"""
+
+    ai_category = item.get("ai", {}).get("category", "")
+    if ai_category:
+        return ai_category
+    return item.get("category_rule", "其他")
+
+
+def parse_item_date(item: dict):
+    """从抓取时间解析本地日期。"""
+
+    fetched_at = str(item.get("fetched_at", "")).strip()
+    if not fetched_at:
+        return None
+
+    try:
+        parsed_time = datetime.fromisoformat(fetched_at.replace("Z", "+00:00"))
+        return parsed_time.astimezone().date()
+    except ValueError:
+        return None
+
+
+def get_today_items(items: list[dict]) -> list[dict]:
+    """筛选今天抓取的文章。"""
+
+    today = datetime.now().astimezone().date()
+    return [item for item in items if parse_item_date(item) == today]
 
 
 def load_articles_from_db() -> list[dict]:

@@ -5,7 +5,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-from orbitai.catalog_import import (
+from orbitai.catalog.import_service import (
     CatalogImportBlocked,
     apply_catalog_seed,
     load_json_document,
@@ -13,7 +13,7 @@ from orbitai.catalog_import import (
     preview_catalog_import,
     validate_catalog_seed,
 )
-from orbitai.catalog_repository import iter_catalog_records
+from orbitai.catalog.repository import iter_catalog_records
 from orbitai.database import get_connection, init_db
 
 

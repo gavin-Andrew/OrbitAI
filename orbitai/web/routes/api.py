@@ -4,10 +4,13 @@ from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from orbitai.html_generator import get_today_items
-from orbitai.repository import get_status_summary
-from orbitai.scoring import get_featured_items, sort_items_by_score
-from orbitai.web.view_helpers import load_articles_from_db, sort_items_by_time
+from orbitai.materials.repository import get_status_summary
+from orbitai.materials.scoring import get_featured_items, sort_items_by_score
+from orbitai.web.view_helpers import (
+    get_today_items,
+    load_articles_from_db,
+    sort_items_by_time,
+)
 
 
 router = APIRouter()

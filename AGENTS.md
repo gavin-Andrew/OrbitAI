@@ -25,14 +25,17 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 - `orbitai/core/database.py`：SQLite 连接与初始化。
 - `orbitai/core/migrations.py`：SQLite 版本迁移、状态检查和受保护回滚。
 - `orbitai/config.py`、`orbitai/database.py`、`orbitai/migrations.py`：旧导入和 CLI 的薄兼容包装；新活动代码应直接使用 `orbitai.core`。
-- `orbitai/catalog_repository.py`：V4.1 名册集中读写与目录查询。
-- `orbitai/catalog_service.py`：把产业、四大分组、赛道和参与者整理成页面数据。
+- `orbitai/materials/`：文章字段、SQLite 文章仓储、RSS、AI 客户端与处理、评分等材料能力的活动实现；`legacy_json.py` 只临时保留待对账清退的旧 `data.json` 读写。
+- `orbitai/catalog/repository.py`：V4.1 名册集中读写与目录查询的活动实现。
+- `orbitai/catalog/service.py`：把产业、四大分组、赛道和参与者整理成页面数据。
+- `orbitai/catalog/import_service.py`：名册校验、只读预览与显式事务写入实现。
 - `orbitai/web/app.py`：FastAPI 应用组装与静态目录挂载。
 - `orbitai/web/routes/`：按 `dossier`、`materials`、`admin`、`api` 拆分的活动 Web 路由。
-- `orbitai/web/view_helpers.py`：动态材料页面使用的展示字段与模板上下文辅助函数。
+- `orbitai/web/view_helpers.py`：动态页面使用的展示字段、日期筛选与模板上下文辅助函数。
+- `orbitai/web/static_snapshots.py`：等待后续清退的静态 HTML 快照生成实现；动态 Web 页面不得新增对它的依赖。
 - 当前规范页面地址为 `/industries/{industry_slug}`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`；`/` 使用 HTTP 307 临时重定向到 AI 产业目录，旧材料页与状态页地址也使用 307 重定向到对应规范地址。
-- `orbitai/materials/`、`orbitai/catalog/`：项目结构重构建立的职责包；材料和目录实现仍将在后续阶段小步迁入，当前不能把包骨架误写成已完成迁移。
-- `orbitai/`：配置、RSS、AI、数据库、仓储、评分、渲染和文本处理等核心模块。
+- `orbitai/repository.py`、`rss_fetcher.py`、`ai_client.py`、`ai_processor.py`、`scoring.py`、`data_utils.py`、`catalog_repository.py`、`catalog_service.py`、`catalog_import.py`、`html_generator.py`：旧导入或 CLI 的薄兼容包装；新活动代码禁止继续引用这些旧路径。
+- `orbitai/`：除薄兼容包装外，活动实现按 `core`、`materials`、`catalog`、`web` 职责组织。
 - `tests/`：当前聚焦测试，优先覆盖数据库迁移和 V4 核心数据约束。
 - `templates/dossier/`、`templates/materials/`、`templates/admin/`：按页面职责拆分的 Jinja2 模板。
 - `static/shared/`、`static/dossier/`、`static/materials/`、`static/admin/`：共享基础样式和各页面边界的前端资源。
@@ -168,6 +171,12 @@ python -m unittest tests.test_web_structure -v
 
 ```powershell
 python -m unittest tests.test_core_paths -v
+```
+
+材料、目录、展示和静态生成模块边界测试：
+
+```powershell
+python -m unittest tests.test_module_boundaries -v
 ```
 
 不要把 `preview` 和 `apply` 视为等价操作；前者只读，后者会应用待执行迁移并写入业务数据。
