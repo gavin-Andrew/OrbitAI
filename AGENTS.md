@@ -30,6 +30,7 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 - `orbitai/web/app.py`：FastAPI 应用组装与静态目录挂载。
 - `orbitai/web/routes/`：按 `dossier`、`materials`、`admin`、`api` 拆分的活动 Web 路由。
 - `orbitai/web/view_helpers.py`：动态材料页面使用的展示字段与模板上下文辅助函数。
+- 当前规范页面地址为 `/industries/{industry_slug}`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`；`/` 使用 HTTP 307 临时重定向到 AI 产业目录，旧材料页与状态页地址也使用 307 重定向到对应规范地址。
 - `orbitai/materials/`、`orbitai/catalog/`：项目结构重构建立的职责包；材料和目录实现仍将在后续阶段小步迁入，当前不能把包骨架误写成已完成迁移。
 - `orbitai/`：配置、RSS、AI、数据库、仓储、评分、渲染和文本处理等核心模块。
 - `tests/`：当前聚焦测试，优先覆盖数据库迁移和 V4 核心数据约束。

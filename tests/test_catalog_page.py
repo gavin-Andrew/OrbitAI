@@ -107,6 +107,9 @@ class IndustryCatalogPageTests(unittest.TestCase):
         self.assertIn("/static/shared/base.css", response.text)
         self.assertIn("/static/dossier/style.css", response.text)
         self.assertNotIn("/static/style.css", response.text)
+        self.assertIn('href="/materials"', response.text)
+        self.assertIn('href="/materials/featured"', response.text)
+        self.assertIn('href="/admin/status"', response.text)
         for expected_text in (
             "核心能力",
             "基础设施",

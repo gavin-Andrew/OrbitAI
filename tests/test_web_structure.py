@@ -46,7 +46,7 @@ class WebStructureTests(unittest.TestCase):
 
         self.assertEqual(actual_routes, expected_routes)
 
-    def test_material_pages_use_layered_assets_on_old_and_new_urls(self):
+    def test_canonical_material_pages_use_layered_assets(self):
         status = {
             "version": "test",
             "today_count": 0,
@@ -63,12 +63,6 @@ class WebStructureTests(unittest.TestCase):
             ),
         ):
             for path in (
-                "/",
-                "/index.html",
-                "/featured",
-                "/featured.html",
-                "/daily",
-                "/daily.html",
                 "/materials",
                 "/materials/featured",
                 "/materials/daily",
@@ -79,15 +73,35 @@ class WebStructureTests(unittest.TestCase):
                     self.assertIn("/static/shared/base.css", response.text)
                     self.assertIn("/static/materials/style.css", response.text)
                     self.assertNotIn("/static/style.css", response.text)
+                    self.assertIn('href="/materials"', response.text)
+                    self.assertIn('href="/admin/status"', response.text)
 
-    def test_admin_old_and_new_urls_use_admin_assets(self):
-        for path in ("/status", "/admin/status"):
+    def test_admin_canonical_url_uses_admin_assets(self):
+        response = self.client.get("/admin/status")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("/static/shared/base.css", response.text)
+        self.assertIn("/static/admin/style.css", response.text)
+        self.assertIn("/static/admin/app.js", response.text)
+        self.assertIn('href="/materials"', response.text)
+        self.assertIn('href="/admin/status"', response.text)
+
+    def test_root_and_legacy_urls_use_temporary_redirects(self):
+        expected_redirects = {
+            "/": "/industries/artificial-intelligence",
+            "/index.html": "/materials",
+            "/featured": "/materials/featured",
+            "/featured.html": "/materials/featured",
+            "/daily": "/materials/daily",
+            "/daily.html": "/materials/daily",
+            "/status": "/admin/status",
+        }
+
+        for path, target in expected_redirects.items():
             with self.subTest(path=path):
-                response = self.client.get(path)
-                self.assertEqual(response.status_code, 200)
-                self.assertIn("/static/shared/base.css", response.text)
-                self.assertIn("/static/admin/style.css", response.text)
-                self.assertIn("/static/admin/app.js", response.text)
+                response = self.client.get(path, follow_redirects=False)
+                self.assertEqual(response.status_code, 307)
+                self.assertEqual(response.headers["location"], target)
 
     def test_static_assets_are_partitioned_by_page_boundary(self):
         for path in (

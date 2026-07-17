@@ -1,6 +1,7 @@
 """信息材料页面路由。"""
 
 from fastapi import APIRouter, Request
+from fastapi.responses import RedirectResponse
 
 from orbitai.html_generator import get_display_category, get_today_items
 from orbitai.scoring import get_featured_items, sort_items_by_score
@@ -16,9 +17,8 @@ from orbitai.web.view_helpers import (
 router = APIRouter()
 
 
-@router.get("/")
-def home(request: Request):
-    """保留现有信息流首页。"""
+def render_materials_home(request: Request):
+    """渲染信息材料首页。"""
 
     items = sort_items_by_time(load_articles_from_db())
     context = build_template_context(
@@ -37,22 +37,31 @@ def home(request: Request):
     )
 
 
+@router.get("/")
+def home():
+    """临时重定向到当前 AI 产业目录规范地址。"""
+
+    return RedirectResponse(
+        url="/industries/artificial-intelligence",
+        status_code=307,
+    )
+
+
 @router.get("/materials")
 def materials_home(request: Request):
-    """信息材料模块的新入口。"""
+    """信息材料模块的规范入口。"""
 
-    return home(request)
+    return render_materials_home(request)
 
 
 @router.get("/index.html")
-def index_html_page(request: Request):
-    """兼容旧静态首页地址。"""
+def index_html_page():
+    """把旧静态首页地址重定向到材料模块。"""
 
-    return home(request)
+    return RedirectResponse(url="/materials", status_code=307)
 
 
-@router.get("/featured")
-def featured_page(request: Request):
+def render_featured_page(request: Request):
     """显示按综合分排序的精选信息。"""
 
     items = sort_items_by_score(get_featured_items(load_articles_from_db()))
@@ -78,20 +87,26 @@ def featured_page(request: Request):
 
 @router.get("/materials/featured")
 def materials_featured_page(request: Request):
-    """精选信息模块的新地址。"""
+    """精选信息模块的规范地址。"""
 
-    return featured_page(request)
+    return render_featured_page(request)
+
+
+@router.get("/featured")
+def legacy_featured_page():
+    """把旧精选页地址重定向到材料模块。"""
+
+    return RedirectResponse(url="/materials/featured", status_code=307)
 
 
 @router.get("/featured.html")
-def featured_html_page(request: Request):
-    """兼容旧静态精选页地址。"""
+def featured_html_page():
+    """把旧静态精选页地址重定向到材料模块。"""
 
-    return featured_page(request)
+    return RedirectResponse(url="/materials/featured", status_code=307)
 
 
-@router.get("/daily")
-def daily_page(request: Request):
+def render_daily_page(request: Request):
     """显示按分类组织的每日信息简报。"""
 
     items = sort_items_by_score(get_today_items(load_articles_from_db()))
@@ -135,13 +150,20 @@ def daily_page(request: Request):
 
 @router.get("/materials/daily")
 def materials_daily_page(request: Request):
-    """每日简报模块的新地址。"""
+    """每日简报模块的规范地址。"""
 
-    return daily_page(request)
+    return render_daily_page(request)
+
+
+@router.get("/daily")
+def legacy_daily_page():
+    """把旧每日简报地址重定向到材料模块。"""
+
+    return RedirectResponse(url="/materials/daily", status_code=307)
 
 
 @router.get("/daily.html")
-def daily_html_page(request: Request):
-    """兼容旧静态每日简报地址。"""
+def daily_html_page():
+    """把旧静态每日简报地址重定向到材料模块。"""
 
-    return daily_page(request)
+    return RedirectResponse(url="/materials/daily", status_code=307)

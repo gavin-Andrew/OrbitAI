@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Request
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from main import run_ai_only, run_fetch_only, run_regenerate_static
 from orbitai.html_generator import get_display_category, get_display_title
@@ -63,15 +63,15 @@ def render_status_page(request: Request):
 
 
 @router.get("/status")
-def status_page(request: Request):
-    """保留现有状态页地址。"""
+def status_page():
+    """把旧状态页地址重定向到管理模块。"""
 
-    return render_status_page(request)
+    return RedirectResponse(url="/admin/status", status_code=307)
 
 
 @router.get("/admin/status")
 def admin_status_page(request: Request):
-    """管理模块的状态页新地址。"""
+    """管理模块的状态页规范地址。"""
 
     return render_status_page(request)
 

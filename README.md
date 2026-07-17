@@ -104,7 +104,7 @@ OrbitAI/
 ├─ sources.json               # RSS 配置
 └─ README.md
 
-Web 结构重构期间，`/`、`/featured`、`/daily` 和 `/status` 仍保持原行为；同时已提供 `/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。默认首页与旧 URL 重定向会在单独确认后切换。
+Web 规范入口为 `/industries/artificial-intelligence`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。`/` 使用 HTTP 307 临时重定向进入 AI 产业目录；旧材料页和状态页 URL 继续保留，并以 307 重定向到对应规范地址。
 
 项目演进（简要）
 V1.x：本地 RSS 抓取与静态 HTML 展示。

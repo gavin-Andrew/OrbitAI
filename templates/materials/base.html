@@ -52,10 +52,10 @@
 
         <nav class="nav">
             <a class="nav-link {% if active_page == 'industry_catalog' %}active{% endif %}" href="{{ url_for('industry_catalog_page', industry_slug='artificial-intelligence') }}">产业目录</a>
-            <a class="nav-link {% if active_page == 'index' %}active{% endif %}" href="/">全部信息</a>
-            <a class="nav-link {% if active_page == 'featured' %}active{% endif %}" href="/featured">精选信息</a>
-            <a class="nav-link {% if active_page == 'daily' %}active{% endif %}" href="/daily">每日简报</a>
-            <a class="nav-link {% if active_page == 'status' %}active{% endif %}" href="/status">状态页</a>
+            <a class="nav-link {% if active_page == 'index' %}active{% endif %}" href="/materials">全部信息</a>
+            <a class="nav-link {% if active_page == 'featured' %}active{% endif %}" href="/materials/featured">精选信息</a>
+            <a class="nav-link {% if active_page == 'daily' %}active{% endif %}" href="/materials/daily">每日简报</a>
+            <a class="nav-link {% if active_page == 'status' %}active{% endif %}" href="/admin/status">状态页</a>
             <a class="nav-link" href="/api/status" target="_blank" rel="noopener noreferrer">状态 JSON</a>
         </nav>
 
