@@ -313,6 +313,7 @@ button.button {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
     gap: 16px;
+}
 
 @media (max-width: 920px) {
     .stats-grid {

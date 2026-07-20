@@ -1,0 +1,69 @@
+{% extends "dossier/base.html" %}
+
+{% block content %}
+<section class="structure-overview" aria-labelledby="structure-title">
+    <div class="structure-overview__copy">
+        <p class="dossier-kicker">产业认知入口</p>
+        <h2 id="structure-title">先看清产业由哪些部分组成</h2>
+        <p>
+            当前目录保留 {{ catalog.group_count }} 个大类和 {{ catalog.segment_count }} 个赛道。
+            高亮赛道已经建立首批参与者名册，可以进入独立档案；其余赛道先保留准确位置。
+        </p>
+    </div>
+    <dl class="structure-summary">
+        <div><dt>大类</dt><dd>{{ catalog.group_count }}</dd></div>
+        <div><dt>赛道</dt><dd>{{ catalog.segment_count }}</dd></div>
+        <div><dt>已建设</dt><dd>{{ catalog.built_count }}</dd></div>
+    </dl>
+</section>
+
+<section class="industry-map" aria-label="人工智能产业结构图">
+    <div class="industry-map__root">
+        <span>INDUSTRY</span>
+        <strong>{{ catalog.industry.name }}</strong>
+        <small>{{ catalog.segment_count }} 个细分赛道</small>
+    </div>
+
+    {% for group in catalog.groups %}
+    <section class="industry-branch industry-branch--{{ group.id }}">
+        <header class="industry-branch__heading">
+            <div>
+                <span>0{{ loop.index }}</span>
+                <h2>{{ group.name }}</h2>
+            </div>
+            <small>{{ group.segment_count }} 个赛道</small>
+        </header>
+        <p class="industry-branch__description">{{ group.description }}</p>
+
+        <ul class="segment-list">
+            {% for segment in group.segments %}
+            <li>
+                {% if segment.is_built %}
+                <a class="segment-node segment-node--built"
+                   href="{{ url_for('segment_profile_page', segment_slug=segment.slug) }}">
+                    <span>
+                        <strong>{{ segment.name }}</strong>
+                        <small>{{ segment.organization_count }} 家组织 · {{ segment.person_count }} 位人物</small>
+                    </span>
+                    <b aria-hidden="true">→</b>
+                </a>
+                {% else %}
+                <div class="segment-node segment-node--pending">
+                    <span>
+                        <strong>{{ segment.name }}</strong>
+                        <small>内容待建设</small>
+                    </span>
+                </div>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endfor %}
+</section>
+
+<aside class="scope-note">
+    <strong>当前试点边界</strong>
+    <p>V4 先完整跑通“通用基础模型（含大语言模型）”一个赛道；其他赛道只展示产业位置，不伪造参与者或发展历史。</p>
+</aside>
+{% endblock %}

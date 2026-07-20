@@ -28,10 +28,11 @@ OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。项�
 - `orbitai/catalog/repository.py`：V4.1 名册集中读写与目录查询的活动实现。
 - `orbitai/catalog/service.py`：把产业、四大分组、赛道和参与者整理成页面数据。
 - `orbitai/catalog/import_service.py`：名册校验、只读预览与显式事务写入实现。
+- `orbitai/catalog/edit_service.py`：V4.1-D 名册差异预览、版本冲突、身份冲突、事务保存和修改记录实现。
 - `orbitai/web/app.py`：FastAPI 应用组装与静态目录挂载。
 - `orbitai/web/routes/`：按 `dossier`、`materials`、`admin`、`api` 拆分的活动 Web 路由。
 - `orbitai/web/view_helpers.py`：动态页面使用的展示字段、日期筛选与模板上下文辅助函数。
-- 当前规范页面地址为 `/industries/{industry_slug}`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`；`/` 使用 HTTP 307 临时重定向到 AI 产业目录，旧材料页与状态页地址也使用 307 重定向到对应规范地址。
+- 产业档案阅读端的规范页面地址为 `/industries/{industry_slug}`、`/organizations`、`/people` 和 `/segments/{segment_slug}`；材料与管理端地址为 `/materials`、`/materials/featured`、`/materials/daily`、`/admin/status` 和 `/admin/catalog`。`/` 使用 HTTP 307 临时重定向到 AI 产业结构，旧材料页与状态页地址也使用 307 重定向到对应规范地址。
 - `orbitai/migrations.py` 与 `orbitai/catalog_import.py`：仍受支持的稳定 CLI 包装；活动实现分别位于 `core/migrations.py` 与 `catalog/import_service.py`。
 - 静态快照生成、旧 `data.json` 读写、空 `models.py` 和其他旧扁平导入包装已在阶段 5 退役，不得重新作为兼容路径引入。
 - `orbitai/`：活动实现按 `core`、`materials`、`catalog`、`web` 职责组织；`text_utils.py` 继续提供通用文本辅助函数。
@@ -83,9 +84,11 @@ V4.1 首批名册范围已经确认采用 6 个组织和 6 位人物；具体对
 
 2026-07-16，V4.1 首批名册已经完成中文逐项审核、显式授权和首次事务写入；正式审核记录见 `docs/decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md`。后续修改种子或数据库名册时，仍必须先生成预览，不得把首次授权解释为对未来修改的永久授权。
 
-V4.1-C 的首个产业目录页面已经实现，动态地址为 `/industries/artificial-intelligence`。页面按固定顺序显示四大分组和全部 26 个赛道，并根据赛道当前关联的组织、人物数量判断“已建设”或“待建设”；该判断保持赛道通用，不得改成对试点 ID 的硬编码。当前页面底部只提供首批名册摘要，独立赛道、组织、人物详情页和来源映射页仍待后续开发。
+V4.1-C 的产业档案阅读端骨架已经实现。顶部固定“产业结构、企业档案、人物档案”三个一级入口；动态地址分别为 `/industries/artificial-intelligence`、`/organizations` 和 `/people`。产业结构按固定顺序显示四大分组和全部 26 个赛道，并根据赛道当前关联的组织、人物数量判断“已建设”或“待建设”；该判断保持赛道通用，不得改成对试点 ID 的硬编码。
 
-当前 V4.1-C 页面只是在沿用既有 Jinja2 和 CSS 基础上建立的工程验证页，不代表最终面向用户的产品界面。用户已经明确最终 V4 页面方向：默认入口直接呈现完整的 AI 产业结构，上方使用“产业结构、企业档案、人物档案”三个一级选项；点击赛道后进入独立赛道页，赛道页上部介绍赛道及其可追溯的发展历程，下部按企业展示发展时间线，后续把已确认事件挂到时间线上并允许继续进入事件档案。四大分组之间的产业关系留到后续产业分析阶段，其他顶层产业也属于远期范围。完整方向见 `docs/product/V4_PRODUCT_PAGE_VISION.md`。在通用基础模型试点完整跑通前，不为了接近最终视觉而大规模重写现有 Jinja2 和 CSS；试点完成后再统一进行用户界面重设计。
+产业档案已经使用独立的 `templates/dossier/base.html` 与 `static/dossier/style.css`，不再继承材料信息流的页面外壳。点击已建设赛道后进入通用的 `/segments/{segment_slug}` 独立赛道页；页面上部介绍赛道，下部为参与者和未来企业时间线保留位置。V4.2 事件完成前，发展历程与时间线必须明确显示等待事件数据，不得用无来源生成内容填满。独立组织详情页、独立人物详情页和来源映射页仍待后续开发。四大分组之间的产业关系留到后续产业分析阶段，其他顶层产业也属于远期范围。完整方向见 `docs/product/V4_PRODUCT_PAGE_VISION.md`，当前实现说明见 `docs/guides/V4_DOSSIER_READER_SHELL_GUIDE.md`。
+
+V4.1-D 的最小人工纠错入口已经实现，地址为 `/admin/catalog`。当前只允许编辑组织和人物的规范名称、简介、状态、别名，以及组织类型和官网；任职、赛道关系和来源映射不进入这张最小表单。编辑必须先预览，后端使用完整可编辑快照的 SHA-256 指纹检查并发冲突，并使用与种子导入相同的名称规范化规则检查身份冲突。真正保存时必须在同一 `BEGIN IMMEDIATE` 事务中再次检查版本、更新业务表并写入 `catalog_change_log`；任何一步失败都要整体回滚。错误对象使用归档，不默认物理删除。具体说明见 `docs/guides/V4_1_CATALOG_ADMIN_GUIDE.md`。
 
 V4.1 首个页面必须按“人工智能产业 -> 四大目录分组 -> 26 个赛道”组织内容。核心能力、基础设施、产品与应用、外部环境四大分组都是不可省略的正式层级；当前只有“通用基础模型”允许进入深度内容，其他赛道显示待建设，但四大类和空白入口仍须完整可见。
 
@@ -159,7 +162,7 @@ V4.1 名册真实写入必须先审核完整预览，并显式确认种子 ID：
 python -m orbitai.catalog_import apply --confirm-seed-id v4_1_foundation_models_roster --summary-only
 ```
 
-V4.1-C 产业目录页面聚焦测试：
+V4.1-C 产业档案阅读端聚焦测试：
 
 ```powershell
 python -m unittest tests.catalog.test_catalog_page -v
@@ -169,6 +172,12 @@ Web 路由与页面资源边界聚焦测试：
 
 ```powershell
 python -m unittest tests.acceptance.test_web_structure -v
+```
+
+V4.1-D 名册编辑、冲突、事务与修改记录聚焦测试：
+
+```powershell
+python -m unittest tests.catalog.test_catalog_edit -v
 ```
 
 项目根路径和稳定迁移 CLI 测试：
@@ -203,4 +212,4 @@ uvicorn app:app --reload
 pip install -r requirements.txt
 ```
 
-当前共有 45 项聚焦与跨模块验收测试，但仍不代表覆盖所有网络、AI 供应商和人工工作流。新增有风险的路由、数据库或 AI 处理逻辑时，应继续补小而聚焦的测试，或记录清楚手动验证路径。
+当前共有 59 项聚焦与跨模块验收测试，但仍不代表覆盖所有网络、AI 供应商和人工工作流。新增有风险的路由、数据库或 AI 处理逻辑时，应继续补小而聚焦的测试，或记录清楚手动验证路径。

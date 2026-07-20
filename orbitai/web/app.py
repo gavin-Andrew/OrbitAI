@@ -12,8 +12,8 @@ def create_app() -> FastAPI:
 
     application = FastAPI(
         title="OrbitAI",
-        description="OrbitAI V3.6 - Local Web Interaction Enhanced",
-        version="3.6.0",
+        description="OrbitAI - 本地优先的个人产业认知系统",
+        version="4.1.0",
     )
     application.mount(
         "/static",

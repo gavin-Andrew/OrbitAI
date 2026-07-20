@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from collections import Counter
 from dataclasses import dataclass, field
@@ -357,6 +358,336 @@ class CatalogRepository:
                 s.name COLLATE NOCASE
             """,
             (industry_id,),
+        )
+        return self._rows_as_dicts(cursor)
+
+    def get_segment_by_slug(self, slug: str) -> dict[str, Any] | None:
+        """读取一个赛道，并带回它所属的主要产业。"""
+
+        self.ensure_schema()
+        cursor = self.connection.execute(
+            """
+            SELECT
+                s.id,
+                s.name,
+                s.slug,
+                s.segment_kind,
+                s.description,
+                industry.id AS industry_id,
+                industry.name AS industry_name,
+                industry.slug AS industry_slug,
+                (
+                    SELECT COUNT(DISTINCT organization_id)
+                    FROM organization_segments
+                    WHERE segment_id = s.id
+                ) AS organization_count,
+                (
+                    SELECT COUNT(DISTINCT person_id)
+                    FROM person_segments
+                    WHERE segment_id = s.id
+                ) AS person_count
+            FROM segments AS s
+            LEFT JOIN industry_segments AS industry_link
+                ON industry_link.segment_id = s.id
+                AND industry_link.is_primary = 1
+            LEFT JOIN industries AS industry
+                ON industry.id = industry_link.industry_id
+                AND industry.status = 'active'
+            WHERE s.slug = ? AND s.status = 'active'
+            ORDER BY industry.name COLLATE NOCASE
+            LIMIT 1
+            """,
+            (slug,),
+        )
+        rows = self._rows_as_dicts(cursor)
+        return rows[0] if rows else None
+
+    def list_active_organizations(self) -> list[dict[str, Any]]:
+        """读取企业与机构档案入口需要的基础信息。"""
+
+        self.ensure_schema()
+        cursor = self.connection.execute(
+            """
+            SELECT
+                o.id,
+                o.name,
+                o.organization_type,
+                o.homepage_url,
+                o.description,
+                o.founded_on,
+                COUNT(DISTINCT segment_link.segment_id) AS segment_count
+            FROM organizations AS o
+            LEFT JOIN organization_segments AS segment_link
+                ON segment_link.organization_id = o.id
+            WHERE o.status = 'active'
+            GROUP BY
+                o.id,
+                o.name,
+                o.organization_type,
+                o.homepage_url,
+                o.description,
+                o.founded_on
+            ORDER BY o.name COLLATE NOCASE
+            """
+        )
+        return self._rows_as_dicts(cursor)
+
+    def list_organization_aliases(self) -> list[dict[str, Any]]:
+        """读取全部有效组织别名，由服务层按组织归组。"""
+
+        self.ensure_schema()
+        cursor = self.connection.execute(
+            """
+            SELECT alias.organization_id, alias.alias
+            FROM organization_aliases AS alias
+            JOIN organizations AS organization
+                ON organization.id = alias.organization_id
+            WHERE organization.status = 'active'
+            ORDER BY alias.organization_id, alias.alias COLLATE NOCASE
+            """
+        )
+        return self._rows_as_dicts(cursor)
+
+    def list_active_people(self) -> list[dict[str, Any]]:
+        """读取人物档案入口需要的基础信息。"""
+
+        self.ensure_schema()
+        cursor = self.connection.execute(
+            """
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                COUNT(DISTINCT segment_link.segment_id) AS segment_count
+            FROM people AS p
+            LEFT JOIN person_segments AS segment_link
+                ON segment_link.person_id = p.id
+            WHERE p.status = 'active'
+            GROUP BY p.id, p.name, p.description
+            ORDER BY p.name COLLATE NOCASE
+            """
+        )
+        return self._rows_as_dicts(cursor)
+
+    def list_person_aliases(self) -> list[dict[str, Any]]:
+        """读取全部有效人物别名，由服务层按人物归组。"""
+
+        self.ensure_schema()
+        cursor = self.connection.execute(
+            """
+            SELECT alias.person_id, alias.alias
+            FROM person_aliases AS alias
+            JOIN people AS person ON person.id = alias.person_id
+            WHERE person.status = 'active'
+            ORDER BY alias.person_id, alias.alias COLLATE NOCASE
+            """
+        )
+        return self._rows_as_dicts(cursor)
+
+    def list_current_person_roles(self) -> list[dict[str, Any]]:
+        """读取人物当前任职关系，由服务层放回相应人物档案。"""
+
+        self.ensure_schema()
+        cursor = self.connection.execute(
+            """
+            SELECT
+                role.person_id,
+                role.organization_id,
+                organization.name AS organization_name,
+                role.role_title,
+                role.started_on
+            FROM person_organization_roles AS role
+            JOIN people AS person ON person.id = role.person_id
+            JOIN organizations AS organization
+                ON organization.id = role.organization_id
+            WHERE role.is_current = 1
+                AND person.status = 'active'
+                AND organization.status = 'active'
+            ORDER BY
+                role.person_id,
+                organization.name COLLATE NOCASE,
+                role.role_title COLLATE NOCASE
+            """
+        )
+        return self._rows_as_dicts(cursor)
+
+    def get_entity_for_edit(
+        self,
+        entity_type: str,
+        entity_id: str,
+    ) -> dict[str, Any] | None:
+        """读取一个可管理的组织或人物，包括已经归档的记录。"""
+
+        self.ensure_schema()
+        table = {
+            "organization": "organizations",
+            "person": "people",
+        }.get(entity_type)
+        if table is None:
+            raise ValueError(f"不支持的名册对象类型：{entity_type}")
+
+        cursor = self.connection.execute(
+            f"SELECT * FROM {table} WHERE id = ?",
+            (entity_id,),
+        )
+        rows = self._rows_as_dicts(cursor)
+        return rows[0] if rows else None
+
+    def list_entity_aliases_for_edit(
+        self,
+        entity_type: str,
+        entity_id: str,
+    ) -> list[str]:
+        """读取一个组织或人物的全部别名。"""
+
+        config = {
+            "organization": ("organization_aliases", "organization_id"),
+            "person": ("person_aliases", "person_id"),
+        }.get(entity_type)
+        if config is None:
+            raise ValueError(f"不支持的名册对象类型：{entity_type}")
+        table, owner_field = config
+        rows = self.connection.execute(
+            f"""
+            SELECT alias FROM {table}
+            WHERE {owner_field} = ?
+            ORDER BY alias COLLATE NOCASE
+            """,
+            (entity_id,),
+        ).fetchall()
+        return [row["alias"] for row in rows]
+
+    def update_entity_for_edit(
+        self,
+        entity_type: str,
+        entity_id: str,
+        values: dict[str, Any],
+        updated_at: str,
+    ) -> None:
+        """更新经过服务层校验的有限字段。"""
+
+        allowed_fields = {
+            "organization": {
+                "name",
+                "organization_type",
+                "homepage_url",
+                "description",
+                "status",
+            },
+            "person": {"name", "description", "status"},
+        }
+        fields = allowed_fields.get(entity_type)
+        if fields is None:
+            raise ValueError(f"不支持的名册对象类型：{entity_type}")
+        if not set(values).issubset(fields):
+            unexpected = sorted(set(values) - fields)
+            raise ValueError(f"不允许修改字段：{', '.join(unexpected)}")
+
+        table = "organizations" if entity_type == "organization" else "people"
+        assignments = [f"{field_name} = ?" for field_name in values]
+        assignments.append("updated_at = ?")
+        parameters = [values[field_name] for field_name in values]
+        parameters.extend((updated_at, entity_id))
+        cursor = self.connection.execute(
+            f"UPDATE {table} SET {', '.join(assignments)} WHERE id = ?",
+            parameters,
+        )
+        if cursor.rowcount != 1:
+            raise LookupError(f"名册对象不存在：{entity_type}:{entity_id}")
+
+    def replace_entity_aliases(
+        self,
+        entity_type: str,
+        entity_id: str,
+        aliases: list[str],
+    ) -> None:
+        """在当前事务中整体替换别名集合。"""
+
+        config = {
+            "organization": ("organization_aliases", "organization_id"),
+            "person": ("person_aliases", "person_id"),
+        }.get(entity_type)
+        if config is None:
+            raise ValueError(f"不支持的名册对象类型：{entity_type}")
+        table, owner_field = config
+        self.connection.execute(
+            f"DELETE FROM {table} WHERE {owner_field} = ?",
+            (entity_id,),
+        )
+        self.connection.executemany(
+            f"INSERT INTO {table} ({owner_field}, alias) VALUES (?, ?)",
+            ((entity_id, alias) for alias in aliases),
+        )
+
+    def insert_catalog_change_log(
+        self,
+        *,
+        entity_type: str,
+        entity_id: str,
+        action: str,
+        changes: dict[str, Any],
+        before: dict[str, Any],
+        after: dict[str, Any],
+        change_reason: str,
+        actor: str,
+        expected_revision: str,
+        result_revision: str,
+    ) -> int:
+        """写入与业务修改处于同一事务的审计记录。"""
+
+        cursor = self.connection.execute(
+            """
+            INSERT INTO catalog_change_log (
+                entity_type,
+                entity_id,
+                action,
+                changed_fields_json,
+                before_json,
+                after_json,
+                change_reason,
+                actor,
+                expected_revision,
+                result_revision
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                entity_type,
+                entity_id,
+                action,
+                json.dumps(changes, ensure_ascii=False, sort_keys=True),
+                json.dumps(before, ensure_ascii=False, sort_keys=True),
+                json.dumps(after, ensure_ascii=False, sort_keys=True),
+                change_reason,
+                actor,
+                expected_revision,
+                result_revision,
+            ),
+        )
+        return int(cursor.lastrowid)
+
+    def list_catalog_change_log(self, limit: int = 30) -> list[dict[str, Any]]:
+        """读取最近的名册修改记录。"""
+
+        cursor = self.connection.execute(
+            """
+            SELECT
+                id,
+                entity_type,
+                entity_id,
+                action,
+                changed_fields_json,
+                before_json,
+                after_json,
+                change_reason,
+                actor,
+                expected_revision,
+                result_revision,
+                created_at
+            FROM catalog_change_log
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (max(1, min(limit, 200)),),
         )
         return self._rows_as_dicts(cursor)
 

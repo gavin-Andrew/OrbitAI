@@ -35,6 +35,7 @@ EXPECTED_V4_TABLES = {
     "source_entries",
     "documents",
     "event_documents",
+    "catalog_change_log",
 }
 
 
@@ -49,7 +50,7 @@ class MigrationTests(unittest.TestCase):
     def test_fresh_database_applies_all_migrations_once(self):
         self.assertEqual(
             init_db(self.database_file),
-            ["0001", "0002", "0003", "0004", "0005"],
+            ["0001", "0002", "0003", "0004", "0005", "0006"],
         )
         self.assertEqual(init_db(self.database_file), [])
 
@@ -66,8 +67,38 @@ class MigrationTests(unittest.TestCase):
         self.assertTrue(EXPECTED_V4_TABLES.issubset(table_names))
         self.assertEqual(
             [item["version"] for item in applied],
-            ["0001", "0002", "0003", "0004", "0005"],
+            ["0001", "0002", "0003", "0004", "0005", "0006"],
         )
+
+    def test_catalog_change_log_schema_is_created(self):
+        init_db(self.database_file)
+
+        with get_connection(self.database_file) as connection:
+            columns = {
+                row["name"]
+                for row in connection.execute(
+                    "PRAGMA table_info(catalog_change_log)"
+                ).fetchall()
+            }
+            index_names = {
+                row["name"]
+                for row in connection.execute(
+                    "PRAGMA index_list(catalog_change_log)"
+                ).fetchall()
+            }
+
+        self.assertTrue(
+            {
+                "entity_type",
+                "entity_id",
+                "before_json",
+                "after_json",
+                "change_reason",
+                "expected_revision",
+                "result_revision",
+            }.issubset(columns)
+        )
+        self.assertIn("idx_catalog_change_log_entity", index_names)
 
     def test_catalog_lookup_indexes_are_created(self):
         init_db(self.database_file)
@@ -518,6 +549,10 @@ class MigrationTests(unittest.TestCase):
         init_db(self.database_file)
 
         with get_connection(self.database_file) as connection:
+            self.assertEqual(
+                rollback_last_migration(connection),
+                "0006",
+            )
             self.assertEqual(
                 rollback_last_migration(connection),
                 "0005",

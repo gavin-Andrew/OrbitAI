@@ -60,7 +60,10 @@ class RuntimePathTests(unittest.TestCase):
             applied = init_db(database_file)
 
             self.assertTrue(database_file.exists())
-            self.assertEqual(applied, ["0001", "0002", "0003", "0004", "0005"])
+            self.assertEqual(
+                applied,
+                ["0001", "0002", "0003", "0004", "0005", "0006"],
+            )
 
     def test_material_repository_refuses_a_missing_activity_database(self):
         with tempfile.TemporaryDirectory() as temp_dir:

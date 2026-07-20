@@ -1,0 +1,95 @@
+{% extends "dossier/base.html" %}
+
+{% block breadcrumb %}
+{% if profile.segment.industry_slug %}
+<a class="dossier-breadcrumb" href="{{ url_for('industry_catalog_page', industry_slug=profile.segment.industry_slug) }}">
+    {{ profile.segment.industry_name }}产业结构
+</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="segment-hero">
+    <div>
+        <p class="dossier-kicker">{{ profile.segment.group_name }} · 细分赛道</p>
+        <h2>什么是{{ profile.segment.name }}？</h2>
+        <p>{{ profile.segment.description or "赛道概述将在来源核查后补充。" }}</p>
+    </div>
+    <dl class="segment-hero__stats">
+        <div><dt>组织</dt><dd>{{ profile.organizations | length }}</dd></div>
+        <div><dt>人物</dt><dd>{{ profile.people | length }}</dd></div>
+    </dl>
+</section>
+
+<section class="profile-section">
+    <header class="profile-section__heading">
+        <div>
+            <p class="dossier-kicker">DEVELOPMENT</p>
+            <h2>赛道发展历程</h2>
+        </div>
+        <span class="content-state">等待 V4.2 事件台账</span>
+    </header>
+    <div class="timeline-placeholder">
+        <span aria-hidden="true"></span>
+        <div>
+            <strong>这里将由可追溯事件生成发展历程</strong>
+            <p>目前还没有经过审核的事件数据，因此不使用 AI 临时编写一段看似完整的历史。</p>
+        </div>
+    </div>
+</section>
+
+<section class="profile-section">
+    <header class="profile-section__heading">
+        <div>
+            <p class="dossier-kicker">PARTICIPANTS</p>
+            <h2>试点参与者名册</h2>
+        </div>
+        <span class="content-state content-state--ready">{{ profile.participant_count }} 条已确认关系</span>
+    </header>
+
+    <div class="participant-columns">
+        <section class="participant-panel">
+            <h3>企业与机构</h3>
+            <div class="participant-list">
+                {% for organization in profile.organizations %}
+                <article>
+                    <span>{{ organization.type_label }}</span>
+                    <strong>{{ organization.name }}</strong>
+                    <p>{{ organization.description or "组织说明待补充。" }}</p>
+                </article>
+                {% else %}
+                <p class="empty-state">尚未登记组织。</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="participant-panel">
+            <h3>代表人物</h3>
+            <div class="participant-list">
+                {% for person in profile.people %}
+                <article>
+                    <span>{% if person.organization_name %}{{ person.organization_name }}{% else %}人物{% endif %}</span>
+                    <strong>{{ person.name }}</strong>
+                    <p>{% if person.role_title %}{{ person.role_title }}{% else %}任职信息待补充{% endif %}</p>
+                </article>
+                {% else %}
+                <p class="empty-state">尚未登记人物。</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</section>
+
+<section class="profile-section">
+    <header class="profile-section__heading">
+        <div>
+            <p class="dossier-kicker">ORGANIZATION TIMELINES</p>
+            <h2>企业发展时间线</h2>
+        </div>
+        <span class="content-state">等待事件关联</span>
+    </header>
+    <p class="section-explanation">
+        后续每家企业会拥有自己的时间线。事件审核通过后才会挂到相应节点，点击节点再进入事件档案与原始材料。
+    </p>
+</section>
+{% endblock %}

@@ -21,6 +21,8 @@
 
 - `guides/V4_1_CATALOG_IMPORT_GUIDE.md`：名册预览、审核和显式写入流程。
 - `guides/V4_1_CATALOG_PAGE_GUIDE.md`：首个产业目录工程验证页说明。
+- `guides/V4_DOSSIER_READER_SHELL_GUIDE.md`：三个固定入口、赛道下钻与阅读端模板骨架说明。
+- `guides/V4_1_CATALOG_ADMIN_GUIDE.md`：最小名册管理、冲突检测、事务保存和修改记录说明。
 
 ## 审核与决策 `decisions/`
 

@@ -1,0 +1,35 @@
+{% extends "dossier/base.html" %}
+
+{% block content %}
+<section class="directory-toolbar" aria-label="企业档案统计">
+    <div>
+        <p class="dossier-kicker">参与者名册</p>
+        <h2>首批 {{ directory.organization_count }} 个组织</h2>
+    </div>
+    <p>当前只展示已经审核并写入数据库的试点名册，后续再增加搜索、筛选和独立详情。</p>
+</section>
+
+<div class="archive-grid archive-grid--organizations">
+    {% for organization in directory.organizations %}
+    <article class="archive-card">
+        <div class="archive-card__topline">
+            <span class="archive-card__type">{{ organization.type_label }}</span>
+            <span>{{ organization.segment_count }} 个关联赛道</span>
+        </div>
+        <h2>{{ organization.name }}</h2>
+        {% if organization.aliases %}
+        <p class="archive-card__aliases">别名：{{ organization.aliases | join('、') }}</p>
+        {% endif %}
+        <p class="archive-card__description">{{ organization.description or "档案说明待补充。" }}</p>
+        <footer>
+            {% if organization.founded_on %}<span>成立：{{ organization.founded_on }}</span>{% endif %}
+            {% if organization.homepage_url %}
+            <a href="{{ organization.homepage_url }}" target="_blank" rel="noopener noreferrer">官方网站 ↗</a>
+            {% endif %}
+        </footer>
+    </article>
+    {% else %}
+    <p class="empty-state">数据库中暂时没有已确认的组织档案。</p>
+    {% endfor %}
+</div>
+{% endblock %}

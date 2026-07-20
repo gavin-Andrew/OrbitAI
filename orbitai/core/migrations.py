@@ -835,6 +835,50 @@ def _drop_catalog_lookup_indexes_v1(connection: sqlite3.Connection) -> None:
         connection.execute(f"DROP INDEX IF EXISTS {index_name}")
 
 
+CATALOG_CHANGE_LOG_SCHEMA_V1 = (
+    """
+    CREATE TABLE catalog_change_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        entity_type TEXT NOT NULL
+            CHECK (entity_type IN ('organization', 'person')),
+        entity_id TEXT NOT NULL,
+        action TEXT NOT NULL DEFAULT 'update'
+            CHECK (action IN ('update', 'archive', 'restore')),
+        changed_fields_json TEXT NOT NULL,
+        before_json TEXT NOT NULL,
+        after_json TEXT NOT NULL,
+        change_reason TEXT NOT NULL,
+        actor TEXT NOT NULL DEFAULT 'local_user',
+        expected_revision TEXT NOT NULL,
+        result_revision TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+    """,
+    """
+    CREATE INDEX idx_catalog_change_log_entity
+    ON catalog_change_log(entity_type, entity_id, id DESC)
+    """,
+    """
+    CREATE INDEX idx_catalog_change_log_created_at
+    ON catalog_change_log(created_at DESC)
+    """,
+)
+
+
+def _create_catalog_change_log_v1(connection: sqlite3.Connection) -> None:
+    """建立不会随业务对象归档而消失的名册修改记录。"""
+
+    _execute_statements(connection, CATALOG_CHANGE_LOG_SCHEMA_V1)
+
+
+def _drop_catalog_change_log_v1(connection: sqlite3.Connection) -> None:
+    """移除修改记录表；正常回滚不会触碰名册业务数据。"""
+
+    connection.execute("DROP INDEX IF EXISTS idx_catalog_change_log_created_at")
+    connection.execute("DROP INDEX IF EXISTS idx_catalog_change_log_entity")
+    connection.execute("DROP TABLE IF EXISTS catalog_change_log")
+
+
 MIGRATIONS = (
     Migration("0001", "articles_baseline", _create_articles_baseline),
     Migration(
@@ -863,6 +907,12 @@ MIGRATIONS = (
         _create_catalog_lookup_indexes_v1,
         _drop_catalog_lookup_indexes_v1,
     ),
+    Migration(
+        "0006",
+        "catalog_change_log_v1",
+        _create_catalog_change_log_v1,
+        _drop_catalog_change_log_v1,
+    ),
 )
 
 
@@ -875,6 +925,7 @@ __all__ = [
     "EVENT_TYPE_RULES_V1",
     "SEGMENT_KINDS_V1",
     "CATALOG_LOOKUP_INDEXES_V1",
+    "CATALOG_CHANGE_LOG_SCHEMA_V1",
     "MIGRATIONS",
     "get_applied_migrations",
     "apply_migrations",

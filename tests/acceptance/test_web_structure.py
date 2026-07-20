@@ -6,6 +6,10 @@ from unittest.mock import patch
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
+from orbitai.catalog.edit_service import (
+    CatalogEditConflict,
+    CatalogEditValidationError,
+)
 from orbitai.web.app import create_app
 
 
@@ -33,8 +37,14 @@ class WebStructureTests(unittest.TestCase):
             ("GET", "/materials/featured"),
             ("GET", "/materials/daily"),
             ("GET", "/industries/{industry_slug}"),
+            ("GET", "/organizations"),
+            ("GET", "/people"),
+            ("GET", "/segments/{segment_slug}"),
             ("GET", "/status"),
             ("GET", "/admin/status"),
+            ("GET", "/admin/catalog"),
+            ("POST", "/admin/catalog/preview"),
+            ("POST", "/admin/catalog/save"),
             ("POST", "/admin/fetch"),
             ("POST", "/admin/process-ai"),
             ("GET", "/api/items"),
@@ -86,8 +96,71 @@ class WebStructureTests(unittest.TestCase):
         self.assertIn("/static/admin/app.js", response.text)
         self.assertIn('href="/materials"', response.text)
         self.assertIn('href="/admin/status"', response.text)
+        self.assertIn('href="/admin/catalog"', response.text)
         self.assertNotIn("/admin/regenerate", response.text)
         self.assertNotIn("重新生成静态 HTML", response.text)
+
+    def test_catalog_admin_is_independent_and_uses_dedicated_assets(self):
+        editor_data = {
+            "entities": [],
+            "organization_count": 6,
+            "person_count": 6,
+            "change_log": [],
+            "options": {
+                "organization_types": [],
+                "statuses": {"organization": [], "person": []},
+            },
+        }
+        with patch(
+            "orbitai.web.routes.admin.load_catalog_management_data",
+            return_value=editor_data,
+        ):
+            response = self.client.get("/admin/catalog")
+
+        html = response.content.decode("utf-8")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("/static/admin/catalog.css", html)
+        self.assertIn("/static/admin/catalog_editor.js", html)
+        self.assertNotIn("/static/materials/style.css", html)
+        self.assertIn("产业与参与者名册管理", html)
+        self.assertIn("1. 预览修改", html)
+        self.assertIn("2. 确认并保存", html)
+
+    def test_catalog_admin_api_exposes_preview_validation_and_conflict_statuses(self):
+        with patch(
+            "orbitai.web.routes.admin.preview_catalog_edit",
+            return_value={"has_changes": True, "changes": {"name": {}}},
+        ):
+            preview_response = self.client.post(
+                "/admin/catalog/preview",
+                json={"example": True},
+            )
+
+        with patch(
+            "orbitai.web.routes.admin.preview_catalog_edit",
+            side_effect=CatalogEditValidationError(["名称不能为空。"]),
+        ):
+            validation_response = self.client.post(
+                "/admin/catalog/preview",
+                json={"example": True},
+            )
+
+        current = {"entity_id": "openai", "revision": "newer"}
+        with patch(
+            "orbitai.web.routes.admin.save_catalog_edit",
+            side_effect=CatalogEditConflict(current),
+        ):
+            conflict_response = self.client.post(
+                "/admin/catalog/save",
+                json={"example": True},
+            )
+
+        self.assertEqual(preview_response.status_code, 200)
+        self.assertTrue(preview_response.json()["ok"])
+        self.assertEqual(validation_response.status_code, 422)
+        self.assertEqual(validation_response.json()["error_type"], "validation")
+        self.assertEqual(conflict_response.status_code, 409)
+        self.assertEqual(conflict_response.json()["current"], current)
 
     def test_root_and_legacy_urls_use_temporary_redirects(self):
         expected_redirects = {
@@ -114,6 +187,8 @@ class WebStructureTests(unittest.TestCase):
             "/static/dossier/style.css",
             "/static/admin/style.css",
             "/static/admin/app.js",
+            "/static/admin/catalog.css",
+            "/static/admin/catalog_editor.js",
         ):
             with self.subTest(path=path):
                 self.assertEqual(self.client.get(path).status_code, 200)

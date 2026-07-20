@@ -30,6 +30,31 @@ SEGMENT_GROUP_PRESENTATION = (
     },
 )
 
+ORGANIZATION_TYPE_LABELS = {
+    "ai_company": "AI 企业",
+    "corporate_ai_lab": "企业 AI 研究机构",
+    "company": "企业",
+    "nonprofit": "非营利机构",
+    "research_institute": "研究机构",
+    "university": "高校",
+    "government": "政府机构",
+    "other": "其他组织",
+}
+
+
+def _group_values(
+    rows: list[dict[str, Any]],
+    key_name: str,
+    value_name: str | None = None,
+) -> dict[str, list[Any]]:
+    """把查询结果按实体 ID 归组，避免模板自己处理数据库关系。"""
+
+    grouped: dict[str, list[Any]] = {}
+    for row in rows:
+        value: Any = row[value_name] if value_name else row
+        grouped.setdefault(row[key_name], []).append(value)
+    return grouped
+
 
 def load_industry_catalog(
     industry_slug: str,
@@ -101,4 +126,116 @@ def load_industry_catalog(
         "built_count": len(built_segments),
         "pending_count": len(segments) - len(built_segments),
         "built_segments": built_segments,
+    }
+
+
+def load_organization_directory(
+    database_file: str | Path | None = None,
+) -> dict[str, Any]:
+    """读取企业与机构档案总入口所需的真实名册数据。"""
+
+    init_db(database_file, allow_create=False)
+    with get_connection(database_file) as connection:
+        repository = CatalogRepository(connection)
+        organizations = repository.list_active_organizations()
+        aliases = _group_values(
+            repository.list_organization_aliases(),
+            "organization_id",
+            "alias",
+        )
+
+    for organization in organizations:
+        organization["aliases"] = aliases.get(organization["id"], [])
+        organization["type_label"] = ORGANIZATION_TYPE_LABELS.get(
+            organization["organization_type"],
+            "其他组织",
+        )
+
+    return {
+        "organizations": organizations,
+        "organization_count": len(organizations),
+    }
+
+
+def load_person_directory(
+    database_file: str | Path | None = None,
+) -> dict[str, Any]:
+    """读取人物档案总入口所需的真实名册与当前任职数据。"""
+
+    init_db(database_file, allow_create=False)
+    with get_connection(database_file) as connection:
+        repository = CatalogRepository(connection)
+        people = repository.list_active_people()
+        aliases = _group_values(
+            repository.list_person_aliases(),
+            "person_id",
+            "alias",
+        )
+        roles = _group_values(
+            repository.list_current_person_roles(),
+            "person_id",
+        )
+
+    for person in people:
+        person["aliases"] = aliases.get(person["id"], [])
+        person["current_roles"] = roles.get(person["id"], [])
+
+    return {
+        "people": people,
+        "person_count": len(people),
+    }
+
+
+def load_segment_profile(
+    segment_slug: str,
+    database_file: str | Path | None = None,
+) -> dict[str, Any] | None:
+    """读取一张赛道页骨架；尚无事件时只展示已经确认的名册。"""
+
+    init_db(database_file, allow_create=False)
+    with get_connection(database_file) as connection:
+        repository = CatalogRepository(connection)
+        segment = repository.get_segment_by_slug(segment_slug)
+        if segment is None:
+            return None
+
+        organizations = repository.list_segment_organizations(segment["id"])
+        people = repository.list_segment_people(segment["id"])
+        organization_aliases = _group_values(
+            repository.list_organization_aliases(),
+            "organization_id",
+            "alias",
+        )
+        person_aliases = _group_values(
+            repository.list_person_aliases(),
+            "person_id",
+            "alias",
+        )
+
+    for organization in organizations:
+        organization["aliases"] = organization_aliases.get(
+            organization["id"], []
+        )
+        organization["type_label"] = ORGANIZATION_TYPE_LABELS.get(
+            organization["organization_type"],
+            "其他组织",
+        )
+    for person in people:
+        person["aliases"] = person_aliases.get(person["id"], [])
+
+    participant_count = len(organizations) + len(people)
+    segment["is_built"] = participant_count > 0
+    segment["group_name"] = next(
+        (
+            item["name"]
+            for item in SEGMENT_GROUP_PRESENTATION
+            if item["id"] == segment["segment_kind"]
+        ),
+        segment["segment_kind"],
+    )
+    return {
+        "segment": segment,
+        "organizations": organizations,
+        "people": people,
+        "participant_count": participant_count,
     }
