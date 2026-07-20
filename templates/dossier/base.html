@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OrbitAI 可追溯的 AI 产业档案">
+    <title>{{ page_title }} · OrbitAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='shared/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='dossier/style.css') }}">
+</head>
+<body class="dossier-body">
+    <header class="dossier-header">
+        <div class="dossier-header__inner">
+            <a class="dossier-brand" href="{{ url_for('industry_catalog_page', industry_slug='artificial-intelligence') }}">
+                <span class="dossier-brand__mark" aria-hidden="true">O</span>
+                <span>
+                    <strong>OrbitAI</strong>
+                    <small>产业档案</small>
+                </span>
+            </a>
+
+            <nav class="dossier-nav" aria-label="产业档案主要入口">
+                <a class="dossier-nav__link {% if active_page == 'industry_structure' %}is-active{% endif %}"
+                   href="{{ url_for('industry_catalog_page', industry_slug='artificial-intelligence') }}"
+                   {% if active_page == 'industry_structure' %}aria-current="page"{% endif %}>
+                    产业结构
+                </a>
+                <a class="dossier-nav__link {% if active_page == 'organizations' %}is-active{% endif %}"
+                   href="{{ url_for('organization_directory_page') }}"
+                   {% if active_page == 'organizations' %}aria-current="page"{% endif %}>
+                    企业档案
+                </a>
+                <a class="dossier-nav__link {% if active_page == 'people' %}is-active{% endif %}"
+                   href="{{ url_for('person_directory_page') }}"
+                   {% if active_page == 'people' %}aria-current="page"{% endif %}>
+                    人物档案
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dossier-shell" id="main-content">
+        <header class="dossier-page-heading">
+            {% block breadcrumb %}{% endblock %}
+            <h1>{{ page_title }}</h1>
+            <p>{{ page_subtitle }}</p>
+        </header>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="dossier-footer">
+        <div>
+            <strong>OrbitAI 产业档案</strong>
+            <span>本地优先 · 保留来源 · 支持人工核查</span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='admin/catalog.css') }}">
+</head>
+<body class="catalog-admin-body">
+    <header class="catalog-admin-header">
+        <div>
+            <a class="catalog-admin-brand" href="{{ url_for('admin_catalog_page') }}">OrbitAI / Catalog Admin</a>
+            <nav aria-label="管理入口导航">
+                <a href="{{ url_for('industry_catalog_page', industry_slug='artificial-intelligence') }}">返回产业阅读端</a>
+                <a href="{{ url_for('admin_status_page') }}">系统状态</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="catalog-admin-shell">
+        <section class="catalog-admin-intro">
+            <div>
+                <p class="catalog-admin-kicker">V4.1-D · LOCAL ONLY</p>
+                <h1>产业与参与者名册管理</h1>
+                <p>先预览差异，再显式保存。系统会阻止旧页面覆盖新修改，并把修改原因和修改前后内容写入记录。</p>
+            </div>
+            <div class="catalog-admin-counts" aria-label="当前名册数量">
+                <span><strong>{{ editor_data.organization_count }}</strong> 个组织</span>
+                <span><strong>{{ editor_data.person_count }}</strong> 位人物</span>
+            </div>
+        </section>
+
+        <aside class="catalog-admin-warning">
+            <strong>安全边界</strong>
+            <span>当前只开放规范名称、简介、状态、组织类型/官网和别名；不会物理删除对象，也不会在这里修改任职、赛道和来源关系。</span>
+        </aside>
+
+        <section class="catalog-editor-layout">
+            <aside class="catalog-entity-sidebar">
+                <header>
+                    <h2>选择档案</h2>
+                    <input id="entitySearch" type="search" placeholder="搜索名称或 ID" autocomplete="off">
+                </header>
+                <div id="entityList" class="catalog-entity-list"></div>
+            </aside>
+
+            <section class="catalog-edit-panel">
+                <header class="catalog-edit-panel__heading">
+                    <div>
+                        <p id="selectedEntityType" class="catalog-admin-kicker">请选择档案</p>
+                        <h2 id="selectedEntityName">从左侧开始</h2>
+                    </div>
+                    <span id="selectedEntityStatus" class="entity-status">尚未选择</span>
+                </header>
+
+                <form id="catalogEditForm" novalidate>
+                    <input id="entityType" type="hidden">
+                    <input id="entityId" type="hidden">
+                    <input id="expectedRevision" type="hidden">
+
+                    <div class="catalog-form-grid">
+                        <label>
+                            <span>稳定 ID（不可修改）</span>
+                            <input id="stableId" type="text" readonly>
+                        </label>
+                        <label>
+                            <span>规范名称</span>
+                            <input id="entityName" type="text" maxlength="200" required>
+                        </label>
+                        <label id="organizationTypeField">
+                            <span>组织类型</span>
+                            <select id="organizationType"></select>
+                        </label>
+                        <label id="homepageField">
+                            <span>官方网站</span>
+                            <input id="homepageUrl" type="url" maxlength="2000" placeholder="https://example.com/">
+                        </label>
+                        <label>
+                            <span>状态</span>
+                            <select id="entityStatus"></select>
+                            <small>错误对象请选择“已归档”，不会物理删除。</small>
+                        </label>
+                        <label class="catalog-form-field--wide">
+                            <span>别名（每行一个）</span>
+                            <textarea id="entityAliases" rows="5" placeholder="每行填写一个别名"></textarea>
+                        </label>
+                        <label class="catalog-form-field--wide">
+                            <span>简介</span>
+                            <textarea id="entityDescription" rows="7" maxlength="10000"></textarea>
+                        </label>
+                        <label class="catalog-form-field--wide">
+                            <span>修改原因（保存时必填）</span>
+                            <textarea id="changeReason" rows="3" maxlength="500" placeholder="说明为什么修改，以及依据是什么"></textarea>
+                        </label>
+                    </div>
+
+                    <div class="catalog-form-actions">
+                        <button id="previewButton" type="button" class="catalog-button catalog-button--secondary" disabled>1. 预览修改</button>
+                        <button id="saveButton" type="button" class="catalog-button catalog-button--primary" disabled>2. 确认并保存</button>
+                    </div>
+                </form>
+
+                <section id="editResult" class="catalog-edit-result" aria-live="polite">
+                    <p>选择档案并修改字段后，先点击“预览修改”。</p>
+                </section>
+            </section>
+        </section>
+
+        <section class="catalog-change-log-section">
+            <header>
+                <div>
+                    <p class="catalog-admin-kicker">AUDIT TRAIL</p>
+                    <h2>最近修改记录</h2>
+                </div>
+                <p>记录与业务修改在同一个事务中写入：两者要么一起成功，要么一起回滚。</p>
+            </header>
+            <div id="changeLog" class="catalog-change-log">
+                {% for log in editor_data.change_log %}
+                <article>
+                    <div>
+                        <strong>{{ log.after.name }}</strong>
+                        <span>{{ log.entity_type_label }} · {{ log.action }} · #{{ log.id }}</span>
+                    </div>
+                    <p>{{ log.change_reason }}</p>
+                    <small>{{ log.created_at }} · 修改 {{ log.changes | length }} 个字段</small>
+                </article>
+                {% else %}
+                <p class="catalog-empty-log">还没有通过这个入口保存的修改。</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <script id="catalogEditorData" type="application/json">{{ editor_data | tojson }}</script>
+    <script src="{{ url_for('static', path='admin/catalog_editor.js') }}"></script>
+</body>
+</html>

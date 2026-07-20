@@ -2,7 +2,7 @@ OrbitAI
 
 OrbitAI 是一个本地优先的个人 AI 与硬科技产业研究系统。
 
-项目已经正式进入 V4“可追溯的 AI 动态产业档案”的开发阶段。V3 的 RSS、AI 处理、SQLite 文章库和本地 Web App 继续作为信息材料基础；V4 将逐步加入产业、赛道、参与者、关键事件和原始来源之间的可追溯关系。总体路径见 `docs/ORBITAI_ROADMAP.md`，当前实现规格草案见 `docs/V4_INDUSTRY_DOSSIER_SPEC.md`。
+项目已经正式进入 V4“可追溯的 AI 动态产业档案”的开发阶段。V3 的 RSS、AI 处理、SQLite 文章库和本地 Web App 继续作为信息材料基础；V4 将逐步加入产业、赛道、参与者、关键事件和原始来源之间的可追溯关系。总体路径见 `docs/product/ORBITAI_ROADMAP.md`，当前实现规格草案见 `docs/specs/V4_INDUSTRY_DOSSIER_SPEC.md`。
 
 它的目标是帮助用户持续收集、整理、浏览和管理 AI 及科技相关信息，避免被信息洪流淹没，同时保持完全可控、可观察的本地环境。
 
@@ -11,7 +11,7 @@ OrbitAI 强调：
 小步迭代，易用且低复杂度。
 本地运行：数据库 + 网页访问，无公网部署，无用户系统。
 模块化与可扩展性：便于长期维护和功能扩展。
-信息闭环：RSS 抓取 → 数据存储 → AI 处理 → 网页展示 → 状态监控。
+信息闭环：RSS 抓取 → 数据存储 → AI 处理 → 动态网页展示 → 状态监控。
 核心功能
 信息抓取：支持从多源 RSS 获取 AI/科技信息。
 数据存储：本地 SQLite 数据库为主存储，保持历史信息备份。
@@ -20,14 +20,15 @@ AI 处理：
 信息分类、标签提取。
 多维度评分与综合分（final_score）。
 本地 Web 页面：
-/：全部信息。
-/featured：精选信息。
-/daily：每日新增信息简报。
-/status：系统运行状态与错误监控。
+/：临时重定向到人工智能产业目录。
+/industries/artificial-intelligence：当前 AI 产业目录工程验证页。
+/materials：材料收件箱。
+/materials/featured：精选材料。
+/materials/daily：每日新增材料简报。
+/admin/status：系统运行状态与错误监控。
 后台手动操作：
 RSS 抓取。
 AI 批量处理。
-静态 HTML 再生成。
 API 接口：
 /api/items
 /api/featured
@@ -54,7 +55,15 @@ uvicorn app:app --reload
 浏览器访问：
 http://127.0.0.1:8000
 
-访问首页、精选页、每日简报及状态页。
+访问产业目录、材料收件箱、精选页、每日简报及状态页。
+
+运行材料更新流程：
+
+```powershell
+python main.py
+```
+
+该命令执行 RSS 抓取和 AI 处理并写回 SQLite，不再生成静态 HTML 快照。
 
 数据库迁移：
 
@@ -69,26 +78,60 @@ python -m orbitai.migrations up
 python -m unittest discover -s tests -v
 ```
 
+项目路径与稳定 CLI 入口测试：
+
+```powershell
+python -m unittest tests.acceptance.test_core_paths -v
+```
+
 项目结构（核心部分）
+
+```text
 OrbitAI/
-├─ app.py                     # FastAPI 本地服务入口
+├─ app.py                     # 薄 FastAPI 兼容启动入口
 ├─ main.py                    # RSS + AI + SQLite 流程调度
 ├─ orbitai/                   # 功能模块
-│  ├─ config.py
-│  ├─ data_utils.py
-│  ├─ rss_fetcher.py
-│  ├─ ai_client.py
-│  ├─ ai_processor.py
-│  ├─ scoring.py
-│  ├─ html_generator.py
-│  └─ text_utils.py
-├─ templates/                 # Jinja2 页面模板
-├─ static/                    # 样式和前端逻辑
-├─ data.json                  # 历史备份
-├─ orbitai.db                 # SQLite 数据库
-├─ snapshots/                 # 静态 HTML 快照输出目录
-├─ sources.json               # RSS 配置
+│  ├─ core/                   # 配置、数据库和迁移的活动实现
+│  ├─ materials/              # 字段、仓储、RSS、AI 与评分活动实现
+│  ├─ catalog/                # 名册导入、仓储与目录服务活动实现
+│  ├─ web/app.py              # FastAPI 应用组装
+│  ├─ web/view_helpers.py     # 动态页面展示辅助函数
+│  ├─ web/routes/             # dossier/materials/admin/api 活动路由
+│  ├─ migrations.py           # 稳定迁移 CLI 包装
+│  ├─ catalog_import.py       # 稳定名册导入 CLI 包装
+│  └─ text_utils.py           # 通用文本辅助函数
+├─ templates/                 # dossier/materials/admin 分层模板
+├─ static/                    # shared 与三类页面的分层前端资源
+├─ tests/
+│  ├─ materials/              # 材料更新流程测试
+│  ├─ catalog/                # 名册与产业目录测试
+│  ├─ migrations/             # SQLite 迁移测试
+│  └─ acceptance/             # 路径、模块和 Web 验收测试
+├─ docs/
+│  ├─ product/                # 产品目标、路线图与长期方向
+│  ├─ specs/                  # 实现规格
+│  ├─ guides/                 # 操作与实现指南
+│  ├─ decisions/              # 审核、决策和阶段退出记录
+│  └─ archive/                # 已失效但仍有历史价值的说明
+├─ data/
+│  ├─ seeds/catalog/          # V4.1 可审核名册种子
+│  ├─ registries/             # RSS 配置与 V4 来源注册表
+│  └─ archive/data.json       # Git 忽略的旧 JSON 历史备份
+├─ var/                       # Git 忽略的本地运行数据
+│  ├─ orbitai.db              # 当前唯一活动 SQLite 数据库
+│  ├─ backups/                # SQLite Backup API 备份
+│  └─ snapshots/              # 待单独确认删除的历史快照，不再生成
 └─ README.md
+```
+
+文档入口与分类说明见 `docs/README.md`。
+
+Web 规范入口为 `/industries/artificial-intelligence`、`/materials`、`/materials/featured`、`/materials/daily` 和 `/admin/status`。`/` 使用 HTTP 307 临时重定向进入 AI 产业目录；旧材料页和状态页 URL 继续保留，并以 307 重定向到对应规范地址。
+
+活动业务代码应直接从 `orbitai.materials`、`orbitai.catalog`、`orbitai.web` 或 `orbitai.core` 导入。阶段 5 已删除无调用方的旧扁平导入包装；只有迁移和名册导入两个稳定 CLI 包装继续保留。
+
+根目录 `orbitai.db` 目前仅作为阶段 4 前的只读保留副本，不是活动数据库。普通页面访问如果找不到 `var/orbitai.db` 会明确失败，不会静默创建空数据库。
+
 项目演进（简要）
 V1.x：本地 RSS 抓取与静态 HTML 展示。
 V2.x：接入 AI 处理，生成中文标题、摘要、分类、标签和多维评分，增加精选页与每日简报。
@@ -98,7 +141,7 @@ Jinja2 模板渲染。
 Web 交互增强。
 SQLite 数据库化。
 状态页与错误管理。
-网页端手动操作与静态兼容。
+网页端手动操作。
 V3.6：本地 Web 稳定版收官，长期使用可控、页面与后台功能完整。
 开发原则
 保持本地可运行闭环。

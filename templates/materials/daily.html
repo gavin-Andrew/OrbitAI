@@ -1,0 +1,62 @@
+{% extends "materials/base.html" %}
+
+{% block content %}
+<section class="intro">
+    <h2>今日重点</h2>
+    <p>以下内容来自今天新增的信息，并按综合分排序、按 AI 分类整理，适合快速浏览今日 AI 动态。</p>
+</section>
+
+{% if grouped_sections %}
+    {% for section in grouped_sections %}
+    <section class="brief-section">
+        <h2>{{ section.category }}</h2>
+
+        {% for item in section["items"] %}
+        <article class="brief-card">
+            <div class="meta">
+                <span class="source">{{ item.get("source", "未知来源") }}</span>
+
+                {% set score = get_display_score(item) %}
+                {% if score %}
+                <span class="score">综合分：{{ score }}</span>
+                {% endif %}
+
+                <span class="time">{{ item.get("published", "无发布时间") }}</span>
+            </div>
+
+            <h3>
+                <a href="{{ item.get('link', '#') }}" target="_blank" rel="noopener noreferrer">
+                    {{ get_display_title(item) }}
+                </a>
+            </h3>
+
+            {% set summary = get_short_summary(item, 260) %}
+            {% if summary %}
+            <p class="summary">{{ summary }}</p>
+            {% else %}
+            <p class="summary empty">暂无摘要</p>
+            {% endif %}
+
+            {% set item_tags = get_item_tags(item) %}
+            {% if item_tags %}
+            <div class="tags">
+                {% for tag in item_tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <a class="button" href="{{ item.get('link', '#') }}" target="_blank" rel="noopener noreferrer">
+                打开原文
+            </a>
+        </article>
+        {% endfor %}
+    </section>
+    {% endfor %}
+{% else %}
+    <section class="intro">
+        <h2>今天暂无新增信息</h2>
+        <p>OrbitAI 今天没有抓取到新的内容。你可以查看“全部信息”或“精选信息”页面。</p>
+    </section>
+{% endif %}
+{% endblock %}

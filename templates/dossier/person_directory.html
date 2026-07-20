@@ -1,0 +1,37 @@
+{% extends "dossier/base.html" %}
+
+{% block content %}
+<section class="directory-toolbar" aria-label="人物档案统计">
+    <div>
+        <p class="dossier-kicker">参与者名册</p>
+        <h2>首批 {{ directory.person_count }} 位人物</h2>
+    </div>
+    <p>任职信息来自带时间的关系记录；人物、组织和赛道不是写在同一段文本里的死数据。</p>
+</section>
+
+<div class="archive-grid archive-grid--people">
+    {% for person in directory.people %}
+    <article class="archive-card person-card">
+        <div class="person-card__avatar" aria-hidden="true">{{ person.name[:1] }}</div>
+        <div class="person-card__body">
+            <div class="archive-card__topline">
+                <span class="archive-card__type">人物</span>
+                <span>{{ person.segment_count }} 个关联赛道</span>
+            </div>
+            <h2>{{ person.name }}</h2>
+            {% if person.aliases %}
+            <p class="archive-card__aliases">别名：{{ person.aliases | join('、') }}</p>
+            {% endif %}
+            {% for role in person.current_roles %}
+            <p class="person-card__role">{{ role.organization_name }} · {{ role.role_title }}</p>
+            {% else %}
+            <p class="person-card__role">当前任职关系待补充</p>
+            {% endfor %}
+            <p class="archive-card__description">{{ person.description or "人物档案说明待补充。" }}</p>
+        </div>
+    </article>
+    {% else %}
+    <p class="empty-state">数据库中暂时没有已确认的人物档案。</p>
+    {% endfor %}
+</div>
+{% endblock %}

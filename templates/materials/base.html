@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='shared/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='materials/style.css') }}">
+</head>
+<body>
+    <main class="page" id="top">
+        <section class="header">
+            <div class="header-main">
+                <div>
+                    <p class="eyebrow">OrbitAI Local Web App</p>
+                    <h1>{{ page_title }}</h1>
+                    <p>{{ page_subtitle }}</p>
+                </div>
+
+                <div class="status-pill">
+                    <span class="status-dot"></span>
+                    {% block header_badge %}{{ status.version }}{% endblock %}
+                </div>
+            </div>
+
+            {% block header_stats %}
+            <div class="stats stats-grid">
+                <span class="stat">
+                    <strong>{{ stat_label }}</strong>
+                    {{ total_count }}
+                </span>
+
+                <span class="stat">
+                    <strong>AI 已处理</strong>
+                    {{ current_ai_processed_count }}
+                </span>
+
+                {% if active_page == "index" %}
+                <span class="stat">
+                    <strong>今日新增</strong>
+                    {{ status.today_count }}
+                </span>
+
+                <span class="stat">
+                    <strong>高分内容</strong>
+                    {{ status.high_score_count }}
+                </span>
+                {% endif %}
+            </div>
+            {% endblock %}
+        </section>
+
+        <nav class="nav">
+            <a class="nav-link {% if active_page == 'industry_catalog' %}active{% endif %}" href="{{ url_for('industry_catalog_page', industry_slug='artificial-intelligence') }}">产业目录</a>
+            <a class="nav-link {% if active_page == 'index' %}active{% endif %}" href="/materials">全部信息</a>
+            <a class="nav-link {% if active_page == 'featured' %}active{% endif %}" href="/materials/featured">精选信息</a>
+            <a class="nav-link {% if active_page == 'daily' %}active{% endif %}" href="/materials/daily">每日简报</a>
+            <a class="nav-link {% if active_page == 'status' %}active{% endif %}" href="/admin/status">状态页</a>
+            <a class="nav-link" href="/api/status" target="_blank" rel="noopener noreferrer">状态 JSON</a>
+        </nav>
+
+        {% block content %}{% endblock %}
+
+        <footer class="footer">
+            Generated dynamically by {% block footer_product %}OrbitAI V3.6{% endblock %} · {{ generated_at }}
+        </footer>
+    </main>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

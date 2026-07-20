@@ -21,7 +21,9 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 
-# Future generated files
+# Local runtime data and generated files
+var/
+data/archive/data.json
 data.json
 snapshots/
 # Secret config
