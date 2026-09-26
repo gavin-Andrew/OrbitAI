@@ -1,0 +1,8 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<section class="segment-hero"><div><h2>收集信息，整理成可追溯的产业动态</h2><p>消息先有原始材料，再形成事件；确认后进入时间线。这里集中查看本轮成果，技术检查由开发侧完成。</p></div></section>
+<div class="participant-columns">
+<section class="participant-panel"><h2>看产业动态</h2><p>从赛道和参与者进入事件，再点开原始来源。</p><p><a href="{{ url_for('event_timeline') }}">已确认时间线</a> · <a href="{{ url_for('organization_directory_page') }}">企业档案</a> · <a href="{{ url_for('person_directory_page') }}">人物档案</a></p></section>
+<section class="participant-panel"><h2>补充与整理</h2><p><a href="{{ url_for('document_intake') }}">补充手工／官网材料</a></p><p><a href="{{ url_for('event_extract_form') }}">从 RSS 拟草稿</a> · <a href="{{ url_for('event_new') }}">手工创建事件</a></p><p>重复事件可从详情页进入合并；修订记录和原文均保留。</p></section></div>
+<section class="profile-section"><h2>当前内容状态</h2><p>{% for key,value in counts.items() %}{{ status_labels[key] }} {{ value }} 条　{% endfor %}</p><p>未确认内容在下方供核对，不混入已确认时间线。你可以直接反馈内容和阅读体验，不需填写技术验收报告。</p>{% include 'dossier/event_list.html' %}</section>
+{% endblock %}

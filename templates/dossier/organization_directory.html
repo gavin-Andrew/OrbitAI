@@ -22,6 +22,7 @@
         {% endif %}
         <p class="archive-card__description">{{ organization.description or "档案说明待补充。" }}</p>
         <footer>
+            <a href="{{ url_for('event_timeline') }}?organization_id={{ organization.id|urlencode }}">事件时间线</a>
             {% if organization.founded_on %}<span>成立：{{ organization.founded_on }}</span>{% endif %}
             {% if organization.homepage_url %}
             <a href="{{ organization.homepage_url }}" target="_blank" rel="noopener noreferrer">官方网站 ↗</a>

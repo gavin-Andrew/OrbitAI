@@ -23,11 +23,35 @@ CATALOG_SEED_FILE = CATALOG_DATA_DIR / "foundation_models.v4.1.json"
 
 load_dotenv(dotenv_path=ENV_FILE)
 
+# Explicit local review sessions may use an isolated copy, never a second active DB.
+PREVIEW_DATABASE = os.getenv("ORBITAI_PREVIEW_DATABASE", "")
+if PREVIEW_DATABASE:
+    preview_path = Path(PREVIEW_DATABASE).resolve()
+    if not preview_path.is_relative_to((VAR_DIR / "previews").resolve()) or not preview_path.is_file():
+        raise ValueError("预览数据库必须是 var/previews/ 下已存在的隔离副本")
+    DATABASE_FILE = preview_path
+
 # RSS 抓取配置
 RSS_MAX_ITEMS_PER_SOURCE = int(os.getenv("RSS_MAX_ITEMS_PER_SOURCE", "5"))
 RSS_RETRY_TIMES = int(os.getenv("RSS_RETRY_TIMES", "3"))
 RSS_RETRY_DELAY_SECONDS = int(os.getenv("RSS_RETRY_DELAY_SECONDS", "2"))
 RSS_TIMEOUT_SECONDS = int(os.getenv("RSS_TIMEOUT_SECONDS", "20"))
+
+# Firecrawl 只作为受限官网后备读取器，不进入 RSS 或 AI 供应商配置。
+FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")
+FIRECRAWL_TIMEOUT_SECONDS = int(
+    os.getenv("FIRECRAWL_TIMEOUT_SECONDS", "35")
+)
+FIRECRAWL_RETRY_TIMES = int(os.getenv("FIRECRAWL_RETRY_TIMES", "2"))
+FIRECRAWL_RETRY_DELAY_SECONDS = int(
+    os.getenv("FIRECRAWL_RETRY_DELAY_SECONDS", "2")
+)
+FIRECRAWL_CRAWL_POLL_SECONDS = float(
+    os.getenv("FIRECRAWL_CRAWL_POLL_SECONDS", "2")
+)
+FIRECRAWL_CRAWL_TIMEOUT_SECONDS = int(
+    os.getenv("FIRECRAWL_CRAWL_TIMEOUT_SECONDS", "60")
+)
 
 AI_PROVIDER = os.getenv("AI_PROVIDER", "deepseek")
 AI_API_KEY = os.getenv("AI_API_KEY", "")
@@ -88,6 +112,12 @@ __all__ = [
     "RSS_RETRY_TIMES",
     "RSS_RETRY_DELAY_SECONDS",
     "RSS_TIMEOUT_SECONDS",
+    "FIRECRAWL_API_KEY",
+    "FIRECRAWL_TIMEOUT_SECONDS",
+    "FIRECRAWL_RETRY_TIMES",
+    "FIRECRAWL_RETRY_DELAY_SECONDS",
+    "FIRECRAWL_CRAWL_POLL_SECONDS",
+    "FIRECRAWL_CRAWL_TIMEOUT_SECONDS",
     "AI_PROVIDER",
     "AI_API_KEY",
     "AI_BASE_URL",

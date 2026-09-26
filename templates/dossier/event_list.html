@@ -1,0 +1,9 @@
+<div class="participant-list">
+{% for event in events %}
+<article>
+  <span>{{ event.date_start or '日期未知' }}{% if event.date_end %} — {{ event.date_end }}{% endif %} · {{ {'day':'具体日期','month':'精确到月','quarter':'精确到季度','year':'精确到年','range':'日期范围','unknown':'时间待核实'}.get(event.date_precision,event.date_precision) }} · {{ status_labels.get(event.status,event.status) if status_labels is defined else '已确认' }}</span>
+  <h3><a href="{{ url_for('event_detail',event_id=event.id) }}">{{ event.title }}</a></h3>
+  <p>{{ event.summary }}</p>
+</article>
+{% else %}<p class="empty-state">当前筛选下暂无事件，不使用 AI 编写替代历史。</p>{% endfor %}
+</div>

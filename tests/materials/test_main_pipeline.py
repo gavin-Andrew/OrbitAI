@@ -7,6 +7,32 @@ import main
 
 
 class MainPipelineTests(unittest.TestCase):
+    def test_ai_pipeline_excludes_disabled_sources(self):
+        disabled_sources = {
+            "Anthropic Claude Code Releases",
+            "DeepSeek R1 Repository Updates",
+        }
+
+        with (
+            patch.object(
+                main,
+                "load_disabled_source_names",
+                return_value=disabled_sources,
+            ),
+            patch.object(
+                main,
+                "get_unprocessed_articles",
+                return_value=[],
+            ) as get_unprocessed,
+        ):
+            result = main.run_ai_only(batch_size=7)
+
+        get_unprocessed.assert_called_once_with(
+            limit=7,
+            excluded_sources=disabled_sources,
+        )
+        self.assertEqual(result["processed_count"], 0)
+
     def test_full_pipeline_updates_materials_without_static_generation(self):
         fetch_result = {"ok": True, "message": "fetch"}
         ai_result = {"ok": True, "message": "ai"}

@@ -1,0 +1,23 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p><a href="{{ url_for('event_ledger') }}">事件台账</a> · <a href="{{ url_for('event_timeline') }}">时间线</a> · <a href="{{ url_for('event_edit',event_id=event.id) }}">编辑／确认／纠错／归档</a></p>
+<p>{{ status_labels.get(event.status,event.status) }} · 事件日期：{{ event.date_start or '未知' }}{% if event.date_end %} 至 {{ event.date_end }}{% endif %} · {{ date_precision_labels.get(event.date_precision,event.date_precision) }}</p>
+<p>创建来源：{{ {'ai':'AI 辅助候选','user':'用户录入','import':'导入'}.get(event.origin,event.origin or '未记录') }} · 人工确认：{{ '是' if event.confirmed_by_user else '否' }}</p>
+{% if event.status != 'confirmed' %}<p><strong>本事件不是已确认事实，不进入确认时间线。</strong></p>{% endif %}
+<h2>事件摘要</h2><p>{{ event.summary }}</p>
+<p><a href="{{ url_for('event_merge_form',event_id=event.id) }}">与重复事件合并</a></p>
+<h2>保留理由与需要核对的地方</h2><p>{{ event.notes or '尚未填写' }}</p>
+{% for label,items,key in [('组织',event.organizations,'organization_id'),('赛道',event.segments,'segment_id'),('人物',event.people,'person_id')] %}
+<p>{{ label }}：{% for item in items %}<a href="{{ url_for('event_timeline') }}?{{ key }}={{ item.id|urlencode }}">{{ item.name }}</a> {% else %}未关联{% endfor %}</p>{% endfor %}
+<h2>原始材料与证据边界</h2>
+{% for document in event.documents %}
+<article class="participant-panel"><h3>{{ document.title }}</h3><p>材料发布日期：{{ document.published_at or '未知' }} · {{ evidence_role_labels.get(document.evidence_role,document.evidence_role) }} · 来源：{{ document.source_id or '待核对' }}</p>
+{% if document.url and (document.url.startswith('https://') or document.url.startswith('http://')) %}<p><a href="{{ document.url }}" target="_blank" rel="noopener noreferrer">打开原始来源</a></p>{% endif %}
+{% if document.document_type == 'web_article' %}<p>官网正文快照；仅代表所保存版本，不表示其中所有说法已经核实。</p>
+{% elif document.document_type == 'manual_excerpt' %}<p>手工摘录，可能不完整；原始链接与发布者保留。</p>
+{% else %}<p>内容为数据库保留的原始 RSS 摘要／内容快照，并非已验证的网页全文；AI 摘要不作为证据。</p>{% endif %}
+<pre style="white-space:pre-wrap;overflow-wrap:anywhere">{{ document.content_text or '没有可用原始内容' }}</pre><p>证据备注：{{ document.notes or '无' }}</p></article>
+{% else %}<p>尚无关联来源，需要补证。</p>{% endfor %}
+<h2>确认与纠错留痕</h2>
+{% for entry in event.history %}<details><summary>{{ entry.created_at }} · {{ entry.action }} · {{ entry.change_reason }}</summary><h3>变更前</h3><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{{ entry.before_json }}</pre><h3>变更后</h3><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{{ entry.after_json }}</pre></details>{% else %}<p>暂无修改记录。</p>{% endfor %}
+{% endblock %}

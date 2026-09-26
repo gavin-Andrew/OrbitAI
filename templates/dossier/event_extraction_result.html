@@ -1,0 +1,8 @@
+{% extends "dossier/event_form.html" %}
+{% block content %}
+<p>这是未保存的 AI 草稿。{{ result.reason }}</p>
+{% for doubt in result.doubts %}<p><strong>需核对：</strong>{{ doubt }}</p>{% endfor %}
+{% for evidence in result.evidence %}<blockquote>材料 #{{ evidence.article_id }}：{{ evidence.quote }}</blockquote>{% endfor %}
+{% if result.related_events %}<section class="participant-panel"><h2>可能已有相关事件</h2><p>若属于同一件事，可打开已有事件补充材料，不必再建一条。</p>{% for item in result.related_events %}<p><a href="{{ url_for('event_edit',event_id=item.id) }}">{{ item.title }}</a> · {{ item.match_reason }}</p>{% endfor %}</section>{% endif %}
+{% if result.event %}{{ super() }}{% else %}<p>本批材料没有形成可用草稿。可补充原文或<a href="{{ url_for('event_new') }}">手工整理</a>。</p>{% endif %}
+{% endblock %}

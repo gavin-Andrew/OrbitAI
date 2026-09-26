@@ -40,6 +40,23 @@ class WebStructureTests(unittest.TestCase):
             ("GET", "/organizations"),
             ("GET", "/people"),
             ("GET", "/segments/{segment_slug}"),
+            ("GET", "/events"),
+            ("GET", "/events/new"),
+            ("GET", "/events/{event_id}"),
+            ("GET", "/events/{event_id}/edit"),
+            ("GET", "/timeline"),
+            ("POST", "/events/preview"),
+            ("POST", "/events/save"),
+            ("GET", "/events/review"),
+            ("GET", "/events/materials"),
+            ("POST", "/events/materials/preview"),
+            ("POST", "/events/materials/fetch"),
+            ("POST", "/events/materials/save"),
+            ("GET", "/events/extract"),
+            ("POST", "/events/extract"),
+            ("GET", "/events/{event_id}/merge"),
+            ("POST", "/events/merge/preview"),
+            ("POST", "/events/merge/save"),
             ("GET", "/status"),
             ("GET", "/admin/status"),
             ("GET", "/admin/catalog"),
@@ -88,7 +105,9 @@ class WebStructureTests(unittest.TestCase):
                     self.assertIn('href="/admin/status"', response.text)
 
     def test_admin_canonical_url_uses_admin_assets(self):
-        response = self.client.get("/admin/status")
+        # Rendering tests must never enter the live repository's init_db path.
+        with patch("orbitai.web.routes.admin.get_status_summary", return_value={}):
+            response = self.client.get("/admin/status")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("/static/shared/base.css", response.text)

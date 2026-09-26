@@ -204,7 +204,8 @@ class IndustryCatalogPageTests(unittest.TestCase):
         self.assertIn("OpenAI", organization_response.content.decode("utf-8"))
         self.assertIn("Sam Altman", people_response.content.decode("utf-8"))
         segment_html = segment_response.content.decode("utf-8")
-        self.assertIn("等待 V4.2 事件台账", segment_html)
+        self.assertIn("查看已确认事件时间线", segment_html)
+        self.assertIn("/timeline?segment_id=general_foundation_models", segment_html)
         self.assertIn("OpenAI", segment_html)
         self.assertIn("Sam Altman", segment_html)
 

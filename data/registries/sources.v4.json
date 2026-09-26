@@ -1,8 +1,9 @@
 {
   "schema_version": "0.1",
   "status": "adopted_schema_v0.1",
-  "status_note": "来源范围和 JSON 第一版字段结构已由用户确认采用；后续可随着网页呈现、观点卡片和数据库设计继续演进。",
-  "source_registry_doc": "docs/V4_SOURCE_REGISTRY.md",
+  "status_note": "来源范围和 JSON 第一版字段结构已由用户确认采用；2026-07-26 根据实际抓取结果，四家无公司级官方 RSS 组织的 GitHub Atom 已停用，暂时改为官网人工处理；写入活动数据库前仍须经过导入预览和人工确认。",
+  "last_verified_at": "2026-07-28",
+  "source_registry_doc": "docs/specs/V4_SOURCE_REGISTRY.md",
   "principles": [
     "信息源注册表是核心，RSS、官网、YouTube、播客、手动录入等只是获取入口。",
     "第一版先少量核心源，避免覆盖所有 AI 新闻。",
@@ -52,7 +53,7 @@
           "url": "https://openai.com/news/rss.xml",
           "status": "enabled",
           "existing_in_sources_json": true,
-          "notes": "当前 RSS 抓取入口之一。"
+          "notes": "2026-07-25 使用 OrbitAI 当前 feedparser 流程验证通过；这是公司级官方 News RSS。"
         },
         {
           "id": "openai_manual_interviews",
@@ -101,7 +102,25 @@
           "url": "https://www.anthropic.com/news",
           "status": "planned",
           "existing_in_sources_json": false,
-          "notes": "第一阶段可作为网页入口；RSS 可后续确认。"
+          "notes": "2026-07-27 官网只读试抓已通过，可发现白名单文章链接并解析标题、日期和正文；当前仍为 preview，不进入数据库或 AI。"
+        },
+        {
+          "id": "anthropic_claude_code_releases_atom",
+          "type": "rss",
+          "label": "Anthropic Claude Code GitHub Releases Atom",
+          "url": "https://github.com/anthropics/claude-code/releases.atom",
+          "status": "disabled",
+          "existing_in_sources_json": true,
+          "notes": "OrbitAI 解析验证通过，但因产生大量小版本材料，于 2026-07-26 从活动抓取和 AI 队列停用；Anthropic 暂由官网人工处理。"
+        },
+        {
+          "id": "anthropic_events_web",
+          "type": "website",
+          "label": "Anthropic Events",
+          "url": "https://www.anthropic.com/events",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "官方活动、网络研讨会和开发者 Newsletter 入口，当前网页采集尚未自动化。"
         },
         {
           "id": "anthropic_manual_interviews",
@@ -122,17 +141,16 @@
         "primary_badges": [
           "核心源",
           "事实 + 观点",
-          "待补入口"
+          "人工获取"
         ]
       },
-      "notes": ""
+      "notes": "截至 2026-07-26 未发现可用的官方公司 News RSS；Claude Code Atom 已停用，公司级材料暂由官网与手动策划获取。"
     },
     {
-      "id": "google_deepmind_google_ai",
-      "name": "Google DeepMind / Google AI",
+      "id": "google_deepmind",
+      "name": "Google DeepMind",
       "aliases": [
-        "Google AI",
-        "Google DeepMind"
+        "DeepMind"
       ],
       "type": "institution",
       "tier": "core",
@@ -146,7 +164,59 @@
         "fact",
         "opinion"
       ],
-      "tracking_reason": "Gemini、Gemma、DeepMind research、Gemini Robotics、world models 和 AI science 的核心来源。",
+      "tracking_reason": "Gemini、DeepMind research、Gemini Robotics、world models 和科学 AI 的核心来源。",
+      "collection_entries": [
+        {
+          "id": "deepmind_news_rss",
+          "type": "rss",
+          "label": "Google DeepMind News RSS",
+          "url": "https://deepmind.google/blog/rss.xml",
+          "status": "enabled",
+          "existing_in_sources_json": true,
+          "notes": "2026-07-25 使用 OrbitAI 当前 feedparser 流程验证通过；公司级官方 News RSS。"
+        },
+        {
+          "id": "deepmind_news_web",
+          "type": "website",
+          "label": "Google DeepMind News",
+          "url": "https://deepmind.google/blog/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "官方新闻和研究网页入口；RSS 已启用，网页保留为核查入口。"
+        }
+      ],
+      "related_source_ids": [
+        "demis_hassabis"
+      ],
+      "ui": {
+        "card_title": "Google DeepMind",
+        "subtitle": "Gemini、科学 AI 与前沿研究",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "官方 RSS"
+        ]
+      },
+      "notes": "2026-07-25 已与范围更宽的 Google AI 来源拆分，避免把所有 Google AI Blog 材料自动归属于 Google DeepMind 参与者。"
+    },
+    {
+      "id": "google_ai",
+      "name": "Google AI",
+      "aliases": [
+        "Google AI Blog"
+      ],
+      "type": "institution",
+      "tier": "watched",
+      "industries": [
+        "ai_agents_software_automation",
+        "model_infra_compute_chips",
+        "ai_hardware_devices_productivity"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "补充 Google AI 产品、开发者平台和超出 Google DeepMind 组织边界的材料。",
       "collection_entries": [
         {
           "id": "google_ai_blog_rss",
@@ -155,31 +225,20 @@
           "url": "https://feeds.feedburner.com/blogspot/gJZg",
           "status": "enabled",
           "existing_in_sources_json": true,
-          "notes": "当前 RSS 抓取入口之一。"
-        },
-        {
-          "id": "deepmind_news_web",
-          "type": "website",
-          "label": "Google DeepMind News",
-          "url": "https://deepmind.google/discover/blog/",
-          "status": "planned",
-          "existing_in_sources_json": false,
-          "notes": "用于补充 DeepMind 官方研究和产品动态。"
+          "notes": "现有补充 RSS；保持与 Google DeepMind 来源身份分离。"
         }
       ],
-      "related_source_ids": [
-        "demis_hassabis"
-      ],
+      "related_source_ids": [],
       "ui": {
-        "card_title": "Google DeepMind / Google AI",
-        "subtitle": "Gemini、科学 AI 与具身智能",
+        "card_title": "Google AI",
+        "subtitle": "Google AI 产品与开发者生态补充源",
         "primary_badges": [
-          "核心源",
+          "观察源",
           "事实 + 观点",
           "已有 RSS"
         ]
       },
-      "notes": ""
+      "notes": "当前有意不绑定单一 V4.1 参与者。"
     },
     {
       "id": "meta_ai",
@@ -205,7 +264,25 @@
           "url": "https://ai.meta.com/blog/",
           "status": "planned",
           "existing_in_sources_json": false,
-          "notes": "可先作为网页入口，后续确认是否有稳定 RSS。"
+          "notes": "2026-07-27 官网只读试抓已通过，可发现白名单文章链接并解析标题、日期和正文；当前仍为 preview，不进入数据库或 AI。"
+        },
+        {
+          "id": "meta_llama_models_releases_atom",
+          "type": "rss",
+          "label": "Meta Llama Models GitHub Releases Atom",
+          "url": "https://github.com/meta-llama/llama-models/releases.atom",
+          "status": "disabled",
+          "existing_in_sources_json": true,
+          "notes": "OrbitAI 解析验证通过，但覆盖粒度不适合当前材料流，于 2026-07-26 从活动抓取和 AI 队列停用；Meta AI 暂由官网人工处理。"
+        },
+        {
+          "id": "meta_ai_newsletter_web",
+          "type": "website",
+          "label": "Meta AI Newsletter",
+          "url": "https://ai.meta.com/subscribe/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "官方 Newsletter 订阅入口，适合作为无 RSS 时的人工补充。"
         }
       ],
       "related_source_ids": [
@@ -217,10 +294,85 @@
         "primary_badges": [
           "核心源",
           "事实 + 观点",
-          "待补入口"
+          "人工获取"
         ]
       },
-      "notes": ""
+      "notes": "截至 2026-07-26 未发现可用的官方 Meta AI Blog RSS；Llama 模型仓库 Atom 已停用，暂由官网和 Newsletter 人工处理。"
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "aliases": [
+        "深度求索"
+      ],
+      "type": "institution",
+      "tier": "core",
+      "industries": [
+        "model_infra_compute_chips"
+      ],
+      "material_types": [
+        "fact",
+        "opinion"
+      ],
+      "tracking_reason": "DeepSeek 模型发布、技术报告、开源权重和 API 变化的核心来源。",
+      "collection_entries": [
+        {
+          "id": "deepseek_news_web",
+          "type": "website",
+          "label": "DeepSeek API News",
+          "url": "https://api-docs.deepseek.com/zh-cn/news/",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "2026-07-27 官网只读试抓已通过；兼容 /news/ 与 /zh-cn/news/ 文章路径，并明确排除 /updates 小版本日志；当前不进入数据库或 AI。"
+        },
+        {
+          "id": "deepseek_r1_commits_atom",
+          "type": "rss",
+          "label": "DeepSeek R1 GitHub Commits Atom",
+          "url": "https://github.com/deepseek-ai/DeepSeek-R1/commits/main.atom",
+          "status": "disabled",
+          "existing_in_sources_json": true,
+          "notes": "OrbitAI 解析验证通过，但普通提交粒度过细，于 2026-07-26 从活动抓取和 AI 队列停用。"
+        },
+        {
+          "id": "deepseek_v3_commits_atom",
+          "type": "rss",
+          "label": "DeepSeek V3 GitHub Commits Atom",
+          "url": "https://github.com/deepseek-ai/DeepSeek-V3/commits/main.atom",
+          "status": "disabled",
+          "existing_in_sources_json": true,
+          "notes": "OrbitAI 解析验证通过，但普通提交粒度过细，于 2026-07-26 从活动抓取和 AI 队列停用。"
+        },
+        {
+          "id": "deepseek_github_web",
+          "type": "website",
+          "label": "DeepSeek GitHub Organization",
+          "url": "https://github.com/deepseek-ai",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于发现新模型仓库、技术报告和工程实现。"
+        },
+        {
+          "id": "deepseek_huggingface_web",
+          "type": "website",
+          "label": "DeepSeek Hugging Face",
+          "url": "https://huggingface.co/deepseek-ai",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "用于核查模型卡、权重、许可证和发布时间。"
+        }
+      ],
+      "related_source_ids": [],
+      "ui": {
+        "card_title": "DeepSeek",
+        "subtitle": "模型发布、开源权重与 API",
+        "primary_badges": [
+          "核心源",
+          "事实 + 观点",
+          "人工获取"
+        ]
+      },
+      "notes": "截至 2026-07-26 未发现可用的官方公司 News RSS；两个提交 Atom 已停用，暂由 API News、GitHub 和 Hugging Face 人工处理。"
     },
     {
       "id": "spacexai",
@@ -248,7 +400,25 @@
           "url": "https://x.ai/news",
           "status": "planned",
           "existing_in_sources_json": false,
-          "notes": "项目内使用 SpaceXAI 作为主名称，保留 xAI 作为别名。"
+          "notes": "2026-07-28 只读试抓已确定受限 Firecrawl 后备：固定 /news 列表 Scrape 发现白名单 URL，每个精确详情 URL 单独使用深度 0、跳过 sitemap、limit=1 的 Crawl；结果必须唯一且元数据 URL 一致，失败转人工。正式材料写库尚未授权，因此保持 planned。"
+        },
+        {
+          "id": "spacexai_release_notes_web",
+          "type": "website",
+          "label": "SpaceXAI API Release Notes",
+          "url": "https://docs.x.ai/developers/release-notes",
+          "status": "planned",
+          "existing_in_sources_json": false,
+          "notes": "结构化官方发布记录，覆盖模型、API 和工具变化；当前网页采集尚未自动化。"
+        },
+        {
+          "id": "spacexai_sdk_releases_atom",
+          "type": "rss",
+          "label": "SpaceXAI Python SDK GitHub Releases Atom",
+          "url": "https://github.com/xai-org/xai-sdk-python/releases.atom",
+          "status": "disabled",
+          "existing_in_sources_json": true,
+          "notes": "OrbitAI 解析验证通过，但 SDK 小版本粒度不适合当前材料流，于 2026-07-26 从活动抓取和 AI 队列停用；公司动态暂由官网人工处理。"
         },
         {
           "id": "spacexai_manual_musk",
@@ -269,10 +439,10 @@
         "primary_badges": [
           "核心源",
           "事实 + 观点",
-          "待补入口"
+          "人工获取"
         ]
       },
-      "notes": "主名称采用用户确认的 SpaceXAI；xAI 作为别名保留。"
+      "notes": "主名称采用用户确认的 SpaceXAI；xAI 作为别名保留。截至 2026-07-26 无官方 News RSS；SDK Atom 已停用，暂由官网和 Release Notes 人工处理。"
     },
     {
       "id": "nvidia",

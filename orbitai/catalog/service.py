@@ -224,6 +224,12 @@ def load_segment_profile(
         person["aliases"] = person_aliases.get(person["id"], [])
 
     participant_count = len(organizations) + len(people)
+    # Events retain their own read-only repository and explicit confirmation filter.
+    from orbitai.events.service import list_events
+    for organization in organizations:
+        organization["events"] = list_events(database_file, status="confirmed",
+            segment_id=segment["id"], organization_id=organization["id"])
+    timeline = list_events(database_file, status="confirmed", segment_id=segment["id"])
     segment["is_built"] = participant_count > 0
     segment["group_name"] = next(
         (
@@ -238,4 +244,5 @@ def load_segment_profile(
         "organizations": organizations,
         "people": people,
         "participant_count": participant_count,
+        "events": timeline,
     }

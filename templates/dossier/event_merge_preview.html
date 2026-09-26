@@ -1,0 +1,12 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p>尚未保存。来源材料和双方修改历史都会保留。</p>
+<h2>保留：{{ preview.after.target.title }}</h2><p>{{ preview.after.target.summary }}</p>
+<p>事件描述和日期采用保留事件的内容，合并后为候选，需重新核对；被合并事件“{{ preview.before.source.title }}”归档。</p>
+<p>理由：{{ preview.payload.change_reason }}</p>
+{% for key,label in [('organizations','组织'),('people','人物'),('segments','赛道')] %}<p>{{ label }}：{% for item in preview.after.target[key] %}{{ item.name }} {% else %}未关联{% endfor %}</p>{% endfor %}
+{% for item in preview.conflicts %}<p>材料“{{ item.title }}”：{{ item.resolution }}</p>{% endfor %}
+<h3>合并后材料</h3>{% for doc in preview.after.target.documents %}<details><summary>{{ doc.title }} · {{ doc.evidence_role }}</summary><pre>{{ doc.content_text }}</pre><p>{{ doc.notes }}</p></details>{% endfor %}
+<details><summary>双方完整变更内容</summary><pre>{{ preview.before|tojson(indent=2) }}</pre><pre>{{ preview.after|tojson(indent=2) }}</pre></details>
+<form method="post" action="{{ url_for('event_merge_save') }}"><input type="hidden" name="payload" value="{{ payload_json }}"><input type="hidden" name="preview_token" value="{{ preview.preview_token }}"><button>保存合并</button></form>
+{% endblock %}

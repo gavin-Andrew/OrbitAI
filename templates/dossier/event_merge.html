@@ -1,0 +1,9 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p>把“{{ source.title }}”的材料和参与者并入一个保留事件。此事件会归档，历史记录仍可查看；保留事件回到候选状态，供重新核对。</p>
+<form method="post" action="{{ url_for('event_merge_preview') }}">
+<input type="hidden" name="source_id" value="{{ source.id }}"><input type="hidden" name="expected_source_revision" value="{{ source.revision }}">
+<p><label>要保留的事件 <select name="target_id" required>{% for target in targets %}<option value="{{ target.id }}">{{ target.title }} · {{ status_labels.get(target.status,target.status) }}</option>{% endfor %}</select></label></p>
+<p><label>合并理由 <input name="change_reason" required maxlength="1000" placeholder="为什么它们属于同一件事"></label></p><button {% if not targets or source.status == 'archived' %}disabled{% endif %}>预览合并结果</button></form>
+<p><a href="{{ url_for('event_detail',event_id=source.id) }}">返回事件</a></p>
+{% endblock %}

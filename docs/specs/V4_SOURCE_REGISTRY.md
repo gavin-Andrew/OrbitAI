@@ -41,15 +41,16 @@
 
 ## 核心机构、公司与平台
 
-第一版先收纳 10 个核心机构、公司和平台。其他来源先进入观察源，避免第一阶段范围过大。
+第一版原先收纳 10 个核心机构、公司和平台。V4.1 将 Google DeepMind 与范围更宽的 Google AI 拆分，并为单赛道试点新增 DeepSeek；当前机器注册表共有 11 个核心机构、公司或平台，Google AI 作为独立观察源保留。其他来源继续先进入观察层，避免横向扩大内容建设。
 
 | 名称 | 别名 | 类型 | 相关产业方向 | 材料类型 | 获取入口 | 关注理由 |
 |---|---|---|---|---|---|---|
-| OpenAI |  | 机构 | AI Agent 与软件自动化；大模型基础设施；生产力工具 | 事实 + 观点 | 已有 RSS：`https://openai.com/news/rss.xml`；官网；发布会；开发者文档；手动录入访谈 | 前沿模型、Agent、Codex、ChatGPT、开发者平台和 AI 产品化的重要源头。 |
-| Anthropic |  | 机构 | AI Agent 与软件自动化；大模型基础设施；企业 AI | 事实 + 观点 | 官网 News；研究页；政策页；Claude/Claude Code 相关页面；手动录入访谈 | Claude、Claude Code、AI safety、企业 Agent 和模型治理的重要观察对象。 |
-| Google DeepMind / Google AI | Google AI | 机构 | 大模型基础设施；Agent；具身智能；科学 AI；生产力工具 | 事实 + 观点 | 已有 Google AI Blog RSS；DeepMind 官网 News；Google Research；YouTube/Podcast 后续补充 | Gemini、Gemma、DeepMind research、Gemini Robotics、world models 和 AI science 的核心来源。 |
-| Meta AI |  | 机构 | 大模型基础设施；开源模型；AI Agent；设备生态 | 事实 + 观点 | Meta AI Blog；研究页；GitHub；手动录入访谈 | Llama、开源模型、AI 眼镜、世界模型和模型架构路线的重要来源。 |
-| SpaceXAI | xAI；xAI Corp. | 公司 / AI 平台 | 大模型基础设施；Agent；算力基础设施 | 事实 + 观点 | 官网 News；Grok 产品页；API/开发者入口；马斯克相关手动录入 | Grok、Colossus、模型训练基础设施和马斯克 AI 产业判断的重要来源。当前项目内统一使用 `SpaceXAI` 作为主名称，保留 `xAI` 作为别名以便检索历史材料和官网入口。 |
+| OpenAI |  | 机构 | AI Agent 与软件自动化；大模型基础设施；生产力工具 | 事实 + 观点 | 官方 News RSS：`https://openai.com/news/rss.xml`；官网；发布会；开发者文档；手动录入访谈 | 前沿模型、Agent、Codex、ChatGPT、开发者平台和 AI 产品化的重要源头。 |
+| Anthropic |  | 机构 | AI Agent 与软件自动化；大模型基础设施；企业 AI | 事实 + 观点 | 无官方 News RSS；官网 News、Events、研究页、政策页和手动录入；Claude Code Atom 已停用 | Claude、Claude Code、AI safety、企业 Agent 和模型治理的重要观察对象。 |
+| Google DeepMind | DeepMind | 机构 | 大模型基础设施；Agent；具身智能；科学 AI | 事实 + 观点 | 官方 News RSS：`https://deepmind.google/blog/rss.xml`；DeepMind News；研究与模型页面 | Gemini、DeepMind research、Gemini Robotics、world models 和科学 AI 的核心来源。 |
+| Meta AI |  | 机构 | 大模型基础设施；开源模型；AI Agent；设备生态 | 事实 + 观点 | 无官方 Blog RSS；Meta AI Blog、Newsletter、模型卡和手动录入；Llama Models Atom 已停用 | Llama、开源模型、AI 眼镜、世界模型和模型架构路线的重要来源。 |
+| DeepSeek | 深度求索 | 机构 | 大模型基础设施；开源模型 | 事实 + 观点 | 无官方 News RSS；API News、GitHub、Hugging Face；R1 与 V3 Commits Atom 已停用 | 模型发布、技术报告、开源权重和 API 变化的重要来源。 |
+| SpaceXAI | xAI；xAI Corp. | 公司 / AI 平台 | 大模型基础设施；Agent；算力基础设施 | 事实 + 观点 | 无官方 News RSS；官网 News、API Release Notes、模型与系统卡、马斯克相关手动录入；SDK Atom 已停用 | Grok、Colossus、模型训练基础设施和马斯克 AI 产业判断的重要来源。当前项目内统一使用 `SpaceXAI` 作为主名称，保留 `xAI` 作为别名。 |
 | NVIDIA |  | 公司 | 大模型基础设施、算力与芯片；机器人；Agent 基础设施 | 事实 + 观点 | NVIDIA Blog；官网 AI/Robotics/Developer 页面；GTC 演讲；财报电话会 | GPU、数据中心、推理成本、机器人基础设施和 AI 产业供给约束的关键来源。 |
 | Microsoft / GitHub | Microsoft AI；GitHub | 公司 / 平台 | AI Agent 与软件自动化；开发者工具；企业 AI；生产力工具 | 事实 + 观点 | Microsoft AI Blog；GitHub Blog；GitHub Changelog；Build/GitHub Universe；手动录入 | Copilot、GitHub、企业 Agent、开发者工具链和软件自动化落地的核心来源。 |
 | Apple |  | 公司 | AI 与硬件、终端和生产力工具 | 事实 + 观点 | Apple Newsroom；WWDC；开发者文档；手动录入发布会 | 端侧 AI、设备内模型、隐私计算、AI 终端和生产力工具形态的重要来源。 |
@@ -108,32 +109,19 @@
 
 ## 与现有 `data/registries/sources.json` 的关系
 
-当前 `data/registries/sources.json` 已有：
+截至 2026-07-26，`data/registries/sources.json` 保留 OpenAI、Google AI 和 Hugging Face 原有入口，并新增 Google DeepMind 官方 News RSS。以下 GitHub Atom 虽已由 OrbitAI 当前 `feedparser` 流程解析通过，但因实际运行产生大量小版本、提交或 SDK 材料，已经保留记录并设为 `enabled: false`：
 
-```json
-[
-  {
-    "name": "OpenAI News",
-    "url": "https://openai.com/news/rss.xml",
-    "enabled": true
-  },
-  {
-    "name": "Hugging Face Blog",
-    "url": "https://huggingface.co/blog/feed.xml",
-    "enabled": true
-  },
-  {
-    "name": "Google AI Blog",
-    "url": "https://feeds.feedburner.com/blogspot/gJZg",
-    "enabled": true
-  }
-]
-```
+- Anthropic Claude Code GitHub Releases Atom。
+- Meta Llama Models GitHub Releases Atom。
+- DeepSeek-R1 与 DeepSeek-V3 GitHub Commits Atom。
+- SpaceXAI Python SDK GitHub Releases Atom。
+
+当前只有 OpenAI 和 Google DeepMind 的试点入口属于公司级官方新闻 RSS 并进入自动抓取。四家无官方 RSS 的组织暂由官网、Newsletter、模型卡、Release Notes 与手动录入处理。
 
 V4 不应简单新建一套和 `data/registries/sources.json` 重复的 RSS 清单。更合理的方向是：
 
-1. 短期：保留 `data/registries/sources.json` 作为 RSS 抓取入口。
-2. V4 第一阶段：新增 source registry 正式表，把现有 RSS 源映射到对应的机构源。
+1. 短期：保留 `data/registries/sources.json` 作为 RSS 与 Atom 抓取入口。
+2. V4 第一阶段：由 source registry 正式表把 RSS、Atom 和网页入口映射到对应的机构源，并标明各入口的覆盖边界。
 3. 后续：让 RSS、手动录入、YouTube、播客、GitHub、论文等入口都挂在 source registry 下。
 
 ## 下一步建议

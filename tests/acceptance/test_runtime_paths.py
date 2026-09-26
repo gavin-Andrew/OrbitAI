@@ -62,7 +62,7 @@ class RuntimePathTests(unittest.TestCase):
             self.assertTrue(database_file.exists())
             self.assertEqual(
                 applied,
-                ["0001", "0002", "0003", "0004", "0005", "0006"],
+                ["0001", "0002", "0003", "0004", "0005", "0006", "0007"],
             )
 
     def test_material_repository_refuses_a_missing_activity_database(self):

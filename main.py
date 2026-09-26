@@ -5,7 +5,11 @@ from orbitai.materials.repository import (
     get_unprocessed_articles,
     update_article_ai,
 )
-from orbitai.materials.rss import load_sources, fetch_rss
+from orbitai.materials.rss import (
+    load_disabled_source_names,
+    load_sources,
+    fetch_rss,
+)
 from orbitai.materials.ai_processor import process_ai_items
 
 
@@ -74,7 +78,11 @@ def run_ai_only(batch_size=10):
     - main.py 命令行流程调用
     - FastAPI 的 POST /admin/process-ai 调用
     """
-    articles = get_unprocessed_articles(limit=batch_size)
+    disabled_source_names = load_disabled_source_names()
+    articles = get_unprocessed_articles(
+        limit=batch_size,
+        excluded_sources=disabled_source_names,
+    )
 
     if not articles:
         print("没有未处理的文章。")

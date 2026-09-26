@@ -122,10 +122,31 @@ class CatalogImportTests(unittest.TestCase):
         self.assertEqual(
             report.summary["action_counts"],
             {
-                "create": 115,
-                "create_from_split": 1,
+                "create": 125,
                 "intentionally_unbound": 1,
-                "map_existing": 7,
+                "map_existing": 9,
+            },
+        )
+        new_source_entry_ids = {
+            "anthropic_claude_code_releases_atom",
+            "anthropic_events_web",
+            "deepmind_news_rss",
+            "meta_llama_models_releases_atom",
+            "meta_ai_newsletter_web",
+            "deepseek_r1_commits_atom",
+            "deepseek_v3_commits_atom",
+            "deepseek_github_web",
+            "deepseek_huggingface_web",
+            "spacexai_release_notes_web",
+            "spacexai_sdk_releases_atom",
+        }
+        self.assertTrue(
+            new_source_entry_ids
+            <= {
+                item.key
+                for item in report.operations
+                if item.entity_type == "source_entry"
+                and item.action == "create"
             },
         )
 
@@ -174,14 +195,17 @@ class CatalogImportTests(unittest.TestCase):
             second_counts = self._catalog_counts(connection)
 
         self.assertTrue(first_report.applied)
-        self.assertEqual(first_report.summary["inserted_count"], 124)
+        self.assertEqual(
+            first_report.summary["inserted_count"],
+            sum(expected_counts.values()),
+        )
         self.assertEqual(first_counts, dict(expected_counts))
         self.assertTrue(second_report.applied)
         self.assertEqual(second_report.summary["inserted_count"], 0)
         self.assertEqual(second_counts, first_counts)
         self.assertEqual(
             second_report.summary["action_counts"],
-            {"unchanged": 124},
+            {"unchanged": sum(expected_counts.values())},
         )
 
     def test_existing_user_change_is_previewed_and_never_overwritten(self):

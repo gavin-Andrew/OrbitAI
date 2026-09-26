@@ -705,20 +705,33 @@ def print_articles_preview(limit=10):
         print(f"分数：{ai.get('final_score')}")
         print(f"链接：{item.get('link')}")
 
-def get_unprocessed_articles(limit: int = 10) -> list[dict]:
+def get_unprocessed_articles(
+    limit: int = 10,
+    excluded_sources: set[str] | None = None,
+) -> list[dict]:
     """
-    获取未处理的文章列表。
+    获取未处理的文章列表，可排除已经停用的材料来源。
     """
     init_db()
+    excluded = sorted(excluded_sources or set())
+    query = """
+        SELECT *
+        FROM articles
+        WHERE processed = 0
+    """
+    parameters: list[object] = []
+
+    if excluded:
+        placeholders = ", ".join("?" for _ in excluded)
+        query += f" AND COALESCE(source, '') NOT IN ({placeholders})"
+        parameters.extend(excluded)
+
+    query += " ORDER BY fetched_at ASC LIMIT ?"
+    parameters.append(limit)
+
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT *
-            FROM articles
-            WHERE processed = 0
-            ORDER BY fetched_at ASC
-            LIMIT ?
-        """, (limit,))
+        cursor.execute(query, parameters)
         rows = cursor.fetchall()
     return [row_to_item(row) for row in rows]
 

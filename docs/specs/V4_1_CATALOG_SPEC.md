@@ -202,6 +202,8 @@ V4.0 已经提供 V4.1 所需的主要物理表。V4.1 优先复用这些表：
 
 拆分操作必须在导入预览中单独显示，旧组合来源不能与两个新来源并存为三个活动来源。`google_ai` 使用 `mapping_status=intentionally_unbound`，表示暂不绑定是已确认决定，不是遗漏或冲突。
 
+2026-07-25 来源补充后，`data/registries/sources.v4.json` 已把首次导入时的组合来源正式整理为 `google_deepmind` 与 `google_ai` 两个当前来源身份，并新增 `deepseek`。首次拆分过程仍由 `docs/decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md` 保留历史证据；当前种子再次预览时改为 `map_existing`，不重复执行已经完成的来源拆分。
+
 ## 7. 种子文件规则
 
 `data/seeds/catalog/foundation_models.v4.1.json` 是可审核的策划输入，不是数据库真相。它应满足：

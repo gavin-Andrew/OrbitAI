@@ -1,0 +1,22 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p><a href="{{ url_for('event_ledger') }}">事件台账</a> · <a href="{{ url_for('v42_review') }}">成果总览</a></p>
+{% if saved %}<p class="scope-note">材料已保存。<a href="{{ url_for('event_new') }}?document_id={{ saved|urlencode }}">用这份材料创建事件</a>，也可以在已有事件的编辑页勾选它。</p>{% endif %}
+<section class="participant-panel"><h2>粘贴原始摘录</h2><p>适用于没有 RSS 或无法读取的网页。保留实际发布者和原始链接，不粘贴 AI 摘要作为原文。</p>
+<form method="post" action="{{ url_for('document_preview') }}">
+<p><label>发布来源 <select name="source_id" required><option value="">选择已登记来源</option>{% for item in options.sources %}<option value="{{ item.id }}">{{ item.name }}</option>{% endfor %}</select></label></p>
+<p><label>原始标题 <input name="title" required maxlength="500"></label></p>
+<p><label>原始链接 <input name="url" type="url" required></label></p>
+<p><label>材料发布日期（可留空） <input name="published_at" type="date"></label></p>
+<p><label>原文摘录 <textarea name="content_text" rows="8" required maxlength="100000"></textarea></label></p>
+<button>预览材料</button></form></section>
+<section class="participant-panel"><h2>读取官方网页</h2><p>按需读取 Anthropic、Meta AI、DeepSeek 的官方文章，先预览再保存。SpaceXAI 暂用上方手工摘录。</p>
+<form method="post" action="{{ url_for('document_fetch') }}"><p><label>官网 <select name="source_id"><option value="anthropic">Anthropic</option><option value="meta_ai">Meta AI</option><option value="deepseek">DeepSeek</option></select></label></p>
+<p><label>官方文章链接 <input type="url" name="url" required></label></p><button>读取并预览正文</button></form></section>
+<section class="profile-section"><h2>已保存的原始材料</h2>
+{% for doc in documents %}<details {% if doc.id == saved %}open{% endif %}><summary>{{ doc.title }} · {{ doc.source_name or doc.source_id or '来源未映射' }}</summary>
+<p>{{ {'rss_excerpt':'RSS 摘录','manual_excerpt':'手工摘录','web_article':'官网正文快照'}.get(doc.document_type,doc.document_type) }} · {{ doc.published_at or '日期未知' }}</p>
+{% if doc.url and (doc.url.startswith('https://') or doc.url.startswith('http://')) %}<p><a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">原始链接</a></p>{% endif %}
+<pre>{{ doc.content_text }}</pre><a href="{{ url_for('event_new') }}?{% if doc.article_id %}article_id={{ doc.article_id }}{% else %}document_id={{ doc.id|urlencode }}{% endif %}">用于新事件</a></details>
+{% else %}<p>尚无材料。</p>{% endfor %}</section>
+{% endblock %}

@@ -1,7 +1,8 @@
 feedparser
+beautifulsoup4
 openai
 python-dotenv
 certifi
 fastapi
 uvicorn
-jinja2   
+jinja2

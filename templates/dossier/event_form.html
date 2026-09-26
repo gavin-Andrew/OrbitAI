@@ -1,0 +1,50 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p><a href="{{ url_for('event_ledger') }}">返回台账</a></p>
+<p>先核对材料原文，再填写事件。AI 摘要或评分不作为证据。保存必须经过下一页预览；确认复选框不会自动勾选。</p>
+<form method="post" action="{{ url_for('event_preview') }}">
+  <input type="hidden" name="id" value="{{ event.id or '' }}">
+  <input type="hidden" name="expected_revision" value="{{ event.revision or '' }}">
+  <input type="hidden" name="origin" value="{{ event.origin or 'user' }}">
+  <p><label>事件标题 <input name="title" required maxlength="500" value="{{ event.title or '' }}"></label></p>
+  <p><label>整理后的事件简介（不等同原文）<br><textarea name="summary" rows="4" cols="65">{{ event.summary or '' }}</textarea></label></p>
+  <p><label>保留理由／需要核对的地方（选填）<br><textarea name="notes" rows="3" cols="65">{{ event.notes or '' }}</textarea></label></p>
+  <p><label>事件类型 <select name="event_type_id">{% for option in options.event_types %}<option value="{{ option.id }}" {% if option.id == (event.event_type_id or 'other') %}selected{% endif %}>{{ option.name }}</option>{% endfor %}</select></label>
+  <label>状态 <select name="status">{% for key,label in status_labels.items() %}<option value="{{ key }}" {% if key == (event.status or 'candidate') %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label></p>
+  <p><label>事件起始日期 <input name="date_start" value="{{ event.date_start or '' }}" placeholder="2026-07-01 / 2026-07 / 2026"></label>
+  <label>结束日期 <input name="date_end" value="{{ event.date_end or '' }}"></label>
+  <label>日期精度 <select name="date_precision">{% for key,label in [('unknown','未知'),('day','日'),('month','月'),('quarter','季度'),('year','年'),('range','范围')] %}<option value="{{ key }}" {% if key == (event.date_precision or 'unknown') %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label></p>
+  {% for key,label,choices,chosen in [('organization_ids','关联组织',options.organizations,event.organizations),('segment_ids','关联赛道',options.segments,event.segments),('person_ids','关联人物',options.people,event.people)] %}
+  <fieldset><legend>{{ label }}</legend>{% for option in choices %}<label><input type="checkbox" name="{{ key }}" value="{{ option.id }}" {% if chosen and option.id in chosen|map(attribute='id')|list %}checked{% endif %}>{{ option.name }}</label> {% endfor %}</fieldset>
+  {% endfor %}
+  <fieldset><legend>关联数据库材料（只使用原始 RSS 内容，不是网页全文）</legend>
+  {% if event.documents %}<p>已选：{% for doc in event.documents %}{{ doc.title }}{% if not loop.last %}；{% endif %}{% endfor %}</p>{% endif %}
+  <details {% if not event.documents %}open{% endif %}><summary>选择或调整 RSS 材料</summary>
+  <p><label>查找材料 <input type="search" data-material-filter placeholder="输入标题或来源关键词"></label></p>
+  {% for article in options.articles %}
+  {% set linked = (event.documents or [])|selectattr('article_id','equalto',article.id)|list %}
+  <details data-material-choice data-search="{{ article.title }} {{ article.source }}" {% if linked %}open{% endif %}><summary><label><input type="checkbox" name="article_ids" value="{{ article.id }}" {% if linked %}checked{% endif %}>#{{ article.id }} {{ article.title }}</label> · {{ article.source }} · {{ article.published or '发布日期未知' }}</summary>
+  <p>原始 RSS 摘要／内容（可能不完整）：{{ article.summary_original or '请在材料详情或原始网页核对内容。' }}</p>
+  <label>来源身份 <select name="source_{{ article.id }}"><option value="">待核对</option>{% for source in options.sources %}<option value="{{ source.id }}" {% if linked and linked[0].source_id == source.id %}selected{% endif %}>{{ source.name }}</option>{% endfor %}</select></label>
+  <label>证据角色 <select name="role_{{ article.id }}">{% for key,label in [('background','背景'),('official','官方'),('independent','独立报道'),('expert','专家'),('user_feedback','用户反馈')] %}<option value="{{ key }}" {% if linked and linked[0].evidence_role == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+  <label>证据边界／备注 <input name="material_notes_{{ article.id }}" value="{{ linked[0].notes if linked else '' }}"></label>
+  </details>
+  {% else %}<p>数据库暂无可关联材料。</p>{% endfor %}
+  </details>
+  </fieldset>
+  <fieldset><legend>补充的原始材料</legend>
+  <p><a href="{{ url_for('document_intake') }}" target="_blank" rel="noopener">补充网页或手工摘录</a>（保存材料后重新打开本页）</p>
+  {% for doc in options.documents or [] %}
+  {% set linked = (event.documents or [])|selectattr('id','equalto',doc.id)|list %}
+  <details {% if linked %}open{% endif %}><summary><label><input type="checkbox" name="document_ids" value="{{ doc.id }}" {% if linked %}checked{% endif %}>{{ doc.title }}</label> · {{ doc.published_at or '日期未知' }}</summary>
+  <p>{{ doc.content_text }}</p>
+  <label>证据角色 <select name="doc_role_{{ doc.id }}">{% for key,label in [('background','背景'),('official','官方'),('independent','独立报道'),('expert','专家'),('user_feedback','用户反馈')] %}<option value="{{ key }}" {% if linked and linked[0].evidence_role == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+  <label>证据边界 <input name="doc_notes_{{ doc.id }}" value="{{ linked[0].notes if linked else '' }}"></label>
+  </details>{% else %}<p>尚无补充材料，可继续使用上方 RSS。</p>{% endfor %}
+  </fieldset>
+  <p><label>本次变更原因 <input name="change_reason" required maxlength="1000" value="{{ '从原始材料整理候选，待核对' if not event.id else '' }}" placeholder="说明新增、确认、纠错或归档的依据"></label></p>
+  <p><label><input type="checkbox" name="confirmed_by_user" value="yes">我已核对来源，明确确认本次事件内容（选择“已确认”时必须勾选）</label></p>
+  <button type="submit">生成只读预览</button>
+</form>
+<script src="{{ url_for('static', path='dossier/events.js') }}" defer></script>
+{% endblock %}

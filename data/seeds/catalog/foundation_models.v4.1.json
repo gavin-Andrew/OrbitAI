@@ -2,10 +2,10 @@
   "schema_version": "0.1",
   "seed_id": "v4_1_foundation_models_roster",
   "status": "draft",
-  "version_date": "2026-07-15",
+  "version_date": "2026-07-26",
   "spec_file": "docs/V4_1_CATALOG_SPEC.md",
   "source_registry_file": "sources.v4.json",
-  "status_note": "单赛道范围、四大类目录、首批 6 个组织与 6 位人物，以及 5 项写库前处理决定已经用户确认；实际写库仍须经过导入预览与人工复核。",
+  "status_note": "单赛道范围、四大类目录、首批 6 个组织与 6 位人物，以及 5 项写库前处理决定已经用户确认；2026-07-26 已按实际抓取结果停用四家无公司级官方 RSS 组织的 GitHub Atom，新增及变更入口仍须经过导入预览与人工复核。",
   "confirmed_scope": {
     "industry_id": "artificial_intelligence",
     "pilot_segment_id": "general_foundation_models",
@@ -946,18 +946,7 @@
       "notes": "首批试点人物。"
     }
   ],
-  "source_registry_operations": [
-    {
-      "operation": "split",
-      "from_source_id": "google_deepmind_google_ai",
-      "to_source_ids": [
-        "google_deepmind",
-        "google_ai"
-      ],
-      "status": "confirmed",
-      "notes": "将原组合来源拆成参与者来源 Google DeepMind 与补充来源 Google AI；实际写入仍通过导入预览确认。"
-    }
-  ],
+  "source_registry_operations": [],
   "sources": [
     {
       "id": "openai",
@@ -1002,6 +991,24 @@
           "status": "planned",
           "existing_in_sources_json": 0,
           "notes": "复用现有规划入口。"
+        },
+        {
+          "id": "anthropic_claude_code_releases_atom",
+          "entry_type": "rss",
+          "label": "Anthropic Claude Code GitHub Releases Atom",
+          "url": "https://github.com/anthropics/claude-code/releases.atom",
+            "status": "disabled",
+            "existing_in_sources_json": 1,
+            "notes": "因产生大量小版本材料，已从活动抓取和 AI 队列停用；Anthropic 暂由官网人工处理。"
+        },
+        {
+          "id": "anthropic_events_web",
+          "entry_type": "website",
+          "label": "Anthropic Events",
+          "url": "https://www.anthropic.com/events",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "官方活动、网络研讨会和开发者 Newsletter 入口。"
         }
       ]
     },
@@ -1012,11 +1019,20 @@
       "tier": "core",
       "organization_id": "google_deepmind",
       "person_id": null,
-      "registry_action": "create_from_split",
+      "registry_action": "map_existing",
       "mapping_status": "confirmed",
       "tracking_reason": "追踪 Google DeepMind 的前沿模型、基础研究和科学 AI 材料。",
       "notes": "由 sources.v4.json 的组合来源拆分，并明确映射到 Google DeepMind 参与者。",
       "entries": [
+        {
+          "id": "deepmind_news_rss",
+          "entry_type": "rss",
+          "label": "Google DeepMind News RSS",
+          "url": "https://deepmind.google/blog/rss.xml",
+          "status": "enabled",
+          "existing_in_sources_json": 1,
+          "notes": "2026-07-25 使用 OrbitAI 当前 feedparser 流程验证通过。"
+        },
         {
           "id": "deepmind_news_web",
           "entry_type": "website",
@@ -1035,7 +1051,7 @@
       "tier": "watched",
       "organization_id": null,
       "person_id": null,
-      "registry_action": "create_from_split",
+      "registry_action": "map_existing",
       "mapping_status": "intentionally_unbound",
       "tracking_reason": "保留 Google AI Blog 中超出 Google DeepMind 参与者边界的补充材料。",
       "notes": "由 sources.v4.json 的组合来源拆分；本期不为它新增参与者身份，也不计入 12 个核心参与者来源。",
@@ -1071,6 +1087,24 @@
           "status": "planned",
           "existing_in_sources_json": 0,
           "notes": "复用现有规划入口。"
+        },
+        {
+          "id": "meta_llama_models_releases_atom",
+          "entry_type": "rss",
+          "label": "Meta Llama Models GitHub Releases Atom",
+          "url": "https://github.com/meta-llama/llama-models/releases.atom",
+            "status": "disabled",
+            "existing_in_sources_json": 1,
+            "notes": "覆盖粒度不适合当前材料流，已从活动抓取和 AI 队列停用；Meta AI 暂由官网人工处理。"
+        },
+        {
+          "id": "meta_ai_newsletter_web",
+          "entry_type": "website",
+          "label": "Meta AI Newsletter",
+          "url": "https://ai.meta.com/subscribe/",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "官方 Newsletter 订阅入口。"
         }
       ]
     },
@@ -1081,7 +1115,7 @@
       "tier": "core",
       "organization_id": "deepseek",
       "person_id": null,
-      "registry_action": "propose_create",
+      "registry_action": "map_existing",
       "mapping_status": "confirmed",
       "tracking_reason": "追踪 DeepSeek 的模型发布、技术报告、开源权重和 API 变化。",
       "notes": "sources.v4.json 尚无该来源，V4.1 提议新增。",
@@ -1094,6 +1128,42 @@
           "status": "planned",
           "existing_in_sources_json": 0,
           "notes": "官方模型发布与 API 变更入口。"
+        },
+        {
+          "id": "deepseek_r1_commits_atom",
+          "entry_type": "rss",
+          "label": "DeepSeek R1 GitHub Commits Atom",
+          "url": "https://github.com/deepseek-ai/DeepSeek-R1/commits/main.atom",
+            "status": "disabled",
+            "existing_in_sources_json": 1,
+            "notes": "普通提交粒度过细，已从活动抓取和 AI 队列停用。"
+        },
+        {
+          "id": "deepseek_v3_commits_atom",
+          "entry_type": "rss",
+          "label": "DeepSeek V3 GitHub Commits Atom",
+          "url": "https://github.com/deepseek-ai/DeepSeek-V3/commits/main.atom",
+            "status": "disabled",
+            "existing_in_sources_json": 1,
+            "notes": "普通提交粒度过细，已从活动抓取和 AI 队列停用。"
+        },
+        {
+          "id": "deepseek_github_web",
+          "entry_type": "website",
+          "label": "DeepSeek GitHub Organization",
+          "url": "https://github.com/deepseek-ai",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "用于发现新模型仓库、技术报告和工程实现。"
+        },
+        {
+          "id": "deepseek_huggingface_web",
+          "entry_type": "website",
+          "label": "DeepSeek Hugging Face",
+          "url": "https://huggingface.co/deepseek-ai",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "用于核查模型卡、权重、许可证和发布时间。"
         }
       ]
     },
@@ -1117,6 +1187,24 @@
           "status": "planned",
           "existing_in_sources_json": 0,
           "notes": "复用现有规划入口。"
+        },
+        {
+          "id": "spacexai_release_notes_web",
+          "entry_type": "website",
+          "label": "SpaceXAI API Release Notes",
+          "url": "https://docs.x.ai/developers/release-notes",
+          "status": "planned",
+          "existing_in_sources_json": 0,
+          "notes": "结构化官方发布记录，覆盖模型、API 和工具变化。"
+        },
+        {
+          "id": "spacexai_sdk_releases_atom",
+          "entry_type": "rss",
+          "label": "SpaceXAI Python SDK GitHub Releases Atom",
+          "url": "https://github.com/xai-org/xai-sdk-python/releases.atom",
+            "status": "disabled",
+            "existing_in_sources_json": 1,
+            "notes": "SDK 小版本粒度不适合当前材料流，已从活动抓取和 AI 队列停用；SpaceXAI 暂由官网人工处理。"
         }
       ]
     },

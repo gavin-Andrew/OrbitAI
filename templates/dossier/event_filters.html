@@ -1,0 +1,7 @@
+<form method="get">
+  {% for key, label, choices in [('segment_id','赛道',options.segments),('organization_id','组织',options.organizations),('person_id','人物',options.people)] %}
+  <label>{{ label }} <select name="{{ key }}"><option value="">全部</option>{% for choice in choices %}<option value="{{ choice.id }}" {% if selected[key] == choice.id %}selected{% endif %}>{{ choice.name }}</option>{% endfor %}</select></label>
+  {% endfor %}
+  {% if selected_status is defined %}<label>状态 <select name="status"><option value="">全部</option>{% for key,label in status_labels.items() %}<option value="{{ key }}" {% if selected_status == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>{% endif %}
+  <button type="submit">筛选</button>
+</form>

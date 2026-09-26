@@ -1,0 +1,54 @@
+{
+  "batch_id": "gpt56_rss_slice_20260913",
+  "events": [
+    {
+      "id": "event_gpt56_sol_preview",
+      "origin": "ai",
+      "title": "OpenAI 发布 GPT-5.6 Sol 预览公告",
+      "summary": "库内官方 RSS 记录了 GPT-5.6 Sol 的预览公告。能力提升属于发布者表述，尚未独立验证。",
+      "event_type_id": "model_release",
+      "status": "candidate",
+      "date_start": "2026-06-26",
+      "date_precision": "day",
+      "confirmed_by_user": false,
+      "notes": "研究问题：库中关于 GPT-5.6 的预览、模型介绍和 Copilot 采用，分别支持什么事件，哪些还不能确认？用于区分预览与全面发布；需核对开放对象与范围，不把 Sol 与后续 GPT-5.6 自动认定为同一型号。日期仅指 RSS 预览公告日。",
+      "organization_ids": ["openai"],
+      "segment_ids": ["general_foundation_models"],
+      "person_ids": [],
+      "materials": [{"article_id": 110, "source_id": "openai", "evidence_role": "official", "notes": "只有 RSS 原文摘录，无完整正文；能力表述未独立核实。"}],
+      "change_reason": "最小事件试点：按完整预览保留为未确认内容。"
+    },
+    {
+      "id": "event_gpt56_introduction",
+      "origin": "ai",
+      "title": "OpenAI 介绍 GPT-5.6，发布范围待核实",
+      "summary": "标题可识别 GPT-5.6，原文摘录只包含能力宣传。不能仅依据 AI 中文摘要中的发布确认正式开放时间或范围。",
+      "event_type_id": "model_release",
+      "status": "needs_evidence",
+      "date_precision": "unknown",
+      "confirmed_by_user": false,
+      "notes": "研究问题：库中关于 GPT-5.6 的预览、模型介绍和 Copilot 采用，分别支持什么事件，哪些还不能确认？作为证据不足样本；类型暂定，需核对原文的发布行为、时间和可用范围。",
+      "organization_ids": ["openai"],
+      "segment_ids": ["general_foundation_models"],
+      "person_ids": [],
+      "materials": [{"article_id": 139, "source_id": "openai", "evidence_role": "official", "notes": "只有 RSS 原文摘录。RSS 发布于 2026-07-09，但暂不等同事件发生日。"}],
+      "change_reason": "最小事件试点：按完整预览保留为待补证据内容。"
+    },
+    {
+      "id": "event_gpt56_copilot_adoption",
+      "origin": "ai",
+      "title": "OpenAI 报道 GPT-5.6 成为 Microsoft 365 Copilot 首选模型",
+      "summary": "标题将 GPT-5.6 描述为 Microsoft 365 Copilot 的 preferred model；原文摘录描述了所支持的应用。尚不确认默认设置、覆盖所有用户或具体推出日期。",
+      "event_type_id": "adoption",
+      "status": "candidate",
+      "date_precision": "unknown",
+      "confirmed_by_user": false,
+      "notes": "研究问题：库中关于 GPT-5.6 的预览、模型介绍和 Copilot 采用，分别支持什么事件，哪些还不能确认？模型介绍与下游采用分开；库存 AI 中文摘要写成默认模型，不能替代原文首选模型。采用起始日期待核实。",
+      "organization_ids": ["openai"],
+      "segment_ids": ["general_foundation_models"],
+      "person_ids": [],
+      "materials": [{"article_id": 136, "source_id": "openai", "evidence_role": "official", "notes": "OpenAI 自述，不是 Microsoft 独立确认；只有 RSS 原文摘录，无完整正文。RSS 发布于 2026-07-09。"}],
+      "change_reason": "最小事件试点：按完整预览保留为未确认内容。"
+    }
+  ]
+}

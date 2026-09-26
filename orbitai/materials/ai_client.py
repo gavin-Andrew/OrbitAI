@@ -26,7 +26,7 @@ def create_ai_client():
     }
 
 
-def request_chat_completion(client, messages):
+def request_chat_completion(client, messages, *, max_tokens=None, thinking=None):
     """
     向 DeepSeek Chat Completions API 发起请求。
     返回模型 message.content 文本。
@@ -36,9 +36,13 @@ def request_chat_completion(client, messages):
     payload = {
         "model": AI_MODEL,
         "messages": messages,
-        "max_tokens": AI_MAX_TOKENS,
+        "max_tokens": AI_MAX_TOKENS if max_tokens is None else max_tokens,
         "stream": False,
     }
+    if thinking is not None:
+        if type(thinking) is not bool:
+            raise ValueError("thinking must be a boolean")
+        payload["thinking"] = {"type": "enabled" if thinking else "disabled"}
 
     request_data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
 

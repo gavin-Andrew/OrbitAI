@@ -1,0 +1,1545 @@
+{
+  "seed_id": "v4_1_foundation_models_roster",
+  "seed_status": "draft",
+  "validation": {
+    "is_valid": true,
+    "error_count": 0,
+    "warning_count": 2,
+    "issues": [
+      {
+        "severity": "warning",
+        "code": "needs_primary_source",
+        "path": "person_organization_roles[4].verification_status",
+        "message": "允许进入名册，但仍需在后续补充一手来源。"
+      },
+      {
+        "severity": "warning",
+        "code": "needs_primary_source",
+        "path": "person_organization_roles[5].verification_status",
+        "message": "允许进入名册，但仍需在后续补充一手来源。"
+      }
+    ]
+  },
+  "summary": {
+    "operation_count": 135,
+    "action_counts": {
+      "create": 11,
+      "unchanged": 124
+    },
+    "blocking_count": 0,
+    "can_apply": true,
+    "applied": false,
+    "inserted_count": 0,
+    "inserted_by_type": {}
+  },
+  "operations": [
+    {
+      "entity_type": "industry",
+      "key": "artificial_intelligence",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "segment",
+      "key": "general_foundation_models",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "pilot_active"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "multimodal_understanding_generation",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "reasoning_planning",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "agent_core_capabilities",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "world_models_physical_intelligence",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "data",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "ai_chips",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "advanced_process_packaging_semiconductor_equipment",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "cloud_compute_platforms",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "networks_data_centers",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "power_energy_cooling",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "ai_agents_software_automation",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "ai_coding_productivity",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "ai_search_assistants_content",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "ai_devices_hardware",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "embodied_intelligence_robotics",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "autonomous_driving",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "industry_applications",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "ai_for_science",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "policy_regulation",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "safety_governance_standards",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "capital_financing",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "talent",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "open_source_community",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "customer_developer_user_adoption",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "segment",
+      "key": "international_trade_supply_restrictions",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "content_status": "directory_only"
+      }
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|general_foundation_models",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|multimodal_understanding_generation",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|reasoning_planning",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|agent_core_capabilities",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|world_models_physical_intelligence",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|data",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|ai_chips",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|advanced_process_packaging_semiconductor_equipment",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|cloud_compute_platforms",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|networks_data_centers",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|power_energy_cooling",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|ai_agents_software_automation",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|ai_coding_productivity",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|ai_search_assistants_content",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|ai_devices_hardware",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|embodied_intelligence_robotics",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|autonomous_driving",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|industry_applications",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|ai_for_science",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|policy_regulation",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|safety_governance_standards",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|capital_financing",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|talent",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|open_source_community",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|customer_developer_user_adoption",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "industry_segment",
+      "key": "artificial_intelligence|international_trade_supply_restrictions",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization",
+      "key": "openai",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "openai_residency_2026"
+        ]
+      }
+    },
+    {
+      "entity_type": "organization",
+      "key": "anthropic",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "anthropic_builder_summit_bengaluru"
+        ]
+      }
+    },
+    {
+      "entity_type": "organization",
+      "key": "google_deepmind",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "google_deepmind_about"
+        ]
+      }
+    },
+    {
+      "entity_type": "organization_alias",
+      "key": "google_deepmind|DeepMind",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization",
+      "key": "meta_ai",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "meta_ai_about"
+        ]
+      }
+    },
+    {
+      "entity_type": "organization_alias",
+      "key": "meta_ai|AI at Meta",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization",
+      "key": "deepseek",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "deepseek_model_disclosure"
+        ]
+      }
+    },
+    {
+      "entity_type": "organization_alias",
+      "key": "deepseek|深度求索",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization",
+      "key": "spacexai",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "spacexai_company"
+        ]
+      }
+    },
+    {
+      "entity_type": "organization_alias",
+      "key": "spacexai|xAI",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization_alias",
+      "key": "spacexai|xAI Corp.",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person",
+      "key": "sam_altman",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "openai_residency_2026"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "sam_altman|山姆·奥特曼",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person",
+      "key": "dario_amodei",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "anthropic_builder_summit_bengaluru"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "dario_amodei|达里奥·阿莫迪",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person",
+      "key": "demis_hassabis",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "google_deepmind_about"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "demis_hassabis|戴密斯·哈萨比斯",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "demis_hassabis|德米斯·哈萨比斯",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person",
+      "key": "yann_lecun",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "meta_ai_yann_lecun_profile"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "yann_lecun|杨立昆",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "yann_lecun|扬·勒昆",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person",
+      "key": "liang_wenfeng",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "secondary_verified",
+        "verification_source_ids": [
+          "reuters_liang_wenfeng_profile_2025"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "liang_wenfeng|Liang Wenfeng",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "liang_wenfeng|Wenfeng Liang",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person",
+      "key": "elon_musk",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "secondary_verified",
+        "verification_source_ids": [
+          "axios_spacexai_grok_4_5_2026"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "elon_musk|Elon Musk",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_alias",
+      "key": "elon_musk|埃隆·马斯克",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_organization_role",
+      "key": "sam_altman|openai|CEO|",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "openai_residency_2026"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_organization_role",
+      "key": "dario_amodei|anthropic|联合创始人兼 CEO|",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "anthropic_builder_summit_bengaluru"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_organization_role",
+      "key": "demis_hassabis|google_deepmind|联合创始人兼 CEO|",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "google_deepmind_about"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_organization_role",
+      "key": "yann_lecun|meta_ai|首席 AI 科学家|2013-12",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "official_verified",
+        "verification_source_ids": [
+          "meta_ai_yann_lecun_profile"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_organization_role",
+      "key": "liang_wenfeng|deepseek|创始人|2023",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "needs_primary_source",
+        "verification_source_ids": [
+          "reuters_liang_wenfeng_profile_2025"
+        ]
+      }
+    },
+    {
+      "entity_type": "person_organization_role",
+      "key": "elon_musk|spacexai|CEO|",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "verification_status": "needs_primary_source",
+        "verification_source_ids": [
+          "axios_spacexai_grok_4_5_2026"
+        ]
+      }
+    },
+    {
+      "entity_type": "organization_segment",
+      "key": "openai|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization_segment",
+      "key": "anthropic|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization_segment",
+      "key": "google_deepmind|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization_segment",
+      "key": "meta_ai|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization_segment",
+      "key": "deepseek|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "organization_segment",
+      "key": "spacexai|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_segment",
+      "key": "sam_altman|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_segment",
+      "key": "dario_amodei|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_segment",
+      "key": "demis_hassabis|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_segment",
+      "key": "yann_lecun|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_segment",
+      "key": "liang_wenfeng|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "person_segment",
+      "key": "elon_musk|general_foundation_models|participant",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "openai",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "openai_news_rss",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "anthropic",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "anthropic_news_web",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "anthropic_claude_code_releases_atom",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "anthropic_events_web",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "google_deepmind",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "deepmind_news_rss",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "deepmind_news_web",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "google_ai",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "intentionally_unbound"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "google_ai_blog_rss",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "meta_ai",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "meta_ai_blog_web",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "meta_llama_models_releases_atom",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "meta_ai_newsletter_web",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "deepseek",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "deepseek_news_web",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "deepseek_r1_commits_atom",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "deepseek_v3_commits_atom",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "deepseek_github_web",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "deepseek_huggingface_web",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "spacexai",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "spacexai_news_web",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "spacexai_release_notes_web",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "spacexai_sdk_releases_atom",
+      "action": "create",
+      "blocking": false,
+      "reason": "数据库中不存在，将在显式 apply 时创建。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "sam_altman",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "sam_altman_manual",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "dario_amodei",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "dario_amodei_manual",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "demis_hassabis",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "propose_create",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "demis_hassabis_manual",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "yann_lecun",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "propose_create",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "yann_lecun_profile_web",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "liang_wenfeng",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "propose_create",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "liang_wenfeng_manual",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    },
+    {
+      "entity_type": "source",
+      "key": "elon_musk",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {
+        "registry_action": "map_existing",
+        "mapping_status": "confirmed"
+      }
+    },
+    {
+      "entity_type": "source_entry",
+      "key": "elon_musk_manual",
+      "action": "unchanged",
+      "blocking": false,
+      "reason": "数据库记录与种子可持久化字段一致。",
+      "changes": {},
+      "metadata": {}
+    }
+  ],
+  "proposed_new_source_entries": [
+    {
+      "id": "anthropic_claude_code_releases_atom",
+      "source_id": "anthropic",
+      "entry_type": "rss",
+      "label": "Anthropic Claude Code GitHub Releases Atom",
+      "url": "https://github.com/anthropics/claude-code/releases.atom",
+      "status": "disabled",
+      "existing_in_sources_json": 1,
+      "notes": "因产生大量小版本材料，已从活动抓取和 AI 队列停用；Anthropic 暂由官网人工处理。"
+    },
+    {
+      "id": "anthropic_events_web",
+      "source_id": "anthropic",
+      "entry_type": "website",
+      "label": "Anthropic Events",
+      "url": "https://www.anthropic.com/events",
+      "status": "planned",
+      "existing_in_sources_json": 0,
+      "notes": "官方活动、网络研讨会和开发者 Newsletter 入口。"
+    },
+    {
+      "id": "deepmind_news_rss",
+      "source_id": "google_deepmind",
+      "entry_type": "rss",
+      "label": "Google DeepMind News RSS",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "status": "enabled",
+      "existing_in_sources_json": 1,
+      "notes": "2026-07-25 使用 OrbitAI 当前 feedparser 流程验证通过。"
+    },
+    {
+      "id": "meta_llama_models_releases_atom",
+      "source_id": "meta_ai",
+      "entry_type": "rss",
+      "label": "Meta Llama Models GitHub Releases Atom",
+      "url": "https://github.com/meta-llama/llama-models/releases.atom",
+      "status": "disabled",
+      "existing_in_sources_json": 1,
+      "notes": "覆盖粒度不适合当前材料流，已从活动抓取和 AI 队列停用；Meta AI 暂由官网人工处理。"
+    },
+    {
+      "id": "meta_ai_newsletter_web",
+      "source_id": "meta_ai",
+      "entry_type": "website",
+      "label": "Meta AI Newsletter",
+      "url": "https://ai.meta.com/subscribe/",
+      "status": "planned",
+      "existing_in_sources_json": 0,
+      "notes": "官方 Newsletter 订阅入口。"
+    },
+    {
+      "id": "deepseek_r1_commits_atom",
+      "source_id": "deepseek",
+      "entry_type": "rss",
+      "label": "DeepSeek R1 GitHub Commits Atom",
+      "url": "https://github.com/deepseek-ai/DeepSeek-R1/commits/main.atom",
+      "status": "disabled",
+      "existing_in_sources_json": 1,
+      "notes": "普通提交粒度过细，已从活动抓取和 AI 队列停用。"
+    },
+    {
+      "id": "deepseek_v3_commits_atom",
+      "source_id": "deepseek",
+      "entry_type": "rss",
+      "label": "DeepSeek V3 GitHub Commits Atom",
+      "url": "https://github.com/deepseek-ai/DeepSeek-V3/commits/main.atom",
+      "status": "disabled",
+      "existing_in_sources_json": 1,
+      "notes": "普通提交粒度过细，已从活动抓取和 AI 队列停用。"
+    },
+    {
+      "id": "deepseek_github_web",
+      "source_id": "deepseek",
+      "entry_type": "website",
+      "label": "DeepSeek GitHub Organization",
+      "url": "https://github.com/deepseek-ai",
+      "status": "planned",
+      "existing_in_sources_json": 0,
+      "notes": "用于发现新模型仓库、技术报告和工程实现。"
+    },
+    {
+      "id": "deepseek_huggingface_web",
+      "source_id": "deepseek",
+      "entry_type": "website",
+      "label": "DeepSeek Hugging Face",
+      "url": "https://huggingface.co/deepseek-ai",
+      "status": "planned",
+      "existing_in_sources_json": 0,
+      "notes": "用于核查模型卡、权重、许可证和发布时间。"
+    },
+    {
+      "id": "spacexai_release_notes_web",
+      "source_id": "spacexai",
+      "entry_type": "website",
+      "label": "SpaceXAI API Release Notes",
+      "url": "https://docs.x.ai/developers/release-notes",
+      "status": "planned",
+      "existing_in_sources_json": 0,
+      "notes": "结构化官方发布记录，覆盖模型、API 和工具变化。"
+    },
+    {
+      "id": "spacexai_sdk_releases_atom",
+      "source_id": "spacexai",
+      "entry_type": "rss",
+      "label": "SpaceXAI Python SDK GitHub Releases Atom",
+      "url": "https://github.com/xai-org/xai-sdk-python/releases.atom",
+      "status": "disabled",
+      "existing_in_sources_json": 1,
+      "notes": "SDK 小版本粒度不适合当前材料流，已从活动抓取和 AI 队列停用；SpaceXAI 暂由官网人工处理。"
+    }
+  ]
+}

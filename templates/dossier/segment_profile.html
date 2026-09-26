@@ -27,15 +27,16 @@
             <p class="dossier-kicker">DEVELOPMENT</p>
             <h2>赛道发展历程</h2>
         </div>
-        <span class="content-state">等待 V4.2 事件台账</span>
+        <a class="content-state" href="{{ url_for('event_timeline') }}?segment_id={{ profile.segment.id|urlencode }}">查看已确认事件时间线</a>
     </header>
     <div class="timeline-placeholder">
         <span aria-hidden="true"></span>
         <div>
-            <strong>这里将由可追溯事件生成发展历程</strong>
-            <p>目前还没有经过审核的事件数据，因此不使用 AI 临时编写一段看似完整的历史。</p>
+            <strong>从原始材料进入可追溯事件</strong>
+            <p>只有人工确认的事件进入时间线；候选、待补证和有争议记录保留在<a href="{{ url_for('event_ledger') }}?segment_id={{ profile.segment.id|urlencode }}">事件台账</a>，不使用 AI 临时编写历史。</p>
         </div>
     </div>
+    {% if profile.events %}{% with events=profile.events %}{% include 'dossier/event_list.html' %}{% endwith %}{% endif %}
 </section>
 
 <section class="profile-section">
@@ -86,10 +87,13 @@
             <p class="dossier-kicker">ORGANIZATION TIMELINES</p>
             <h2>企业发展时间线</h2>
         </div>
-        <span class="content-state">等待事件关联</span>
+        <span class="content-state">按组织筛选已确认事件</span>
     </header>
     <p class="section-explanation">
-        后续每家企业会拥有自己的时间线。事件审核通过后才会挂到相应节点，点击节点再进入事件档案与原始材料。
+        事件审核通过后才会挂到相应节点，点击节点再进入事件档案与原始材料。
     </p>
+    {% for organization in profile.organizations %}<section class="participant-panel"><h3><a href="{{ url_for('event_timeline') }}?segment_id={{ profile.segment.id|urlencode }}&amp;organization_id={{ organization.id|urlencode }}">{{ organization.name }}时间线</a></h3>
+    {% with events=organization.events or [] %}{% include 'dossier/event_list.html' %}{% endwith %}</section>{% endfor %}
+    <p><a href="{{ url_for('v42_review') }}">查看本轮整理成果与待核对内容</a></p>
 </section>
 {% endblock %}

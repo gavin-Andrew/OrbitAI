@@ -13,6 +13,10 @@
 
 - `specs/V4_INDUSTRY_DOSSIER_SPEC.md`：动态产业档案分阶段实现规格。
 - `specs/V4_1_CATALOG_SPEC.md`：V4.1 产业与参与者名册规格。
+- `specs/V4_2_WEB_SOURCE_PREVIEW_SPEC.md`：四家无官方 RSS 组织的官网只读发现、正文解析和质量门槛草案。
+- `specs/V4_2_EVENT_SLICE_SPEC.md`：最小事件闭环、三篇 GPT-5.6 RSS 样本完整预览、授权与验收记录。
+- `specs/V4_2_COMPLETION_SPEC.md`：2026-09-16 完整 V4.2 交付范围、材料补充、提取、合并与隔离验证边界。
+- `specs/V4_MULTIMODAL_AGENT_FEASIBILITY.md`：Grok Bot 等外部材料助手的官方能力核查、多模态取证要求与小样本试验草案；尚未决定选型或正式接入。
 - `specs/V4_SOURCE_REGISTRY.md`：信息源注册表模型与规则。
 
 规格文件可以同时包含“已确认”和“仍为草案”的部分；以文件自身状态说明为准，不能仅因位于 `specs/` 就视为全部已确认。
@@ -23,10 +27,13 @@
 - `guides/V4_1_CATALOG_PAGE_GUIDE.md`：首个产业目录工程验证页说明。
 - `guides/V4_DOSSIER_READER_SHELL_GUIDE.md`：三个固定入口、赛道下钻与阅读端模板骨架说明。
 - `guides/V4_1_CATALOG_ADMIN_GUIDE.md`：最小名册管理、冲突检测、事务保存和修改记录说明。
+- `guides/V4_2_EVENT_SLICE_GUIDE.md`：事件台账、原文回溯、人工确认、时间线与纠错操作。
+- `guides/V4_2_ACCEPTANCE.md`：V4.2 统一入口、2026-09-26 用户验收通过记录、外部实测限制和独立内容确认事项。
 
 ## 审核与决策 `decisions/`
 
 - `decisions/V4_1_CATALOG_REVIEW_CHECKLIST.md`：首批名册中文审核与授权记录。
+- `decisions/V4_2_SOURCE_COVERAGE_REVIEW.md`：六家试点组织 RSS、Atom 与官方替代入口的在线验证和待审核写库边界。
 - `decisions/PROJECT_STRUCTURE_REFACTOR_PLAN.md`：本轮项目结构重构的正式行动依据和实际状态。
 - `decisions/PROJECT_STRUCTURE_REFACTOR_BASELINE.md`：阶段 0 基线。
 - `decisions/PROJECT_STRUCTURE_REFACTOR_STAGE1.md` 至 `decisions/PROJECT_STRUCTURE_REFACTOR_STAGE6.md`：各阶段执行与退出记录。

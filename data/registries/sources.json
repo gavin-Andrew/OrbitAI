@@ -5,13 +5,43 @@
     "enabled": true
   },
   {
-    "name": "Hugging Face Blog",
-    "url": "https://huggingface.co/blog/feed.xml",
+    "name": "Anthropic Claude Code Releases",
+    "url": "https://github.com/anthropics/claude-code/releases.atom",
+    "enabled": false
+  },
+  {
+    "name": "Google DeepMind News",
+    "url": "https://deepmind.google/blog/rss.xml",
     "enabled": true
+  },
+  {
+    "name": "Meta Llama Models Releases",
+    "url": "https://github.com/meta-llama/llama-models/releases.atom",
+    "enabled": false
+  },
+  {
+    "name": "DeepSeek R1 Repository Updates",
+    "url": "https://github.com/deepseek-ai/DeepSeek-R1/commits/main.atom",
+    "enabled": false
+  },
+  {
+    "name": "DeepSeek V3 Repository Updates",
+    "url": "https://github.com/deepseek-ai/DeepSeek-V3/commits/main.atom",
+    "enabled": false
+  },
+  {
+    "name": "SpaceXAI SDK Releases",
+    "url": "https://github.com/xai-org/xai-sdk-python/releases.atom",
+    "enabled": false
   },
   {
     "name": "Google AI Blog",
     "url": "https://feeds.feedburner.com/blogspot/gJZg",
+    "enabled": true
+  },
+  {
+    "name": "Hugging Face Blog",
+    "url": "https://huggingface.co/blog/feed.xml",
     "enabled": true
   }
 ]

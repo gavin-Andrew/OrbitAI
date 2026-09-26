@@ -2,7 +2,7 @@
 
 类别：产品方向
 
-状态：原信息策略已由用户审核确认；自 2026-07-10 起，作为“可追溯的 AI 动态产业档案”的材料采集子策略继续有效。
+状态：原信息策略已由用户审核确认；自 2026-07-10 起，作为“可追溯的 AI 动态产业档案”的材料采集子策略继续有效。2026-07-26 根据实际抓取结果，四家无公司级官方 RSS 组织的 GitHub Atom 已停用并改为人工处理；具体来源入口变更仍待用户复核后写入活动数据库。
 
 方向更新：V4 不再以观点卡片作为唯一产品中心。公开事实、信息源注册表和观点卡片将进入事件档案，服务于产业、企业、人物和关键事件时间线。总体路线见 `docs/product/ORBITAI_ROADMAP.md`；该路线图已经用户审核确认，是后续 V4 开发的正式方向依据。
 
@@ -120,6 +120,28 @@ V4 应采用分层获取策略，但实现上不应把它们做成互相割裂�
 - 研究机构博客。
 - 技术博客。
 - 有价值的 GitHub release feed。
+
+#### V4 单赛道试点的六家组织入口基线
+
+2026-07-25 使用 OrbitAI 当前 `urllib + feedparser` 流程实测后，六家试点组织不能采用“一家公司等于一条官方 RSS”的简单方案：
+
+| 组织 | 公司级官方 RSS | 当前自动入口 | 必须保留的非 RSS 入口 |
+|---|---|---|---|
+| OpenAI | 有 | OpenAI News RSS | 官网、开发者文档、发布会和人工录入 |
+| Anthropic | 未发现；常见地址返回 404 | 暂无；Claude Code GitHub Releases Atom 已停用 | Anthropic News、Events、研究和政策页 |
+| Google DeepMind | 有 | Google DeepMind News RSS | News 网页、研究与模型页面 |
+| Meta AI | 未发现；常见地址返回 404 | 暂无；Llama Models GitHub Releases Atom 已停用 | Meta AI Blog、Newsletter、模型卡和人工录入 |
+| DeepSeek | 未发现；常见地址返回 HTML 而不是 feed | 暂无；R1、V3 GitHub Commits Atom 已停用 | API News、GitHub 组织、Hugging Face 模型卡 |
+| SpaceXAI | 未发现；常见地址返回 404 | 暂无；xAI Python SDK GitHub Releases Atom 已停用 | xAI News、API Release Notes、模型与系统卡 |
+
+2026-07-26 的实际运行表明，这些 GitHub Atom 会让普通提交和小版本进入文章库及 AI 评分流程，因此当前处理决定是：
+
+- 在 `data/registries/sources.json` 中保留记录但设为停用，避免继续抓取。
+- `python main.py` 的 AI 队列同时跳过来自停用入口的存量未处理材料。
+- 无 RSS 公司的官网页面仍是公司级事实入口；在网页采集器实现前，先通过人工策划和手动录入进入事件候选流程。
+- 不默认启用第三方生成的公司新闻镜像 RSS，避免来源身份、完整性和长期稳定性不可控。
+
+2026-07-27 已实现四家公司官网的只读试抓入口。Anthropic、Meta AI 和 DeepSeek 可以直接发现官方文章并解析标题、日期和正文；SpaceXAI 在本地直接请求下连续返回 HTTP 403。2026-07-28 根据 Firecrawl 官方接口边界和实际样本，将 SpaceXAI 后备路径确定为“固定 `/news` 列表 Scrape 发现白名单 URL，再对每个精确详情 URL 单独执行深度 0、跳过 sitemap、`limit=1` 的 Crawl”；完成结果必须只有一个文档，且元数据 URL 与请求 URL 一致，否则失败关闭并转人工。该命令不写数据库、不调用 AI，完整边界见 `docs/specs/V4_2_WEB_SOURCE_PREVIEW_SPEC.md`。
 
 ### 第二层：策划式信息源注册表
 

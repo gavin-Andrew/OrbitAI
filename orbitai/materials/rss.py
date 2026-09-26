@@ -18,11 +18,8 @@ from orbitai.materials.fields import create_new_item
 from orbitai.text_utils import clean_html
 
 
-def load_sources():
-    """
-    从 data/registries/sources.json 读取 RSS 信息源。
-    只返回 enabled 为 true 的信源。
-    """
+def _load_source_configs():
+    """读取完整来源配置；调用方自行决定是否包含停用入口。"""
     if not SOURCES_FILE.exists():
         print("⚠️ 未找到 data/registries/sources.json，无法读取信息源。")
         return []
@@ -35,30 +32,52 @@ def load_sources():
             print("⚠️ RSS 来源配置格式错误：最外层应该是列表。")
             return []
 
-        enabled_sources = []
-
-        for source in sources:
-            name = source.get("name")
-            url = source.get("url")
-            enabled = source.get("enabled", True)
-
-            if not enabled:
-                continue
-
-            if not name or not url:
-                print(f"⚠️ 跳过无效信源：{source}")
-                continue
-
-            enabled_sources.append({
-                "name": name,
-                "url": url,
-            })
-
-        return enabled_sources
+        return sources
 
     except json.JSONDecodeError:
         print("⚠️ RSS 来源配置不是有效 JSON，请检查格式。")
         return []
+
+
+def load_sources():
+    """
+    从 data/registries/sources.json 读取 RSS 信息源。
+    只返回 enabled 为 true 的信源。
+    """
+    enabled_sources = []
+
+    for source in _load_source_configs():
+        name = source.get("name")
+        url = source.get("url")
+        enabled = source.get("enabled", True)
+
+        if not enabled:
+            continue
+
+        if not name or not url:
+            print(f"⚠️ 跳过无效信源：{source}")
+            continue
+
+        enabled_sources.append({
+            "name": name,
+            "url": url,
+        })
+
+    return enabled_sources
+
+
+def load_disabled_source_names() -> set[str]:
+    """
+    返回已经停用的来源名称。
+
+    这些来源既不继续抓取，也不让此前写入但尚未处理的材料进入
+    `python main.py` 的 AI 队列。重新启用入口后，存量材料可继续处理。
+    """
+    return {
+        source["name"]
+        for source in _load_source_configs()
+        if source.get("enabled", True) is False and source.get("name")
+    }
 
 def parse_rss_with_retry(
     url,

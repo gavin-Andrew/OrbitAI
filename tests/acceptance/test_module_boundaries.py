@@ -9,9 +9,11 @@ from pathlib import Path
 
 from orbitai import catalog_import as catalog_import_cli
 from orbitai import migrations as migrations_cli
+from orbitai import website_preview as website_preview_cli
 from orbitai.catalog import import_service
 from orbitai.core import migrations
 from orbitai.core.database import init_db
+from orbitai.materials import web_sources
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -69,6 +71,17 @@ class ModuleBoundaryTests(unittest.TestCase):
             for retired_import in RETIRED_IMPORT_PATHS:
                 self.assertNotIn(retired_import, source, str(path))
 
+    def test_website_preview_has_no_database_or_ai_write_dependencies(self):
+        preview_source = (
+            PROJECT_ROOT / "orbitai" / "materials" / "web_sources.py"
+        ).read_text(encoding="utf-8")
+
+        self.assertNotIn("orbitai.core.database", preview_source)
+        self.assertNotIn("orbitai.materials.repository", preview_source)
+        self.assertNotIn("orbitai.materials.ai_processor", preview_source)
+        self.assertNotIn("insert_articles", preview_source)
+        self.assertNotIn("process_ai_items", preview_source)
+
     def test_supported_cli_wrappers_forward_to_active_implementations(self):
         self.assertIs(catalog_import_cli.main, import_service.main)
         self.assertIs(
@@ -77,6 +90,11 @@ class ModuleBoundaryTests(unittest.TestCase):
         )
         self.assertIs(migrations_cli.main, migrations.main)
         self.assertIs(migrations_cli.MIGRATIONS, migrations.MIGRATIONS)
+        self.assertIs(website_preview_cli.main, web_sources.main)
+        self.assertIs(
+            website_preview_cli.WEBSITE_SOURCE_RULES,
+            web_sources.WEBSITE_SOURCE_RULES,
+        )
 
     def test_legacy_and_active_catalog_clis_match_from_other_directory(self):
         with tempfile.TemporaryDirectory() as temp_dir:

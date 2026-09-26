@@ -1,0 +1,7 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p><a href="{{ url_for('event_ledger') }}">返回事件台账（含候选及纠错入口）</a></p>
+<p>这里只展示人工确认的事件。事件日期与材料发布日期分别保留；日期未知不推测、不补成某一天。</p>
+{% include "dossier/event_filters.html" %}
+{% include "dossier/event_list.html" %}
+{% endblock %}

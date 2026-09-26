@@ -40,6 +40,7 @@
     </header>
 
     <main class="dossier-shell" id="main-content">
+        {% if request.app.state.preview_mode %}<aside class="scope-note" role="note"><strong>隔离演示库</strong><span>这里的确认、合并与修改仅用于试用，正式库未改变。带“演示”的事件不代表真实内容已获确认。</span></aside>{% endif %}
         <header class="dossier-page-heading">
             {% block breadcrumb %}{% endblock %}
             <h1>{{ page_title }}</h1>

@@ -1,0 +1,2 @@
+{% extends "dossier/base.html" %}
+{% block content %}<p role="alert">{{ error }}</p><p>没有保存本次变更。请返回表单修正，或重新加载最新事件后再次预览。</p><a href="{{ url_for('event_ledger') }}">返回台账</a>{% endblock %}

@@ -879,6 +879,28 @@ def _drop_catalog_change_log_v1(connection: sqlite3.Connection) -> None:
     connection.execute("DROP TABLE IF EXISTS catalog_change_log")
 
 
+def _create_event_change_log(connection: sqlite3.Connection) -> None:
+    connection.execute("""
+        CREATE TABLE event_change_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_id TEXT NOT NULL REFERENCES events(id),
+            action TEXT NOT NULL,
+            change_reason TEXT NOT NULL,
+            before_json TEXT NOT NULL,
+            after_json TEXT NOT NULL,
+            actor TEXT NOT NULL DEFAULT 'local_user',
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    connection.execute(
+        "CREATE INDEX idx_event_change_log_event ON event_change_log(event_id, id)"
+    )
+
+
+def _drop_event_change_log(connection: sqlite3.Connection) -> None:
+    connection.execute("DROP TABLE event_change_log")
+
+
 MIGRATIONS = (
     Migration("0001", "articles_baseline", _create_articles_baseline),
     Migration(
@@ -913,6 +935,8 @@ MIGRATIONS = (
         _create_catalog_change_log_v1,
         _drop_catalog_change_log_v1,
     ),
+    Migration("0007", "event_change_log_v1", _create_event_change_log,
+              _drop_event_change_log, destructive_down=True),
 )
 
 

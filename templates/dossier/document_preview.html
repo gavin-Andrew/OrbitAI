@@ -1,0 +1,10 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p>尚未保存。材料保存后可供多个事件引用，不会自动成为已确认事件。</p>
+<h2>{{ preview.after.title }}</h2><p>来源：{{ preview.source.name }} · 发布日期：{{ preview.after.published_at or '未知' }}</p>
+<p>{{ '官网正文快照' if preview.after.document_type == 'web_article' else '手工摘录，可能不完整' }}</p>
+<p><a href="{{ preview.after.url }}" target="_blank" rel="noopener noreferrer">打开原始来源</a></p>
+{% for warning in preview.warnings %}<p>{{ warning }}</p>{% endfor %}<pre>{{ preview.after.content_text }}</pre>
+<form method="post" action="{{ url_for('document_save') }}"><input type="hidden" name="payload" value="{{ payload_json }}"><input type="hidden" name="preview_token" value="{{ preview.preview_token }}"><button>保存这份原始材料</button></form>
+<p><a href="{{ url_for('document_intake') }}">返回材料补充</a></p>
+{% endblock %}

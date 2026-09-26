@@ -28,6 +28,7 @@
             <p class="person-card__role">当前任职关系待补充</p>
             {% endfor %}
             <p class="archive-card__description">{{ person.description or "人物档案说明待补充。" }}</p>
+            <p><a href="{{ url_for('event_timeline') }}?person_id={{ person.id|urlencode }}">人物事件时间线</a></p>
         </div>
     </article>
     {% else %}

@@ -1,0 +1,8 @@
+{% extends "dossier/base.html" %}
+{% block content %}
+<p><a href="{{ url_for('event_new') }}">创建事件候选</a> · <a href="{{ url_for('event_timeline') }}">已确认事件时间线</a></p>
+<p><a href="{{ url_for('document_intake') }}">补充原始材料</a> · <a href="{{ url_for('event_extract_form') }}">从 RSS 拟事件草稿</a> · <a href="{{ url_for('v42_review') }}">V4.2 成果总览</a></p>
+<p>候选、待补证和有争议事件不是已确认事实；归档仅移出确认时间线，保留来源和修改记录。</p>
+{% include "dossier/event_filters.html" %}
+{% include "dossier/event_list.html" %}
+{% endblock %}

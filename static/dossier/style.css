@@ -763,3 +763,20 @@ html {
         padding: 18px 0;
     }
 }
+/* V4.2 reading and editing controls stay inside the dossier shell. */
+.dossier-shell pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.65; }
+.dossier-shell form { max-width: 960px; }
+.dossier-shell input:not([type=checkbox]):not([type=hidden]),
+.dossier-shell textarea, .dossier-shell select {
+    max-width: 100%; padding: 9px 12px; border: 1px solid #cbd5d2;
+    border-radius: 6px; background: #fff; color: #233b34; font: inherit;
+}
+.dossier-shell textarea { display: block; width: 100%; margin-top: 8px; }
+.dossier-shell input[type=url] { width: 100%; }
+.dossier-shell fieldset { margin: 20px 0; padding: 18px; border: 1px solid #cbd5d2; border-radius: 8px; }
+.dossier-shell fieldset > label { display: inline-block; margin: 5px 12px 5px 0; }
+.dossier-shell details { padding: 12px 0; border-bottom: 1px solid #dce4df; overflow-wrap: anywhere; }
+.dossier-shell summary { cursor: pointer; }
+.dossier-shell button { padding: 11px 18px; margin: 14px 0; background: #245d49; color: #fff; border: 0; border-radius: 7px; font: inherit; cursor: pointer; }
+.dossier-shell button:disabled { opacity: .5; cursor: default; }
+.dossier-shell .participant-panel { margin-bottom: 20px; }
